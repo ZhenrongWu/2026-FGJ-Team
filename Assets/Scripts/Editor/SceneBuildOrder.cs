@@ -10,10 +10,10 @@ namespace FGJ.Editor
 {
     public static class SceneBuildOrder
     {
-        public const string InitScenePath = "Assets/Scenes/Init.unity";
+        public const string BootstrapScenePath = "Assets/Scenes/Bootstrap.unity";
 
         private static readonly string[] OrderedSceneNames =
-            { SceneNames.Init, SceneNames.MainMenu, SceneNames.Exploration, SceneNames.Gameplay };
+            { SceneNames.Bootstrap, SceneNames.MainMenu, SceneNames.Exploration, SceneNames.Gameplay };
 
         [MenuItem("FGJ/Scenes/Build All Scenes")]
         public static void BuildAllFromMenu()
@@ -25,29 +25,29 @@ namespace FGJ.Editor
 
         public static void BuildAll()
         {
-            BuildInitScene();
+            BuildBootstrapScene();
             LiarDiceSceneMenu.BuildRoomScene();
             ExplorationSceneMenu.BuildScene();
             Apply();
         }
 
-        [MenuItem("FGJ/Scenes/Build Init Scene")]
-        public static void BuildInitSceneFromMenu()
+        [MenuItem("FGJ/Scenes/Build Bootstrap Scene")]
+        public static void BuildBootstrapSceneFromMenu()
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 return;
-            BuildInitScene();
+            BuildBootstrapScene();
             Apply();
         }
 
-        public static void BuildInitScene()
+        public static void BuildBootstrapScene()
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var camera = new GameObject("Main Camera").AddComponent<Camera>();
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = Color.black;
             new GameObject("GameBootstrap").AddComponent<GameBootstrap>().Configure(FlowAssets.Progress, FlowAssets.Router);
-            EditorSceneManager.SaveScene(scene, InitScenePath);
+            EditorSceneManager.SaveScene(scene, BootstrapScenePath);
         }
 
         public static void Apply()
