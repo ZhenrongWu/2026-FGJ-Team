@@ -50,6 +50,7 @@ namespace FGJ.LiarDice.UI
         public string CurrentBidLabel => parts.currentBidText.text;
         public string MonsterLine => parts.monsterLineText.text;
         public string ResultMessage => parts.resultText.text;
+        public string ContinueLabel => parts.continueLabel.text;
         public bool IsResultVisible => parts.resultPanel.activeSelf;
         public bool IsInputInteractable => parts.quantityInput.interactable;
 

@@ -9,6 +9,15 @@ namespace FGJ.LiarDice.UI
         public const string NothingToChallenge = "目前沒有可以質疑的喊數。";
         public const string NextRoundLabel = "下一局";
         public const string RematchLabel = "再挑戰一次";
+        public const string ReturnToCaveLabel = "返回洞穴";
+        public const string RestartLabel = "重新開始";
+
+        public static string MatchOverLabel(Side winner, bool leavesRoom)
+        {
+            if (!leavesRoom)
+                return RematchLabel;
+            return winner == Side.Player ? ReturnToCaveLabel : RestartLabel;
+        }
 
         public static string SideName(Side side) => side == Side.Player ? "你" : "怪物";
 

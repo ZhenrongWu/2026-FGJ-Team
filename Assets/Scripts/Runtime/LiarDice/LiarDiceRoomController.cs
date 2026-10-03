@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using FGJ.Flow;
 using FGJ.LiarDice.UI;
 using UnityEngine;
 using UnityEngine.Events;
@@ -19,6 +20,7 @@ namespace FGJ.LiarDice
         private Coroutine _monsterTurn;
 
         public event Action<Side> MatchFinished;
+        public event Action<Side> ExitRequested;
 
         public LiarDiceMatch Match { get; private set; }
         public LiarDiceView View => view;
@@ -37,8 +39,10 @@ namespace FGJ.LiarDice
 
         private void Start()
         {
-            if (Match == null && config != null)
-                Begin(config.ToMatchSettings(), () => new RandomDiceRoller(), new MonsterAI(config.ToMonsterProfile()));
+            var activeConfig = GameSession.CurrentGameplayConfig != null ? GameSession.CurrentGameplayConfig : config;
+            if (Match == null && activeConfig != null)
+                Begin(activeConfig.ToMatchSettings(), () => new RandomDiceRoller(),
+                    new MonsterAI(activeConfig.ToMonsterProfile()));
         }
 
         private void OnDestroy()
@@ -113,7 +117,10 @@ namespace FGJ.LiarDice
                     AdvanceTurn();
                     break;
                 case MatchPhase.MatchOver:
-                    Begin(Match.Settings, _rollerFactory, _monster);
+                    if (ExitRequested != null)
+                        ExitRequested.Invoke(Match.Winner.Value);
+                    else
+                        Begin(Match.Settings, _rollerFactory, _monster);
                     break;
             }
         }
@@ -176,7 +183,8 @@ namespace FGJ.LiarDice
             if (Match.Phase == MatchPhase.MatchOver)
             {
                 var winner = Match.Winner.Value;
-                view.ShowResult($"{message}\n\n{LiarDiceText.MatchOver(winner)}", LiarDiceText.RematchLabel);
+                view.ShowResult($"{message}\n\n{LiarDiceText.MatchOver(winner)}", LiarDiceText.MatchOverLabel(winner,
+                    ExitRequested != null));
                 MatchFinished?.Invoke(winner);
                 matchFinished.Invoke(winner);
                 return;
