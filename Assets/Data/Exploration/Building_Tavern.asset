@@ -16,6 +16,7 @@ MonoBehaviour:
   entrancePrefab: {fileID: 0}
   exterior: {fileID: 21300000, guid: 0f69652186dec044c8a665953326923c, type: 3}
   exteriorOffset: {x: 0.74, y: -0.15}
+  exteriorScale: {x: 2, y: 2}
   exteriorSortingOrder: -5
   enterPrompt: "\u6309 E \u9032\u5165\u9152\u9928"
   clearedPrompt: "\u9152\u9928\u88E1\u5DF2\u7D93\u5B89\u975C\u4E86"
