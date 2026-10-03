@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace FGJ.LiarDice
 {
-    /// <summary>每個關卡的吹牛數值設定。</summary>
     [CreateAssetMenu(fileName = "LiarDiceConfig", menuName = "FGJ/Liar Dice Config")]
     public sealed class LiarDiceConfig : ScriptableObject
     {

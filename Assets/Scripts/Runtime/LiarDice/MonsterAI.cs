@@ -3,19 +3,14 @@ using System.Collections.Generic;
 
 namespace FGJ.LiarDice
 {
-    /// <summary>怪物個性參數，由 <see cref="LiarDiceConfig"/> 產生。</summary>
     public sealed class MonsterAIProfile
     {
-        /// <summary>上一個喊數成立機率低於此值就質疑。</summary>
         public float ChallengeThreshold { get; }
 
-        /// <summary>成立機率不低於此值的喊數視為「有把握」，會從中挑最大的喊。</summary>
         public float ConfidentBidThreshold { get; }
 
-        /// <summary>刻意吹牛（喊沒把握的數）的機率。</summary>
         public float BluffChance { get; }
 
-        /// <summary>一次加注最多比目前數量多幾個。</summary>
         public int MaxRaiseStep { get; }
 
         public MonsterAIProfile(float challengeThreshold = 0.35f, float confidentBidThreshold = 0.5f,
@@ -43,7 +38,6 @@ namespace FGJ.LiarDice
         public static MonsterDecision Raise(Bid bid) => new MonsterDecision(false, bid);
     }
 
-    /// <summary>依自己的骰子與未知骰子的二項分布機率決定要加注還是質疑。</summary>
     public sealed class MonsterAI
     {
         private readonly MonsterAIProfile _profile;
@@ -109,13 +103,11 @@ namespace FGJ.LiarDice
             if (bluffs.Count > 0 && _random.NextDouble() < _profile.BluffChance)
                 return MonsterDecision.Raise(bluffs[_random.Next(bluffs.Count)]);
 
-            // 有把握的喊數中挑最大的施壓；都沒把握就喊成立機率最高的。
             if (confident.Count > 0)
                 return MonsterDecision.Raise(confident[confident.Count - 1]);
             return MonsterDecision.Raise(bestBid);
         }
 
-        /// <summary>在已知自己骰子的情況下，喊數成立（全場符合數量 ≥ Quantity）的機率。</summary>
         public static double Probability(IReadOnlyList<int> ownDice, int unknownDiceCount, Bid bid, bool wildActive)
         {
             var known = LiarDiceRules.CountMatching(ownDice, bid.Face, wildActive);

@@ -2,7 +2,6 @@ using System;
 
 namespace FGJ.LiarDice
 {
-    /// <summary>喊數：「Quantity 個 Face 點」。</summary>
     public readonly struct Bid : IEquatable<Bid>
     {
         public readonly int Quantity;
@@ -14,7 +13,6 @@ namespace FGJ.LiarDice
             Face = face;
         }
 
-        /// <summary>數量更多，或數量相同但點數更大（1 &lt; 2 &lt; … &lt; 6）。</summary>
         public bool IsHigherThan(Bid other)
         {
             return Quantity > other.Quantity || (Quantity == other.Quantity && Face > other.Face);

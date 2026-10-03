@@ -26,9 +26,7 @@ namespace FGJ.Tests.EditMode.LiarDice
         [Test]
         public void Probability_MatchesBinomial()
         {
-            // 自己沒有 4 也沒有 1，需要 1 顆未知骰子中的 4 或 1（機率 1/3）
             Assert.AreEqual(1.0 / 3.0, MonsterAI.Probability(new[] { 2, 3, 5, 6, 6 }, 1, new Bid(1, 4), true), 1e-9);
-            // 萬用失效後只剩 1/6
             Assert.AreEqual(1.0 / 6.0, MonsterAI.Probability(new[] { 2, 3, 5, 6, 6 }, 1, new Bid(1, 4), false), 1e-9);
         }
 

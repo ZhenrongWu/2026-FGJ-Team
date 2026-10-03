@@ -4,7 +4,6 @@ namespace FGJ.LiarDice
 {
     public interface IDiceRoller
     {
-        /// <summary>回傳 1～6 的點數。</summary>
         int Roll();
     }
 

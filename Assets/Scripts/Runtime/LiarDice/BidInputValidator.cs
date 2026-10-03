@@ -17,7 +17,6 @@ namespace FGJ.LiarDice
         public static BidInputResult Fail(string message) => new BidInputResult(false, default, message);
     }
 
-    /// <summary>玩家輸入欄位（數量、點數）的防呆檢查，回傳可直接顯示的錯誤訊息。</summary>
     public static class BidInputValidator
     {
         public static BidInputResult Validate(string quantityText, string faceText, Bid? currentBid, int totalDice)

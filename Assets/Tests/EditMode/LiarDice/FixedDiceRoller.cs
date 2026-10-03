@@ -3,7 +3,6 @@ using FGJ.LiarDice;
 
 namespace FGJ.Tests.EditMode.LiarDice
 {
-    /// <summary>依序回傳指定點數的骰子，讓測試結果可預期。</summary>
     internal sealed class FixedDiceRoller : IDiceRoller
     {
         private readonly Queue<int> _values;

@@ -2,7 +2,6 @@ using System;
 
 namespace FGJ.LiarDice
 {
-    /// <summary>一場對局的數值設定，由 <see cref="LiarDiceConfig"/> 產生。</summary>
     public sealed class MatchSettings
     {
         public int PlayerDiceCount { get; }

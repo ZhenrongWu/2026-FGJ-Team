@@ -6,7 +6,6 @@ namespace FGJ.Tests.EditMode.LiarDice
 {
     public class LiarDiceMatchTests
     {
-        // 玩家：1 4 4 2 6；怪物：3 4 5 5 1（萬用有效時全場 4 點 = 5 顆）
         private static readonly int[] RoundOneDice = { 1, 4, 4, 2, 6, 3, 4, 5, 5, 1 };
 
         private static LiarDiceMatch CreateMatch(int oxygen = 2, params int[] extraRolls)
@@ -116,7 +115,6 @@ namespace FGJ.Tests.EditMode.LiarDice
             match.PlaceBid(Side.Player, new Bid(4, 4));
             var result = match.Challenge(Side.Monster);
 
-            // 萬用失效：4 點只有 3 顆，玩家喊 4 個 4 不成立
             Assert.AreEqual(3, result.ActualCount);
             Assert.AreEqual(Side.Player, result.Loser);
         }
@@ -126,7 +124,7 @@ namespace FGJ.Tests.EditMode.LiarDice
         {
             var match = CreateMatch(2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3);
             match.PlaceBid(Side.Monster, new Bid(2, 1));
-            match.Challenge(Side.Player); // 全場 1 點有 2 顆，喊數成立，玩家輸
+            match.Challenge(Side.Player);
 
             match.NextRound();
 

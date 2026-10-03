@@ -17,7 +17,6 @@ namespace FGJ.LiarDice
         NotHigher
     }
 
-    /// <summary>吹牛的純規則判定，不含任何狀態。</summary>
     public static class LiarDiceRules
     {
         public const int MinFace = 1;
@@ -26,10 +25,8 @@ namespace FGJ.LiarDice
 
         public static Side Opponent(Side side) => side == Side.Player ? Side.Monster : Side.Player;
 
-        /// <summary>喊到 1 點會讓本局的萬用失效。</summary>
         public static bool CancelsWild(Bid bid) => bid.Face == WildFace;
 
-        /// <summary>計算骰子中符合 face 的數量；萬用有效時 1 點可當任何點數。</summary>
         public static int CountMatching(IEnumerable<int> dice, int face, bool wildActive)
         {
             var count = 0;
@@ -54,7 +51,6 @@ namespace FGJ.LiarDice
             return BidValidation.Valid;
         }
 
-        /// <summary>目前喊數之後是否還有合法的加注；不能加注時只能質疑。</summary>
         public static bool CanRaise(Bid? currentBid, int totalDice)
         {
             if (!currentBid.HasValue)

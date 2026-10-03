@@ -12,7 +12,6 @@ namespace FGJ.LiarDice
         MatchOver
     }
 
-    /// <summary>一次質疑的結算結果。</summary>
     public readonly struct RoundResult
     {
         public readonly Side Challenger;
@@ -33,9 +32,6 @@ namespace FGJ.LiarDice
         public bool ChallengerWon => Loser == Bidder;
     }
 
-    /// <summary>
-    /// 吹牛對局狀態機：搖骰 → 輪流喊數 → 質疑開盅 → 輸家扣氧氣 → 輸家先叫下一局，直到一方氧氣歸零。
-    /// </summary>
     public sealed class LiarDiceMatch
     {
         public event Action<Side> RoundStarted;
@@ -58,6 +54,7 @@ namespace FGJ.LiarDice
         public RoundResult? LastResult { get; private set; }
         public Side? Winner { get; private set; }
 
+        public MatchSettings Settings => _settings;
         public int TotalDice => _playerDice.Length + _monsterDice.Length;
         public bool CanChallenge => Phase == MatchPhase.Bidding && CurrentBid.HasValue;
         public bool CanRaise => Phase == MatchPhase.Bidding && LiarDiceRules.CanRaise(CurrentBid, TotalDice);
@@ -82,14 +79,12 @@ namespace FGJ.LiarDice
             StartRound(_settings.FirstTurn);
         }
 
-        /// <summary>開始下一局，由上一局的輸家先叫。</summary>
         public void NextRound()
         {
             EnsurePhase(MatchPhase.RoundOver);
             StartRound(LastResult.Value.Loser);
         }
 
-        /// <summary>喊數。不合法時回傳原因且狀態不變。</summary>
         public BidValidation PlaceBid(Side side, Bid bid)
         {
             EnsurePhase(MatchPhase.Bidding);
@@ -109,7 +104,6 @@ namespace FGJ.LiarDice
             return BidValidation.Valid;
         }
 
-        /// <summary>質疑上一個喊數並開盅結算。</summary>
         public RoundResult Challenge(Side challenger)
         {
             EnsurePhase(MatchPhase.Bidding);
