@@ -141,11 +141,10 @@ namespace FGJ.Exploration
             router.GoToGameplay();
         }
 
-        private static bool InteractKeyPressed()
+        private bool InteractKeyPressed()
         {
             var keyboard = Keyboard.current;
-            return keyboard != null && (keyboard.eKey.wasPressedThisFrame || keyboard.upArrowKey.wasPressedThisFrame ||
-                                        keyboard.wKey.wasPressedThisFrame);
+            return keyboard != null && keyboard.eKey.wasPressedThisFrame;
         }
     }
 }
