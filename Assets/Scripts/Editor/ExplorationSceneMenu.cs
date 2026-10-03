@@ -49,7 +49,7 @@ namespace FGJ.Editor
             var controller = new GameObject("ExplorationController").AddComponent<ExplorationController>();
             controller.Configure(player, follow, hud);
             controller.SetServices(FlowAssets.Progress, FlowAssets.Router);
-            controller.SetRoute(route, DefaultPrefabs.Load<RoomEntrance>(DefaultPrefabs.PlaceholderEntrancePath),
+            controller.SetRoute(route, DefaultPrefabs.Load<RoomEntrance>(DefaultPrefabs.EntrancePath),
                 GroundY);
 
             EditorSceneManager.SaveScene(scene, ScenePath);

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &532446914235877946
+--- !u!1 &4656386050059106931
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,66 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2655339422055192333}
-  - component: {fileID: 6576425438764015839}
-  - component: {fileID: 3505509632064467913}
+  - component: {fileID: 325754355254398012}
+  - component: {fileID: 153722261047855937}
+  m_Layer: 0
+  m_Name: LiarDiceRoom
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &325754355254398012
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4656386050059106931}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4529429362503031128}
+  - {fileID: 6110528457396212585}
+  - {fileID: 1464483498704620144}
+  - {fileID: 1059475411142881711}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &153722261047855937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4656386050059106931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f50b6f9c02bdb346b29c3e2cdfa0109, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FGJ.Runtime::FGJ.LiarDice.LiarDiceRoomController
+  config: {fileID: 11400000, guid: 0d046963bc814fa41ba45ba1bfc178b1, type: 2}
+  monster: {fileID: 11400000, guid: cc3bad4bf002efb4ea28fabf314fff15, type: 2}
+  hud: {fileID: 6151378286434843894}
+  table: {fileID: 3626189414029758972}
+  monsterView: {fileID: 1416686392754230632}
+  monsterThinkSeconds: 1.2
+  matchFinished:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!1 &6162754189746667176
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4529429362503031128}
+  - component: {fileID: 4238668684905675898}
+  - component: {fileID: 4955313347212764069}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -18,28 +75,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2655339422055192333
+--- !u!4 &4529429362503031128
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 532446914235877946}
+  m_GameObject: {fileID: 6162754189746667176}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3729197705110959972}
+  m_Father: {fileID: 325754355254398012}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6576425438764015839
+--- !u!114 &4238668684905675898
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 532446914235877946}
+  m_GameObject: {fileID: 6162754189746667176}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
@@ -48,13 +105,13 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
---- !u!114 &3505509632064467913
+--- !u!114 &4955313347212764069
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 532446914235877946}
+  m_GameObject: {fileID: 6162754189746667176}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
@@ -79,68 +136,13 @@ MonoBehaviour:
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
   m_ScrollDeltaPerTick: 6
---- !u!1 &8425177156222386058
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3729197705110959972}
-  - component: {fileID: 7764758329602799314}
-  m_Layer: 0
-  m_Name: LiarDiceRoom
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3729197705110959972
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8425177156222386058}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2655339422055192333}
-  - {fileID: 1844423742863705097}
-  - {fileID: 3549850963905490786}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7764758329602799314
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8425177156222386058}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f50b6f9c02bdb346b29c3e2cdfa0109, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: FGJ.Runtime::FGJ.LiarDice.LiarDiceRoomController
-  config: {fileID: 11400000, guid: 0d046963bc814fa41ba45ba1bfc178b1, type: 2}
-  monster: {fileID: 11400000, guid: cc3bad4bf002efb4ea28fabf314fff15, type: 2}
-  hud: {fileID: 1732290650860923798}
-  table: {fileID: 1676369647728424174}
-  monsterThinkSeconds: 1.2
-  matchFinished:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!1001 &6785767072170161187
+--- !u!1001 &1405021851033985859
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 3729197705110959972}
+    m_TransformParent: {fileID: 325754355254398012}
     m_Modifications:
     - target: {fileID: 5166568494821453866, guid: 2eec22fae981e11419b7be00e0525731, type: 3}
       propertyPath: m_Pivot.x
@@ -231,10 +233,15 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2eec22fae981e11419b7be00e0525731, type: 3}
---- !u!114 &1732290650860923798 stripped
+--- !u!224 &6110528457396212585 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5166568494821453866, guid: 2eec22fae981e11419b7be00e0525731, type: 3}
+  m_PrefabInstance: {fileID: 1405021851033985859}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6151378286434843894 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5053520471710310325, guid: 2eec22fae981e11419b7be00e0525731, type: 3}
-  m_PrefabInstance: {fileID: 6785767072170161187}
+  m_PrefabInstance: {fileID: 1405021851033985859}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -242,18 +249,86 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37efbcc4a10a569488cb2a98037b5fb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FGJ.Runtime::FGJ.LiarDice.UI.LiarDiceHud
---- !u!224 &1844423742863705097 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5166568494821453866, guid: 2eec22fae981e11419b7be00e0525731, type: 3}
-  m_PrefabInstance: {fileID: 6785767072170161187}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &7641791548983153425
+--- !u!1001 &4082609686149540684
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 3729197705110959972}
+    m_TransformParent: {fileID: 325754355254398012}
+    m_Modifications:
+    - target: {fileID: 3899084444688816867, guid: 5661296f55971ef45a21cf993fbfb2f5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3899084444688816867, guid: 5661296f55971ef45a21cf993fbfb2f5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3899084444688816867, guid: 5661296f55971ef45a21cf993fbfb2f5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3899084444688816867, guid: 5661296f55971ef45a21cf993fbfb2f5, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3899084444688816867, guid: 5661296f55971ef45a21cf993fbfb2f5, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3899084444688816867, guid: 5661296f55971ef45a21cf993fbfb2f5, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3899084444688816867, guid: 5661296f55971ef45a21cf993fbfb2f5, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3899084444688816867, guid: 5661296f55971ef45a21cf993fbfb2f5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3899084444688816867, guid: 5661296f55971ef45a21cf993fbfb2f5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3899084444688816867, guid: 5661296f55971ef45a21cf993fbfb2f5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4772993951977715330, guid: 5661296f55971ef45a21cf993fbfb2f5, type: 3}
+      propertyPath: m_Name
+      value: Monster
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5661296f55971ef45a21cf993fbfb2f5, type: 3}
+--- !u!4 &1059475411142881711 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3899084444688816867, guid: 5661296f55971ef45a21cf993fbfb2f5, type: 3}
+  m_PrefabInstance: {fileID: 4082609686149540684}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1416686392754230632 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3098831847715372580, guid: 5661296f55971ef45a21cf993fbfb2f5, type: 3}
+  m_PrefabInstance: {fileID: 4082609686149540684}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58b8a3367e060f14e9a427df51cdb6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FGJ.Runtime::FGJ.LiarDice.Table.MonsterView
+--- !u!1001 &5700538646921672195
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 325754355254398012}
     m_Modifications:
     - target: {fileID: 2253336386324908832, guid: ee9da66b58999a34ab81a0bfa4660aa5, type: 3}
       propertyPath: m_Name
@@ -304,10 +379,15 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ee9da66b58999a34ab81a0bfa4660aa5, type: 3}
---- !u!114 &1676369647728424174 stripped
+--- !u!4 &1464483498704620144 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6579339359060966515, guid: ee9da66b58999a34ab81a0bfa4660aa5, type: 3}
+  m_PrefabInstance: {fileID: 5700538646921672195}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3626189414029758972 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9029349728527083519, guid: ee9da66b58999a34ab81a0bfa4660aa5, type: 3}
-  m_PrefabInstance: {fileID: 7641791548983153425}
+  m_PrefabInstance: {fileID: 5700538646921672195}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -315,8 +395,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b383588fdfa022a4ea1f9b80c07e3667, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FGJ.Runtime::FGJ.LiarDice.Table.DiceTableView
---- !u!4 &3549850963905490786 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6579339359060966515, guid: ee9da66b58999a34ab81a0bfa4660aa5, type: 3}
-  m_PrefabInstance: {fileID: 7641791548983153425}
-  m_PrefabAsset: {fileID: 0}

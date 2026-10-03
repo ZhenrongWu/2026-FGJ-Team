@@ -17,6 +17,7 @@ namespace FGJ.LiarDice
         [SerializeField] private MonsterProfile monster;
         [SerializeField] private LiarDiceHud hud;
         [SerializeField] private DiceTableView table;
+        [SerializeField] private MonsterView monsterView;
         [Min(0f)] [SerializeField] private float monsterThinkSeconds = 1.2f;
         [SerializeField] private UnityEvent<Side> matchFinished = new UnityEvent<Side>();
 
@@ -35,6 +36,7 @@ namespace FGJ.LiarDice
         public LiarDiceMatch Match { get; private set; }
         public LiarDiceHud Hud => hud;
         public DiceTableView Table => table;
+        public MonsterView MonsterView => monsterView;
         public MatchLog Log => _log;
         public bool IsBusy { get; private set; }
         public bool HasBelieved => _believed;
@@ -46,10 +48,11 @@ namespace FGJ.LiarDice
             ? _fallbackMonster
             : _fallbackMonster = ScriptableObject.CreateInstance<MonsterProfile>();
 
-        public void Configure(LiarDiceHud roomHud, DiceTableView diceTable)
+        public void Configure(LiarDiceHud roomHud, DiceTableView diceTable, MonsterView roomMonsterView)
         {
             hud = roomHud;
             table = diceTable;
+            monsterView = roomMonsterView;
         }
 
         public void UseEncounter(LiarDiceConfig roomConfig, MonsterProfile roomMonster)
@@ -99,6 +102,8 @@ namespace FGJ.LiarDice
             hud.LogView.Bind(_log);
             hud.ClearError();
             hud.ClearBidInput();
+            if (monsterView != null)
+                monsterView.Show(Monster);
             _log.Add(_text.Speech(Monster.DisplayName, Monster.Greeting), LogKind.MonsterSpeech);
             StartRound();
         }

@@ -39,7 +39,7 @@ namespace FGJ.Tests.PlayMode.Exploration
             Assert.AreEqual(1, entrances.Count);
             Assert.AreEqual(ExplorationTestRig.RoomId, entrances[0].RoomId);
             Assert.AreEqual(ExplorationTestRig.BuildingX, entrances[0].X, 1e-4f);
-            Assert.IsNotNull(entrances[0].transform.Find("PlaceholderMarker"));
+            Assert.IsFalse(entrances[0].IsCleared);
         }
 
         [UnityTest]
@@ -106,7 +106,7 @@ namespace FGJ.Tests.PlayMode.Exploration
 
             Assert.AreEqual(ExplorationTestRig.BuildingX, _rig.Player.X, 1e-4f);
             Assert.AreEqual(ExplorationTestRig.ClearedPrompt, _rig.Hud.PromptMessage);
-            Assert.IsFalse(_rig.Controller.Entrances[0].transform.Find("PlaceholderMarker").gameObject.activeSelf);
+            Assert.IsTrue(_rig.Controller.Entrances[0].IsCleared);
 
             _rig.Controller.RequestInteract();
             yield return WaitFrames(2);

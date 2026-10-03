@@ -117,25 +117,6 @@ namespace FGJ.Editor
             return root;
         }
 
-        public GameObject CreateMonsterPlaceholder()
-        {
-            EnsureFolders();
-            var root = new GameObject("MonsterPlaceholder");
-
-            var body = CreatePrimitive(PrimitiveType.Capsule, "Body", root.transform,
-                Material("MonsterBody", new Color32(22, 26, 24, 255), 0.1f));
-            body.transform.localScale = new Vector3(0.75f, 0.8f, 0.5f);
-
-            var eye = EmissiveMaterial("MonsterEye", new Color32(170, 255, 210, 255));
-            foreach (var x in new[] { -0.13f, 0.13f })
-            {
-                var eyeObject = CreatePrimitive(PrimitiveType.Sphere, "Eye", root.transform, eye);
-                eyeObject.transform.localScale = new Vector3(0.09f, 0.06f, 0.04f);
-                eyeObject.transform.localPosition = new Vector3(x, 0.42f, -0.27f);
-            }
-            return root;
-        }
-
         private DiceCupView InstantiateCup(GameObject cupPrefab, Transform parent, string name, Vector3 position,
             float yaw)
         {
@@ -226,22 +207,6 @@ namespace FGJ.Editor
             var material = new Material(Shader.Find(LitShader));
             material.SetColor("_BaseColor", color);
             material.SetFloat("_Smoothness", smoothness);
-            AssetDatabase.CreateAsset(material, path);
-            return material;
-        }
-
-        private Material EmissiveMaterial(string name, Color color)
-        {
-            var path = $"{MaterialFolder}/{name}.mat";
-            var existing = AssetDatabase.LoadAssetAtPath<Material>(path);
-            if (existing != null)
-                return existing;
-
-            var material = new Material(Shader.Find(LitShader));
-            material.SetColor("_BaseColor", color);
-            material.EnableKeyword("_EMISSION");
-            material.SetColor("_EmissionColor", color * 2.5f);
-            material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
             AssetDatabase.CreateAsset(material, path);
             return material;
         }
