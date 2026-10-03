@@ -19,9 +19,19 @@ namespace FGJ.Flow
         public void GoToStart() => Load(StartScene);
         public void GoToExploration() => Load(explorationScene);
         public void GoToGameplay() => Load(gameplayScene);
+        public void QuitGame() => Quit();
 
         protected virtual bool CanLoad(string sceneName) => Application.CanStreamedLevelBeLoaded(sceneName);
 
         protected virtual void Load(string sceneName) => SceneManager.LoadScene(sceneName);
+
+        protected virtual void Quit()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
     }
 }
