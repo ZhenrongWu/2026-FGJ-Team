@@ -8,9 +8,12 @@ namespace FGJ.Tests.PlayMode.Exploration
     {
         public readonly List<string> LoadedScenes = new List<string>();
         public Func<string, bool> Availability = _ => true;
+        public int QuitRequests { get; private set; }
 
         protected override bool CanLoad(string sceneName) => Availability(sceneName);
 
         protected override void Load(string sceneName) => LoadedScenes.Add(sceneName);
+
+        protected override void Quit() => QuitRequests++;
     }
 }
