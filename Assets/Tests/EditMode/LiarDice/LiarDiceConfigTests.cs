@@ -7,7 +7,7 @@ namespace FGJ.Tests.EditMode.LiarDice
 {
     public class LiarDiceConfigTests
     {
-        private const string Level01Path = "Assets/Data/LiarDice/Level01_LiarDiceConfig.asset";
+        private const string SwampWatcherPath = "Assets/Data/LiarDice/LiarDiceConfig_SwampWatcher.asset";
 
         [Test]
         public void Defaults_MatchLevelOneSpec()
@@ -21,7 +21,6 @@ namespace FGJ.Tests.EditMode.LiarDice
                 Assert.AreEqual(2, settings.PlayerOxygen);
                 Assert.AreEqual(2, settings.MonsterOxygen);
                 Assert.AreEqual(Side.Monster, settings.FirstTurn);
-                Assert.IsNotNull(config.ToMonsterProfile());
                 Assert.IsTrue(settings.Rules.OnesAreWild);
             }
             finally
@@ -31,11 +30,11 @@ namespace FGJ.Tests.EditMode.LiarDice
         }
 
         [Test]
-        public void Level01Asset_ExistsWithTwoOxygen()
+        public void SwampWatcherAsset_ExistsWithTwoOxygen()
         {
-            var config = AssetDatabase.LoadAssetAtPath<LiarDiceConfig>(Level01Path);
+            var config = AssetDatabase.LoadAssetAtPath<LiarDiceConfig>(SwampWatcherPath);
 
-            Assert.IsNotNull(config, $"找不到 {Level01Path}");
+            Assert.IsNotNull(config, $"找不到 {SwampWatcherPath}");
             Assert.AreEqual(2, config.PlayerOxygen);
             Assert.AreEqual(2, config.MonsterOxygen);
             Assert.AreEqual(5, config.PlayerDiceCount);

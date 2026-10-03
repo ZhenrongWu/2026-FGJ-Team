@@ -2,9 +2,6 @@ namespace FGJ.LiarDice.UI
 {
     public static class LiarDiceText
     {
-        public const string MonsterName = "沼澤看守者";
-        public const string MonsterGreeting = "「來吧，旅人。用你的氧氣，跟我賭一把。」";
-        public const string MonsterChallengeLine = "「你在吹牛。開！」";
         public const string NotPlayerTurn = "還沒輪到你。";
         public const string NothingToChallenge = "目前沒有可以質疑的喊數。";
         public const string NextRoundLabel = "下一局";
@@ -52,8 +49,6 @@ namespace FGJ.LiarDice.UI
                     return string.Empty;
             }
         }
-
-        public static string MonsterBidLine(Bid bid) => $"「{bid}。」";
 
         public static string RoundResult(RoundResult result, bool wildCounted)
         {

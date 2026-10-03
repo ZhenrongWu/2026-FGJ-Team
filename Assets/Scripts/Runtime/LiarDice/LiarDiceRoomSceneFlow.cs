@@ -35,11 +35,9 @@ namespace FGJ.LiarDice
 
         private void ApplyBuildingConfig()
         {
-            var buildingConfig = progress != null && progress.CurrentBuilding != null
-                ? progress.CurrentBuilding.GameplayConfig
-                : null;
-            if (controller != null && buildingConfig != null)
-                controller.UseConfig(buildingConfig);
+            var building = progress != null ? progress.CurrentBuilding : null;
+            if (controller != null && building != null)
+                controller.UseEncounter(building.GameplayConfig, building.Monster);
         }
 
         private void OnExitRequested(Side winner)

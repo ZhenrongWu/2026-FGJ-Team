@@ -19,5 +19,5 @@ MonoBehaviour:
   enterPrompt: "\u6309 E \u9032\u5165\u6D1E\u7A74\u6DF1\u8655"
   clearedPrompt: "\u770B\u5B88\u8005\u5DF2\u7D93\u6C89\u9ED8\u4E86"
   interactRange: 1.5
-  gameplayScene: Gameplay
   gameplayConfig: {fileID: 11400000, guid: 0d046963bc814fa41ba45ba1bfc178b1, type: 2}
+  monster: {fileID: 11400000, guid: cc3bad4bf002efb4ea28fabf314fff15, type: 2}

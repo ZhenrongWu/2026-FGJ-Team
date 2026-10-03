@@ -64,7 +64,7 @@ namespace FGJ.LiarDice.UI
 
         private static void BuildMonsterArea(Transform canvas, LiarDiceViewParts parts)
         {
-            parts.monsterNameText = LiarDiceUIFactory.CreateText("MonsterName", canvas, LiarDiceText.MonsterName, 44,
+            parts.monsterNameText = LiarDiceUIFactory.CreateText("MonsterName", canvas, string.Empty, 44,
                 LiarDiceUIFactory.Glow);
             LiarDiceUIFactory.Place(parts.monsterNameText.rectTransform, Top, new Vector2(0, -60), new Vector2(800, 60));
 

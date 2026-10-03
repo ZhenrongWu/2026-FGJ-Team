@@ -55,7 +55,8 @@ namespace FGJ.Tests.PlayMode.LiarDice
             Assert.IsTrue(_controller.IsPlayerTurn);
             Assert.IsTrue(View.IsInputInteractable);
             StringAssert.StartsWith("怪物喊：", View.CurrentBidLabel);
-            Assert.AreEqual(LiarDiceText.MonsterBidLine(Match.CurrentBid.Value), View.MonsterLine);
+            Assert.AreEqual(_controller.Monster.BidLine(Match.CurrentBid.Value), View.MonsterLine);
+            Assert.AreEqual(_controller.Monster.DisplayName, View.MonsterName);
         }
 
         [UnityTest]

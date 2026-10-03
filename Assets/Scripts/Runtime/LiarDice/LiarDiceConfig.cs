@@ -19,12 +19,6 @@ namespace FGJ.LiarDice
         [Header("回合")]
         [SerializeField] private Side firstTurn = Side.Monster;
 
-        [Header("怪物 AI")]
-        [Range(0f, 1f)] [SerializeField] private float challengeThreshold = 0.35f;
-        [Range(0f, 1f)] [SerializeField] private float confidentBidThreshold = 0.5f;
-        [Range(0f, 1f)] [SerializeField] private float bluffChance = 0.15f;
-        [Min(1)] [SerializeField] private int maxRaiseStep = 2;
-
         public int PlayerDiceCount => playerDiceCount;
         public int MonsterDiceCount => monsterDiceCount;
         public int PlayerOxygen => playerOxygen;
@@ -39,11 +33,6 @@ namespace FGJ.LiarDice
         {
             return new MatchSettings(playerDiceCount, monsterDiceCount, playerOxygen, monsterOxygen, firstTurn,
                 ToRules());
-        }
-
-        public MonsterAIProfile ToMonsterProfile()
-        {
-            return new MonsterAIProfile(challengeThreshold, confidentBidThreshold, bluffChance, maxRaiseStep);
         }
     }
 }

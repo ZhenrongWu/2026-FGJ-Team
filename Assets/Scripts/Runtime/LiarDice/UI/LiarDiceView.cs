@@ -49,6 +49,7 @@ namespace FGJ.LiarDice.UI
         public string ErrorMessage => parts.errorText.text;
         public string CurrentBidLabel => parts.currentBidText.text;
         public string MonsterLine => parts.monsterLineText.text;
+        public string MonsterName => parts.monsterNameText.text;
         public string ResultMessage => parts.resultText.text;
         public string ContinueLabel => parts.continueLabel.text;
         public bool IsResultVisible => parts.resultPanel.activeSelf;
@@ -84,7 +85,6 @@ namespace FGJ.LiarDice.UI
         public void Render(LiarDiceMatch match, bool revealMonsterDice)
         {
             var settings = match.Settings;
-            parts.monsterNameText.text = LiarDiceText.MonsterName;
             parts.monsterOxygenText.text = LiarDiceText.Oxygen("怪物", match.MonsterOxygen, settings.MonsterOxygen);
             parts.playerOxygenText.text = LiarDiceText.Oxygen("你的", match.PlayerOxygen, settings.PlayerOxygen);
             parts.currentBidText.text = LiarDiceText.CurrentBid(match.CurrentBid, match.CurrentBidder);
@@ -103,6 +103,11 @@ namespace FGJ.LiarDice.UI
             parts.faceInput.interactable = playerCanAct && match.CanRaise;
             parts.raiseButton.interactable = playerCanAct && match.CanRaise;
             parts.challengeButton.interactable = playerCanAct && match.CanChallenge;
+        }
+
+        public void SetMonsterName(string monsterName)
+        {
+            parts.monsterNameText.text = monsterName;
         }
 
         public void SetMonsterLine(string line)

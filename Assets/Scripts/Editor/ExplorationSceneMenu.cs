@@ -91,8 +91,16 @@ namespace FGJ.Editor
             {
                 building = ScriptableObject.CreateInstance<BuildingDefinition>();
                 building.Configure("SwampWatcher", "按 E 進入洞穴深處", "看守者已經沉默了", 1.5f,
-                    AssetDatabase.LoadAssetAtPath<LiarDiceConfig>(LiarDiceSceneMenu.ConfigPath));
+                    AssetDatabase.LoadAssetAtPath<LiarDiceConfig>(LiarDiceSceneMenu.ConfigPath),
+                    LiarDiceSceneMenu.EnsureDefaultMonster());
                 AssetDatabase.CreateAsset(building, FirstBuildingPath);
+            }
+            else if (building.Monster == null)
+            {
+                var serialized = new SerializedObject(building);
+                serialized.FindProperty("monster").objectReferenceValue = LiarDiceSceneMenu.EnsureDefaultMonster();
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(building);
             }
 
             var route = AssetDatabase.LoadAssetAtPath<ExplorationRoute>(RoutePath);

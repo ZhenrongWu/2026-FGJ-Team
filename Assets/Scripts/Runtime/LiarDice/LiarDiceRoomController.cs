@@ -11,17 +11,23 @@ namespace FGJ.LiarDice
     {
         [SerializeField] private LiarDiceConfig config;
         [SerializeField] private LiarDiceView view;
+        [SerializeField] private MonsterProfile monster;
         [Min(0f)] [SerializeField] private float monsterThinkSeconds = 1.2f;
         [SerializeField] private UnityEvent<Side> matchFinished = new UnityEvent<Side>();
 
         private MonsterAI _monster;
         private Func<IDiceRoller> _rollerFactory;
         private Coroutine _monsterTurn;
+        private MonsterProfile _fallbackMonster;
 
         public event Action<Side> MatchFinished;
         public event Action<Side> ExitRequested;
 
         public LiarDiceMatch Match { get; private set; }
+        public MonsterProfile Monster => monster != null ? monster : FallbackMonster;
+
+        private MonsterProfile FallbackMonster =>
+            _fallbackMonster != null ? _fallbackMonster : _fallbackMonster = ScriptableObject.CreateInstance<MonsterProfile>();
         public LiarDiceView View => view;
         public bool IsPlayerTurn => Match != null && Match.Phase == MatchPhase.Bidding && Match.CurrentTurn == Side.Player;
 
@@ -31,9 +37,12 @@ namespace FGJ.LiarDice
             view = roomView;
         }
 
-        public void UseConfig(LiarDiceConfig roomConfig)
+        public void UseEncounter(LiarDiceConfig roomConfig, MonsterProfile roomMonster)
         {
-            config = roomConfig;
+            if (roomConfig != null)
+                config = roomConfig;
+            if (roomMonster != null)
+                monster = roomMonster;
         }
 
         public void SetMonsterThinkSeconds(float seconds)
@@ -45,11 +54,13 @@ namespace FGJ.LiarDice
         {
             if (Match == null && config != null)
                 Begin(config.ToMatchSettings(), () => new RandomDiceRoller(),
-                    new MonsterAI(config.ToMonsterProfile(), rules: config.ToRules()));
+                    new MonsterAI(Monster.ToAIProfile(), rules: config.ToRules()));
         }
 
         private void OnDestroy()
         {
+            if (_fallbackMonster != null)
+                Destroy(_fallbackMonster);
             UnbindView();
         }
 
@@ -69,7 +80,8 @@ namespace FGJ.LiarDice
             view.HideResult();
             view.ClearInput();
             view.ClearError();
-            view.SetMonsterLine(LiarDiceText.MonsterGreeting);
+            view.SetMonsterName(Monster.DisplayName);
+            view.SetMonsterLine(Monster.Greeting);
             AdvanceTurn();
         }
 
@@ -169,13 +181,13 @@ namespace FGJ.LiarDice
             var decision = _monster.Decide(Match);
             if (decision.IsChallenge)
             {
-                view.SetMonsterLine(LiarDiceText.MonsterChallengeLine);
+                view.SetMonsterLine(Monster.ChallengeLine);
                 Resolve(Match.Challenge(Side.Monster));
                 yield break;
             }
 
             Match.PlaceBid(Side.Monster, decision.Bid);
-            view.SetMonsterLine(LiarDiceText.MonsterBidLine(decision.Bid));
+            view.SetMonsterLine(Monster.BidLine(decision.Bid));
             AdvanceTurn();
         }
 

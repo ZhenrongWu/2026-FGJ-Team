@@ -19,6 +19,7 @@ namespace FGJ.Tests.PlayMode.LiarDice
         private RecordingSceneRouter _router;
         private BuildingDefinition _building;
         private LiarDiceConfig _buildingConfig;
+        private MonsterProfile _buildingMonster;
 
         [SetUp]
         public void SetUp()
@@ -27,7 +28,9 @@ namespace FGJ.Tests.PlayMode.LiarDice
             _router = ScriptableObject.CreateInstance<RecordingSceneRouter>();
             _buildingConfig = ScriptableObject.CreateInstance<LiarDiceConfig>();
             _building = ScriptableObject.CreateInstance<BuildingDefinition>();
-            _building.Configure("Room01", "enter", "cleared", 1.5f, _buildingConfig);
+            _buildingMonster = ScriptableObject.CreateInstance<MonsterProfile>();
+            _buildingMonster.Configure("測試怪物", "「測試開場」", "「測試質疑」", "<{0}>");
+            _building.Configure("Room01", "enter", "cleared", 1.5f, _buildingConfig, _buildingMonster);
             _progress.EnterBuilding(_building);
 
             _controller = LiarDiceRoomBuilder.Build(null);
@@ -47,6 +50,7 @@ namespace FGJ.Tests.PlayMode.LiarDice
             Object.Destroy(_router);
             Object.Destroy(_building);
             Object.Destroy(_buildingConfig);
+            Object.Destroy(_buildingMonster);
         }
 
         private void BeginOneOxygenMatch()
@@ -64,9 +68,14 @@ namespace FGJ.Tests.PlayMode.LiarDice
         }
 
         [UnityTest]
-        public IEnumerator Awake_UsesConfigOfBuildingBeingEntered()
+        public IEnumerator Awake_UsesConfigAndMonsterOfBuildingBeingEntered()
         {
             yield return null;
+            yield return null;
+
+            Assert.AreSame(_buildingMonster, _controller.Monster);
+            Assert.AreEqual("測試怪物", _controller.View.MonsterName);
+            Assert.AreEqual($"<{_controller.Match.CurrentBid.Value}>", _controller.View.MonsterLine);
 
             Assert.AreEqual(_buildingConfig.PlayerOxygen, _controller.Match.PlayerOxygen);
             Assert.AreEqual(_buildingConfig.PlayerDiceCount, _controller.Match.GetDice(Side.Player).Count);

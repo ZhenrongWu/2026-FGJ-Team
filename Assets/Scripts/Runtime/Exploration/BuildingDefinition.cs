@@ -14,6 +14,7 @@ namespace FGJ.Exploration
         [SerializeField] private string clearedPrompt = "這裡已經安靜了";
         [Min(0f)] [SerializeField] private float interactRange = 1.5f;
         [SerializeField] private LiarDiceConfig gameplayConfig;
+        [SerializeField] private MonsterProfile monster;
 
         public string BuildingId => buildingId;
         public Sprite Exterior => exterior;
@@ -23,9 +24,12 @@ namespace FGJ.Exploration
         public string ClearedPrompt => clearedPrompt;
         public float InteractRange => interactRange;
         public LiarDiceConfig GameplayConfig => gameplayConfig;
+        public MonsterProfile Monster => monster;
 
-        public void Configure(string id, string enter, string cleared, float range, LiarDiceConfig config)
+        public void Configure(string id, string enter, string cleared, float range, LiarDiceConfig config,
+            MonsterProfile buildingMonster = null)
         {
+            monster = buildingMonster;
             buildingId = id;
             enterPrompt = enter;
             clearedPrompt = cleared;
