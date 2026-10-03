@@ -20,12 +20,12 @@ namespace FGJ.Editor
         public const string DiceCupPath = GameplayFolder + "/DiceCup.prefab";
         public const string DiceTablePath = GameplayFolder + "/DiceTable.prefab";
         public const string GameplayHudPath = GameplayFolder + "/GameplayHud.prefab";
-        public const string MonsterPlaceholderPath = GameplayFolder + "/MonsterPlaceholder.prefab";
+        public const string MonsterPath = GameplayFolder + "/Monster.prefab";
         public const string LiarDiceRoomPath = GameplayFolder + "/LiarDiceRoom.prefab";
         public const string PlayerPath = ExplorationFolder + "/Player.prefab";
         public const string BackgroundPath = ExplorationFolder + "/CaveBackground.prefab";
         public const string HudPath = ExplorationFolder + "/ExplorationHud.prefab";
-        public const string PlaceholderEntrancePath = ExplorationFolder + "/BuildingEntrance_Placeholder.prefab";
+        public const string EntrancePath = ExplorationFolder + "/BuildingEntrance.prefab";
 
         public const float TileWidth = 55.99f;
         public const float ViewHeight = 14.17f;
@@ -56,12 +56,12 @@ namespace FGJ.Editor
                 () => dice.CreateCup(new Vector3(0.42f, 0.08f, 0.2f), new Vector3(0f, 0f, -22f)));
             var tablePrefab = Ensure(DiceTablePath, () => dice.CreateTable(cupPrefab, diePrefab));
             var hudPrefab = Ensure(GameplayHudPath, () => new GameplayHudBuilder(ui).Build().gameObject);
-            Ensure(MonsterPlaceholderPath, dice.CreateMonsterPlaceholder);
-            Ensure(LiarDiceRoomPath, () => CreateLiarDiceRoom(hudPrefab, tablePrefab));
+            var monsterPrefab = Ensure(MonsterPath, new MonsterPlaceholderBuilder().CreateMonster);
+            Ensure(LiarDiceRoomPath, () => CreateLiarDiceRoom(hudPrefab, tablePrefab, monsterPrefab));
             Ensure(PlayerPath, CreatePlayer);
             Ensure(BackgroundPath, CreateBackground);
             Ensure(HudPath, () => CreateHud(ui));
-            Ensure(PlaceholderEntrancePath, CreatePlaceholderEntrance);
+            Ensure(EntrancePath, CreateEntrance);
         }
 
         public static T Load<T>(string path) where T : Component
@@ -87,7 +87,10 @@ namespace FGJ.Editor
                 AssetDatabase.CreateFolder(parent, name);
         }
 
-        private static GameObject CreateLiarDiceRoom(GameObject hudPrefab, GameObject tablePrefab)
+        private static readonly Vector3 MonsterLocalPosition = new Vector3(0f, 0.12f, 1.1f);
+
+        private static GameObject CreateLiarDiceRoom(GameObject hudPrefab, GameObject tablePrefab,
+            GameObject monsterPrefab)
         {
             var root = new GameObject("LiarDiceRoom");
             var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
@@ -95,9 +98,12 @@ namespace FGJ.Editor
 
             var hud = (GameObject)PrefabUtility.InstantiatePrefab(hudPrefab, root.transform);
             var table = (GameObject)PrefabUtility.InstantiatePrefab(tablePrefab, root.transform);
+            var monster = (GameObject)PrefabUtility.InstantiatePrefab(monsterPrefab, root.transform);
+            monster.transform.localPosition = MonsterLocalPosition;
 
             var controller = root.AddComponent<LiarDiceRoomController>();
-            controller.Configure(hud.GetComponent<LiarDiceHud>(), table.GetComponent<DiceTableView>());
+            controller.Configure(hud.GetComponent<LiarDiceHud>(), table.GetComponent<DiceTableView>(),
+                monster.GetComponent<MonsterView>());
             var config = AssetDatabase.LoadAssetAtPath<LiarDiceConfig>(LiarDiceSceneMenu.ConfigPath);
             controller.UseEncounter(config, LiarDiceSceneMenu.EnsureDefaultMonster());
             return root;
@@ -177,9 +183,9 @@ namespace FGJ.Editor
             return canvasObject;
         }
 
-        private static GameObject CreatePlaceholderEntrance()
+        private static GameObject CreateEntrance()
         {
-            var root = new GameObject("BuildingEntrance_Placeholder");
+            var root = new GameObject("BuildingEntrance");
 
             var exterior = new GameObject("Exterior");
             exterior.transform.SetParent(root.transform, false);
@@ -187,16 +193,7 @@ namespace FGJ.Editor
             exteriorRenderer.sortingOrder = -5;
             exterior.SetActive(false);
 
-            var marker = new GameObject("PlaceholderMarker");
-            marker.transform.SetParent(root.transform, false);
-            marker.transform.localPosition = new Vector3(0f, 1.6f, 0f);
-            marker.transform.localScale = new Vector3(14f, 30f, 1f);
-            var glow = marker.AddComponent<SpriteRenderer>();
-            glow.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
-            glow.color = new Color32(150, 255, 220, 150);
-            glow.sortingOrder = -5;
-
-            root.AddComponent<RoomEntrance>().Configure(exteriorRenderer, marker);
+            root.AddComponent<RoomEntrance>().Configure(exteriorRenderer);
             return root;
         }
     }

@@ -113,10 +113,8 @@ namespace FGJ.Tests.PlayMode.Exploration
         {
             var template = Track(new GameObject("EntranceTemplate"));
             template.transform.position = new Vector3(-100f, 0f, 0f);
-            var marker = new GameObject("PlaceholderMarker");
-            marker.transform.SetParent(template.transform, false);
             var entrance = template.AddComponent<RoomEntrance>();
-            entrance.Configure(null, marker);
+            entrance.Configure(null);
             return entrance;
         }
     }

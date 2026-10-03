@@ -10,7 +10,6 @@ namespace FGJ.Tests.PlayMode.Exploration
         private readonly List<Object> _created = new List<Object>();
         private RoomEntrance _entrance;
         private SpriteRenderer _exterior;
-        private GameObject _marker;
 
         [SetUp]
         public void SetUp()
@@ -20,11 +19,9 @@ namespace FGJ.Tests.PlayMode.Exploration
             exteriorObject.transform.SetParent(root.transform, false);
             _exterior = exteriorObject.AddComponent<SpriteRenderer>();
             exteriorObject.SetActive(false);
-            _marker = new GameObject("PlaceholderMarker");
-            _marker.transform.SetParent(root.transform, false);
 
             _entrance = root.AddComponent<RoomEntrance>();
-            _entrance.Configure(_exterior, _marker);
+            _entrance.Configure(_exterior);
         }
 
         [TearDown]
@@ -56,7 +53,7 @@ namespace FGJ.Tests.PlayMode.Exploration
         }
 
         [Test]
-        public void Bind_WithExterior_ShowsArtAtDoorOffsetAndHidesPlaceholder()
+        public void Bind_WithExterior_ShowsArtAtDoorOffset()
         {
             var sprite = CreateSprite();
 
@@ -66,7 +63,6 @@ namespace FGJ.Tests.PlayMode.Exploration
             Assert.IsTrue(_entrance.HasExterior);
             Assert.AreSame(sprite, _exterior.sprite);
             Assert.AreEqual(new Vector3(0.74f, -0.15f, 0f), _exterior.transform.localPosition);
-            Assert.IsFalse(_marker.activeSelf);
             Assert.AreEqual("按 E 進入酒館", _entrance.Prompt);
         }
 
@@ -92,16 +88,16 @@ namespace FGJ.Tests.PlayMode.Exploration
         }
 
         [Test]
-        public void Bind_WithoutExterior_KeepsPlaceholderShowingClearedState()
+        public void Bind_WithoutExterior_HidesExteriorAndPromptFollowsClearedState()
         {
             _entrance.Bind(CreateBuilding(null, Vector2.zero));
 
             _entrance.SetCleared(false);
             Assert.IsFalse(_entrance.HasExterior);
-            Assert.IsTrue(_marker.activeSelf);
+            Assert.AreEqual("按 E 進入酒館", _entrance.Prompt);
 
             _entrance.SetCleared(true);
-            Assert.IsFalse(_marker.activeSelf);
+            Assert.IsTrue(_entrance.IsCleared);
             Assert.AreEqual("酒館裡已經安靜了", _entrance.Prompt);
         }
     }

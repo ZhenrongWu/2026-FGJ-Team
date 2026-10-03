@@ -33,6 +33,25 @@ namespace FGJ.Tests.EditMode.LiarDice
         }
 
         [Test]
+        public void Sprite_DefaultsToNoneAndCanBeAssigned()
+        {
+            Assert.IsNull(_monster.Sprite);
+
+            var texture = new Texture2D(4, 4);
+            var sprite = Sprite.Create(texture, new Rect(0, 0, 4, 4), Vector2.zero);
+            try
+            {
+                _monster.SetSprite(sprite);
+                Assert.AreSame(sprite, _monster.Sprite);
+            }
+            finally
+            {
+                Object.DestroyImmediate(sprite);
+                Object.DestroyImmediate(texture);
+            }
+        }
+
+        [Test]
         public void ToAIProfile_UsesPersonalityDefaults()
         {
             var profile = _monster.ToAIProfile();

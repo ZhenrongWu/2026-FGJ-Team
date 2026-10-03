@@ -69,6 +69,8 @@ namespace FGJ.Tests.PlayMode.LiarDice
             Assert.AreEqual($"{_controller.Monster.DisplayName}：{_controller.Monster.BidLine(Match.CurrentBid.Value)}",
                 Hud.LogView.LatestText);
             Assert.AreEqual(2, Hud.PlayerOxygen.FilledCount);
+            Assert.IsNotNull(_controller.MonsterView.CurrentSprite);
+            Assert.IsTrue(_controller.MonsterView.IsShowingPlaceholder);
             Assert.AreEqual(2, Hud.MonsterOxygen.SegmentCount);
         }
 

@@ -27,10 +27,6 @@ namespace FGJ.Editor
             SetUpCamera(Camera.main);
             SetUpLighting();
 
-            var monsterPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(DefaultPrefabs.MonsterPlaceholderPath);
-            var monster = (GameObject)PrefabUtility.InstantiatePrefab(monsterPrefab);
-            monster.transform.position = MonsterPosition;
-
             var roomPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(DefaultPrefabs.LiarDiceRoomPath);
             var room = (GameObject)PrefabUtility.InstantiatePrefab(roomPrefab);
             var controller = room.GetComponent<LiarDiceRoomController>();
@@ -44,7 +40,6 @@ namespace FGJ.Editor
 
         private static readonly Vector3 CameraPosition = new Vector3(0f, 1.55f, -1.4f);
         private static readonly Vector3 CameraLookTarget = new Vector3(0f, 0.78f, 0.22f);
-        private static readonly Vector3 MonsterPosition = new Vector3(0f, 0.72f, 1.05f);
         private static readonly Vector3 CandlePosition = new Vector3(0.15f, 1.55f, 0.1f);
 
         private static void SetUpCamera(Camera camera)
