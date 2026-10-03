@@ -18,7 +18,7 @@ MonoBehaviour:
   exteriorOffset: {x: 0.74, y: -0.15}
   exteriorScale: {x: 2, y: 2}
   exteriorSortingOrder: -5
-  enterPrompt: "\u6309 E \u9032\u5165\u9152\u9928"
+  enterPrompt: "\u6309 \u2191 \u9032\u5165\u9152\u9928"
   clearedPrompt: "\u9152\u9928\u88E1\u5DF2\u7D93\u5B89\u975C\u4E86"
   interactRange: 1.5
   gameplayConfig: {fileID: 11400000, guid: 0d046963bc814fa41ba45ba1bfc178b1, type: 2}

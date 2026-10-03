@@ -1,6 +1,7 @@
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.TestTools;
 
 namespace FGJ.Tests.PlayMode.Exploration
@@ -31,31 +32,40 @@ namespace FGJ.Tests.PlayMode.Exploration
             Assert.AreEqual(ExplorationTestRig.EnterPrompt, _rig.Hud.PromptMessage);
         }
 
+        private IEnumerator Tap(KeyControl key)
+        {
+            Press(key);
+            yield return null;
+            Release(key);
+            yield return null;
+        }
+
         [UnityTest]
-        public IEnumerator PressingE_EntersBuilding()
+        public IEnumerator PressingUpArrow_EntersBuilding()
         {
             yield return StandAtBuilding();
 
-            Press(_keyboard.eKey);
-            yield return null;
-            Release(_keyboard.eKey);
-            yield return null;
+            yield return Tap(_keyboard.upArrowKey);
 
             Assert.IsTrue(_rig.Controller.IsEnteringRoom);
         }
 
         [UnityTest]
-        public IEnumerator PressingUpArrowOrW_DoesNotEnterBuilding()
+        public IEnumerator PressingW_EntersBuilding()
         {
             yield return StandAtBuilding();
 
-            Press(_keyboard.upArrowKey);
-            yield return null;
-            Release(_keyboard.upArrowKey);
-            Press(_keyboard.wKey);
-            yield return null;
-            Release(_keyboard.wKey);
-            yield return null;
+            yield return Tap(_keyboard.wKey);
+
+            Assert.IsTrue(_rig.Controller.IsEnteringRoom);
+        }
+
+        [UnityTest]
+        public IEnumerator PressingE_DoesNotEnterBuilding()
+        {
+            yield return StandAtBuilding();
+
+            yield return Tap(_keyboard.eKey);
 
             Assert.IsFalse(_rig.Controller.IsEnteringRoom);
             Assert.IsEmpty(_rig.Router.LoadedScenes);

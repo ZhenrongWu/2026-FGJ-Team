@@ -120,7 +120,7 @@ namespace FGJ.Editor
             {
                 new SpriteClip(SideScrollPlayer.IdleClip, new[] { ArtImport.LoadSprite("Right_01") }, 1f, true),
                 new SpriteClip(SideScrollPlayer.WalkClip, Frames("Right_01", "Right_02", "Right_03"), 6f, true),
-                new SpriteClip(SideScrollPlayer.EnterClip, Frames("Forward_01", "Forward_02", "Forward_03"), 6f, true)
+                new SpriteClip(SideScrollPlayer.EnterClip, Frames("Forward_01", "Forward_02", "Forward_03"), 6f, false)
             });
 
             playerObject.AddComponent<SideScrollPlayer>()
