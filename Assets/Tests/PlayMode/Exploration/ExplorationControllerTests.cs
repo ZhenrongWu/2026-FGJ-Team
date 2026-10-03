@@ -18,7 +18,8 @@ namespace FGJ.Tests.PlayMode.Exploration
         private const string ClearedPrompt = "測試建築已通過";
 
         private readonly List<Object> _created = new List<Object>();
-        private readonly List<string> _loadedScenes = new List<string>();
+        private GameProgress _progress;
+        private RecordingSceneRouter _router;
         private SideScrollPlayer _player;
         private ExplorationController _controller;
         private LiarDiceConfig _buildingConfig;
@@ -26,8 +27,8 @@ namespace FGJ.Tests.PlayMode.Exploration
         [SetUp]
         public void SetUp()
         {
-            GameSession.Reset();
-            _loadedScenes.Clear();
+            _progress = Track(ScriptableObject.CreateInstance<GameProgress>());
+            _router = Track(ScriptableObject.CreateInstance<RecordingSceneRouter>());
         }
 
         [TearDown]
@@ -36,7 +37,6 @@ namespace FGJ.Tests.PlayMode.Exploration
             foreach (var created in _created)
                 Object.Destroy(created);
             _created.Clear();
-            GameSession.Reset();
         }
 
         private T Track<T>(T created) where T : Object
@@ -51,14 +51,26 @@ namespace FGJ.Tests.PlayMode.Exploration
             return Track(Sprite.Create(texture, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0f)));
         }
 
+        private BuildingDefinition _building;
+
         private ExplorationRoute CreateRoute()
         {
-            _buildingConfig = Track(ScriptableObject.CreateInstance<LiarDiceConfig>());
-            var building = Track(ScriptableObject.CreateInstance<BuildingDefinition>());
-            building.Configure(RoomId, EnterPrompt, ClearedPrompt, 1.5f, _buildingConfig);
             var route = Track(ScriptableObject.CreateInstance<ExplorationRoute>());
-            route.SetPlacements(new[] { new BuildingPlacement(building, BuildingX) });
+            route.SetPlacements(new[] { new BuildingPlacement(Building, BuildingX) });
             return route;
+        }
+
+        private BuildingDefinition Building
+        {
+            get
+            {
+                if (_building != null)
+                    return _building;
+                _buildingConfig = Track(ScriptableObject.CreateInstance<LiarDiceConfig>());
+                _building = Track(ScriptableObject.CreateInstance<BuildingDefinition>());
+                _building.Configure(RoomId, EnterPrompt, ClearedPrompt, 1.5f, _buildingConfig);
+                return _building;
+            }
         }
 
         private void BuildExploration(float playerStartX)
@@ -93,7 +105,7 @@ namespace FGJ.Tests.PlayMode.Exploration
             _controller.Configure(_player, follow, promptRoot, promptText, fader);
             _controller.SetRoute(CreateRoute(), 0f, CreateSprite());
             _controller.SetTransitionDurations(0f, 0f);
-            _controller.SetSceneLoader(_loadedScenes.Add);
+            _controller.SetServices(_progress, _router);
         }
 
         private static IEnumerator WaitFrames(int count)
@@ -161,16 +173,16 @@ namespace FGJ.Tests.PlayMode.Exploration
             Assert.IsTrue(_controller.IsEnteringRoom);
             Assert.IsTrue(_player.InputLocked);
             Assert.AreEqual(SideScrollPlayer.EnterClip, _player.GetComponent<SpriteFrameAnimator>().CurrentClipName);
-            Assert.AreEqual(RoomId, GameSession.CurrentRoomId);
-            Assert.AreSame(_buildingConfig, GameSession.CurrentGameplayConfig);
-            CollectionAssert.AreEqual(new[] { SceneNames.Gameplay }, _loadedScenes);
+            Assert.AreSame(Building, _progress.CurrentBuilding);
+            Assert.AreSame(_buildingConfig, _progress.CurrentBuilding.GameplayConfig);
+            CollectionAssert.AreEqual(new[] { SceneNames.Gameplay }, _router.LoadedScenes);
         }
 
         [UnityTest]
         public IEnumerator ReturningFromClearedBuilding_SpawnsThereAndBlocksReentry()
         {
-            GameSession.EnterRoom(RoomId);
-            GameSession.CompleteRoom(true);
+            _progress.EnterBuilding(Building);
+            _progress.CompleteBuilding(true);
             BuildExploration(2f);
             yield return WaitFrames(2);
 
@@ -182,7 +194,7 @@ namespace FGJ.Tests.PlayMode.Exploration
             yield return WaitFrames(2);
 
             Assert.IsFalse(_controller.IsEnteringRoom);
-            Assert.IsEmpty(_loadedScenes);
+            Assert.IsEmpty(_router.LoadedScenes);
         }
     }
 }

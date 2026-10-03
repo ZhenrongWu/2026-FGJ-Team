@@ -1,10 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using FGJ.Flow;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace FGJ.Exploration
@@ -13,6 +11,8 @@ namespace FGJ.Exploration
     {
         [SerializeField] private SideScrollPlayer player;
         [SerializeField] private CameraFollow2D cameraFollow;
+        [SerializeField] private GameProgress progress;
+        [SerializeField] private SceneRouter router;
         [SerializeField] private ExplorationRoute route;
         [SerializeField] private float buildingGroundY = 1.5f;
         [SerializeField] private Sprite placeholderMarker;
@@ -23,7 +23,6 @@ namespace FGJ.Exploration
         [Min(0f)] [SerializeField] private float fadeInDuration = 0.6f;
 
         private readonly List<RoomEntrance> _entrances = new List<RoomEntrance>();
-        private Action<string> _sceneLoader = SceneManager.LoadScene;
         private bool _interactRequested;
 
         public RoomEntrance NearbyEntrance { get; private set; }
@@ -48,9 +47,10 @@ namespace FGJ.Exploration
             placeholderMarker = placeholder;
         }
 
-        public void SetSceneLoader(Action<string> loader)
+        public void SetServices(GameProgress gameProgress, SceneRouter sceneRouter)
         {
-            _sceneLoader = loader ?? throw new ArgumentNullException(nameof(loader));
+            progress = gameProgress;
+            router = sceneRouter;
         }
 
         public void SetTransitionDurations(float enter, float fadeIn)
@@ -96,14 +96,16 @@ namespace FGJ.Exploration
             {
                 if (placement.building == null)
                     continue;
-                _entrances.Add(RoomEntrance.Spawn(placement.building, placement.x, buildingGroundY, placeholderMarker,
-                    transform));
+                var entrance = RoomEntrance.Spawn(placement.building, placement.x, buildingGroundY, placeholderMarker,
+                    transform);
+                entrance.SetCleared(progress.IsCleared(entrance.RoomId));
+                _entrances.Add(entrance);
             }
         }
 
         private void PlacePlayerAtReturnEntrance()
         {
-            var returnRoomId = GameSession.ConsumeReturnRoom();
+            var returnRoomId = progress.ConsumeReturnBuilding();
             if (returnRoomId == null)
                 return;
 
@@ -140,9 +142,9 @@ namespace FGJ.Exploration
             IsEnteringRoom = true;
             promptRoot.SetActive(false);
             player.PlayEnter();
-            GameSession.EnterRoom(entrance.RoomId, entrance.Building.GameplayConfig);
+            progress.EnterBuilding(entrance.Building);
             yield return Fade(0f, 1f, enterDuration);
-            _sceneLoader(entrance.RoomScene);
+            router.GoToGameplay();
         }
 
         private IEnumerator Fade(float from, float to, float duration)

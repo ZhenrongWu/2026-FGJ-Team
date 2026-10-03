@@ -74,6 +74,7 @@ namespace FGJ.Editor
             var (promptRoot, prompt, fader) = CreateOverlay();
             var controller = new GameObject("ExplorationController").AddComponent<ExplorationController>();
             controller.Configure(player, follow, promptRoot, prompt, fader);
+            controller.SetServices(FlowAssets.Progress, FlowAssets.Router);
             controller.SetRoute(route, GroundY, AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd"));
 
             EditorSceneManager.SaveScene(scene, ScenePath);

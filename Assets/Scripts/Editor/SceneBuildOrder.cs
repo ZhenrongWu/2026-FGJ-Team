@@ -46,7 +46,7 @@ namespace FGJ.Editor
             var camera = new GameObject("Main Camera").AddComponent<Camera>();
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = Color.black;
-            new GameObject("GameBootstrap").AddComponent<GameBootstrap>();
+            new GameObject("GameBootstrap").AddComponent<GameBootstrap>().Configure(FlowAssets.Progress, FlowAssets.Router);
             EditorSceneManager.SaveScene(scene, InitScenePath);
         }
 

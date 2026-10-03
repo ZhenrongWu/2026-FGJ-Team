@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using FGJ.Flow;
 using FGJ.LiarDice.UI;
 using UnityEngine;
 using UnityEngine.Events;
@@ -32,6 +31,11 @@ namespace FGJ.LiarDice
             view = roomView;
         }
 
+        public void UseConfig(LiarDiceConfig roomConfig)
+        {
+            config = roomConfig;
+        }
+
         public void SetMonsterThinkSeconds(float seconds)
         {
             monsterThinkSeconds = Mathf.Max(0f, seconds);
@@ -39,10 +43,8 @@ namespace FGJ.LiarDice
 
         private void Start()
         {
-            var activeConfig = GameSession.CurrentGameplayConfig != null ? GameSession.CurrentGameplayConfig : config;
-            if (Match == null && activeConfig != null)
-                Begin(activeConfig.ToMatchSettings(), () => new RandomDiceRoller(),
-                    new MonsterAI(activeConfig.ToMonsterProfile()));
+            if (Match == null && config != null)
+                Begin(config.ToMatchSettings(), () => new RandomDiceRoller(), new MonsterAI(config.ToMonsterProfile()));
         }
 
         private void OnDestroy()

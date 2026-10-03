@@ -1,4 +1,3 @@
-using FGJ.Flow;
 using FGJ.LiarDice;
 using UnityEngine;
 
@@ -14,7 +13,6 @@ namespace FGJ.Exploration
         [SerializeField] private string enterPrompt = "按 E 進入";
         [SerializeField] private string clearedPrompt = "這裡已經安靜了";
         [Min(0f)] [SerializeField] private float interactRange = 1.5f;
-        [SerializeField] private string gameplayScene = SceneNames.Gameplay;
         [SerializeField] private LiarDiceConfig gameplayConfig;
 
         public string BuildingId => buildingId;
@@ -24,7 +22,6 @@ namespace FGJ.Exploration
         public string EnterPrompt => enterPrompt;
         public string ClearedPrompt => clearedPrompt;
         public float InteractRange => interactRange;
-        public string GameplayScene => gameplayScene;
         public LiarDiceConfig GameplayConfig => gameplayConfig;
 
         public void Configure(string id, string enter, string cleared, float range, LiarDiceConfig config)

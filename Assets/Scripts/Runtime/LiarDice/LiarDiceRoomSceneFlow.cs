@@ -1,32 +1,24 @@
-using System;
 using FGJ.Flow;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace FGJ.LiarDice
 {
     public sealed class LiarDiceRoomSceneFlow : MonoBehaviour
     {
         [SerializeField] private LiarDiceRoomController controller;
-        [SerializeField] private string explorationScene = SceneNames.Exploration;
+        [SerializeField] private GameProgress progress;
+        [SerializeField] private SceneRouter router;
 
-        private Action<string> _sceneLoader = SceneManager.LoadScene;
-        private Func<string, bool> _canLoadScene = SceneFlow.CanLoad;
-
-        public void Configure(LiarDiceRoomController roomController, string sceneAfterWin)
+        public void Configure(LiarDiceRoomController roomController, GameProgress gameProgress, SceneRouter sceneRouter)
         {
             controller = roomController;
-            explorationScene = sceneAfterWin;
+            progress = gameProgress;
+            router = sceneRouter;
         }
 
-        public void SetSceneLoader(Action<string> loader)
+        private void Awake()
         {
-            _sceneLoader = loader ?? throw new ArgumentNullException(nameof(loader));
-        }
-
-        public void SetSceneAvailability(Func<string, bool> canLoadScene)
-        {
-            _canLoadScene = canLoadScene ?? throw new ArgumentNullException(nameof(canLoadScene));
+            ApplyBuildingConfig();
         }
 
         private void OnEnable()
@@ -41,11 +33,23 @@ namespace FGJ.LiarDice
                 controller.ExitRequested -= OnExitRequested;
         }
 
+        private void ApplyBuildingConfig()
+        {
+            var buildingConfig = progress != null && progress.CurrentBuilding != null
+                ? progress.CurrentBuilding.GameplayConfig
+                : null;
+            if (controller != null && buildingConfig != null)
+                controller.UseConfig(buildingConfig);
+        }
+
         private void OnExitRequested(Side winner)
         {
             var playerWon = winner == Side.Player;
-            GameSession.CompleteRoom(playerWon);
-            _sceneLoader(playerWon ? explorationScene : SceneFlow.StartScene(_canLoadScene));
+            progress.CompleteBuilding(playerWon);
+            if (playerWon)
+                router.GoToExploration();
+            else
+                router.GoToStart();
         }
     }
 }

@@ -1,4 +1,3 @@
-using FGJ.Flow;
 using UnityEngine;
 
 namespace FGJ.Exploration
@@ -14,9 +13,8 @@ namespace FGJ.Exploration
 
         public BuildingDefinition Building => building;
         public string RoomId => building.BuildingId;
-        public string RoomScene => building.GameplayScene;
         public float X => transform.position.x;
-        public bool IsCleared => GameSession.IsCleared(RoomId);
+        public bool IsCleared { get; private set; }
         public string Prompt => IsCleared ? building.ClearedPrompt : building.EnterPrompt;
 
         public void Configure(BuildingDefinition definition, GameObject marker)
@@ -65,10 +63,11 @@ namespace FGJ.Exploration
             return visual;
         }
 
-        private void Start()
+        public void SetCleared(bool cleared)
         {
+            IsCleared = cleared;
             if (activeMarker != null)
-                activeMarker.SetActive(!IsCleared);
+                activeMarker.SetActive(!cleared);
         }
     }
 }

@@ -1,4 +1,3 @@
-using FGJ.Flow;
 using FGJ.LiarDice;
 using FGJ.LiarDice.UI;
 using UnityEditor;
@@ -33,7 +32,7 @@ namespace FGJ.Editor
             var config = AssetDatabase.LoadAssetAtPath<LiarDiceConfig>(ConfigPath);
             var controller = LiarDiceRoomBuilder.Build(config);
             controller.gameObject.AddComponent<LiarDiceRoomSceneFlow>()
-                .Configure(controller, SceneNames.Exploration);
+                .Configure(controller, FlowAssets.Progress, FlowAssets.Router);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             SceneBuildOrder.Apply();
