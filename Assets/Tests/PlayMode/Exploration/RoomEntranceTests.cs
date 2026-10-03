@@ -71,6 +71,27 @@ namespace FGJ.Tests.PlayMode.Exploration
         }
 
         [Test]
+        public void Bind_WithExteriorScale_ScalesArtAndKeepsDoorAligned()
+        {
+            var building = CreateBuilding(CreateSprite(), new Vector2(0.74f, -0.15f));
+            building.SetExteriorScale(new Vector2(2f, 1.5f));
+
+            _entrance.Bind(building);
+
+            Assert.AreEqual(new Vector3(2f, 1.5f, 1f), _exterior.transform.localScale);
+            Assert.AreEqual(1.48f, _exterior.transform.localPosition.x, 1e-5f);
+            Assert.AreEqual(-0.225f, _exterior.transform.localPosition.y, 1e-5f);
+        }
+
+        [Test]
+        public void NewBuildingDefinition_DefaultsToUnitScale()
+        {
+            var building = Track(ScriptableObject.CreateInstance<BuildingDefinition>());
+
+            Assert.AreEqual(Vector2.one, building.ExteriorScale);
+        }
+
+        [Test]
         public void Bind_WithoutExterior_KeepsPlaceholderShowingClearedState()
         {
             _entrance.Bind(CreateBuilding(null, Vector2.zero));

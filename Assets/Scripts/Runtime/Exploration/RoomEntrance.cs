@@ -27,7 +27,8 @@ namespace FGJ.Exploration
                 return;
 
             exterior.sprite = definition.Exterior;
-            exterior.transform.localPosition = definition.ExteriorOffset;
+            exterior.transform.localPosition = definition.ScaledExteriorOffset;
+            exterior.transform.localScale = new Vector3(definition.ExteriorScale.x, definition.ExteriorScale.y, 1f);
             exterior.sortingOrder = definition.ExteriorSortingOrder;
             exterior.gameObject.SetActive(true);
             HidePlaceholderMarker();
