@@ -2,7 +2,9 @@
     "name": "FGJ.Editor",
     "rootNamespace": "FGJ.Editor",
     "references": [
-        "FGJ.Runtime"
+        "FGJ.Runtime",
+        "Unity.InputSystem",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [
         "Editor"

@@ -84,5 +84,5 @@ ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 
-### Claude Code local settings ###
-.claude/settings.local.json
+### Claude Code（本機指令與設定，不上傳） ###
+/.claude/
