@@ -1,7 +1,8 @@
+using FGJ.LiarDice.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace FGJ.LiarDice.UI
+namespace FGJ.Editor
 {
     public static class LiarDiceUIFactory
     {
@@ -104,25 +105,15 @@ namespace FGJ.LiarDice.UI
             return input;
         }
 
-        public static DieSlot CreateDie(Transform parent)
+        public static DieSlotView CreateDie(Transform parent)
         {
-            var face = CreateImage("Die", parent, Bone);
+            var face = CreateImage("DieSlot", parent, Bone);
             ((RectTransform)face.transform).sizeDelta = new Vector2(110, 110);
             var label = CreateText("Pips", face.transform, string.Empty, 64, Ink);
             Stretch(label.rectTransform);
-            return new DieSlot(face, label);
-        }
-    }
-
-    public sealed class DieSlot
-    {
-        public Image Face { get; }
-        public Text Label { get; }
-
-        public DieSlot(Image face, Text label)
-        {
-            Face = face;
-            Label = label;
+            var slot = face.gameObject.AddComponent<DieSlotView>();
+            slot.Configure(face, label);
+            return slot;
         }
     }
 }

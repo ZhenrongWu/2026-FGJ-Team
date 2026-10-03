@@ -44,6 +44,8 @@ namespace FGJ.Exploration
 
         private void LateUpdate()
         {
+            if (targetCamera == null)
+                targetCamera = Camera.main;
             if (targetCamera == null || tiles.Length == 0)
                 return;
 

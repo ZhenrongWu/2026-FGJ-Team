@@ -32,12 +32,12 @@ namespace FGJ.LiarDice.UI
 
     public sealed class LiarDiceView : MonoBehaviour
     {
-        private const string HiddenPips = "?";
-
         [SerializeField] private LiarDiceViewParts parts;
+        [SerializeField] private DieSlotView diePrefab;
+        [SerializeField] private LiarDicePalette palette = new LiarDicePalette();
 
-        private readonly List<DieSlot> _monsterDice = new List<DieSlot>();
-        private readonly List<DieSlot> _playerDice = new List<DieSlot>();
+        private readonly List<DieSlotView> _monsterDice = new List<DieSlotView>();
+        private readonly List<DieSlotView> _playerDice = new List<DieSlotView>();
         private bool _listenersWired;
 
         public event Action<string, string> BidSubmitted;
@@ -55,9 +55,13 @@ namespace FGJ.LiarDice.UI
         public bool IsResultVisible => parts.resultPanel.activeSelf;
         public bool IsInputInteractable => parts.quantityInput.interactable;
 
-        public void SetParts(LiarDiceViewParts viewParts)
+        public IReadOnlyList<DieSlotView> PlayerDice => _playerDice;
+        public IReadOnlyList<DieSlotView> MonsterDice => _monsterDice;
+
+        public void SetParts(LiarDiceViewParts viewParts, DieSlotView dieSlotPrefab)
         {
             parts = viewParts;
+            diePrefab = dieSlotPrefab;
             WireListeners();
         }
 
@@ -89,14 +93,14 @@ namespace FGJ.LiarDice.UI
             parts.playerOxygenText.text = LiarDiceText.Oxygen("你的", match.PlayerOxygen, settings.PlayerOxygen);
             parts.currentBidText.text = LiarDiceText.CurrentBid(match.CurrentBid, match.CurrentBidder);
             parts.wildStatusText.text = LiarDiceText.WildStatus(match.WildActive);
-            parts.wildStatusText.color = match.WildActive ? LiarDiceUIFactory.Glow : LiarDiceUIFactory.Danger;
+            parts.wildStatusText.color = palette.WildStatusColor(match.WildActive);
             parts.turnStatusText.text = LiarDiceText.TurnStatus(match);
 
             var highlightFace = revealMonsterDice ? match.CurrentBid?.Face : null;
             RenderDice(match.Rules, _playerDice, parts.playerDiceRow, match.GetDice(Side.Player), false, highlightFace,
                 match.WildActive);
-            RenderDice(match.Rules, _monsterDice, parts.monsterDiceRow, match.GetDice(Side.Monster), !revealMonsterDice,
-                highlightFace, match.WildActive);
+            RenderDice(match.Rules, _monsterDice, parts.monsterDiceRow, match.GetDice(Side.Monster),
+                !revealMonsterDice, highlightFace, match.WildActive);
 
             var playerCanAct = match.Phase == MatchPhase.Bidding && match.CurrentTurn == Side.Player;
             parts.quantityInput.interactable = playerCanAct && match.CanRaise;
@@ -162,33 +166,22 @@ namespace FGJ.LiarDice.UI
             input.ActivateInputField();
         }
 
-        private static void RenderDice(ILiarDiceRules rules, List<DieSlot> slots, RectTransform row, IReadOnlyList<int> dice, bool hidden,
-            int? highlightFace, bool wildActive)
+        private void RenderDice(ILiarDiceRules rules, List<DieSlotView> slots, RectTransform row,
+            IReadOnlyList<int> dice, bool hidden, int? highlightFace, bool wildActive)
         {
             while (slots.Count < dice.Count)
-                slots.Add(LiarDiceUIFactory.CreateDie(row));
+                slots.Add(Instantiate(diePrefab, row));
 
             for (var i = 0; i < slots.Count; i++)
             {
-                var slot = slots[i];
                 var visible = i < dice.Count;
-                slot.Face.gameObject.SetActive(visible);
+                slots[i].gameObject.SetActive(visible);
                 if (!visible)
                     continue;
 
-                if (hidden)
-                {
-                    slot.Face.color = LiarDiceUIFactory.HiddenDie;
-                    slot.Label.color = LiarDiceUIFactory.Muted;
-                    slot.Label.text = HiddenPips;
-                    continue;
-                }
-
-                var matches = highlightFace.HasValue &&
-                              rules.CountMatching(new[] { dice[i] }, highlightFace.Value, wildActive) > 0;
-                slot.Face.color = matches ? LiarDiceUIFactory.Highlight : LiarDiceUIFactory.Bone;
-                slot.Label.color = LiarDiceUIFactory.Ink;
-                slot.Label.text = dice[i].ToString();
+                var highlighted = !hidden && highlightFace.HasValue &&
+                                  rules.CountMatching(new[] { dice[i] }, highlightFace.Value, wildActive) > 0;
+                slots[i].Show(dice[i], hidden, highlighted, palette);
             }
         }
     }

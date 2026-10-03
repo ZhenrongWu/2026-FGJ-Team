@@ -22,6 +22,7 @@ namespace FGJ.Tests.PlayMode.Exploration
         private RecordingSceneRouter _router;
         private SideScrollPlayer _player;
         private ExplorationController _controller;
+        private ExplorationHud _hud;
         private LiarDiceConfig _buildingConfig;
 
         [SetUp]
@@ -100,12 +101,25 @@ namespace FGJ.Tests.PlayMode.Exploration
             promptText.transform.SetParent(promptRoot.transform, false);
             var fader = new GameObject("Fader", typeof(RectTransform)).AddComponent<Image>();
             fader.transform.SetParent(canvas.transform, false);
+            _hud = canvas.AddComponent<ExplorationHud>();
+            _hud.Configure(promptRoot, promptText, fader);
 
             _controller = Track(new GameObject("Exploration")).AddComponent<ExplorationController>();
-            _controller.Configure(_player, follow, promptRoot, promptText, fader);
-            _controller.SetRoute(CreateRoute(), 0f, CreateSprite());
+            _controller.Configure(_player, follow, _hud);
+            _controller.SetRoute(CreateRoute(), CreateEntranceTemplate(), 0f);
             _controller.SetTransitionDurations(0f, 0f);
             _controller.SetServices(_progress, _router);
+        }
+
+        private RoomEntrance CreateEntranceTemplate()
+        {
+            var template = Track(new GameObject("EntranceTemplate"));
+            template.transform.position = new Vector3(-100f, 0f, 0f);
+            var marker = new GameObject("PlaceholderMarker");
+            marker.transform.SetParent(template.transform, false);
+            var entrance = template.AddComponent<RoomEntrance>();
+            entrance.Configure(null, marker);
+            return entrance;
         }
 
         private static IEnumerator WaitFrames(int count)
@@ -157,7 +171,7 @@ namespace FGJ.Tests.PlayMode.Exploration
             yield return WaitFrames(2);
 
             Assert.IsNull(_controller.NearbyEntrance);
-            Assert.AreEqual(string.Empty, _controller.PromptMessage);
+            Assert.AreEqual(string.Empty, _hud.PromptMessage);
         }
 
         [UnityTest]
@@ -165,7 +179,7 @@ namespace FGJ.Tests.PlayMode.Exploration
         {
             BuildExploration(BuildingX + 1f);
             yield return WaitFrames(2);
-            Assert.AreEqual(EnterPrompt, _controller.PromptMessage);
+            Assert.AreEqual(EnterPrompt, _hud.PromptMessage);
 
             _controller.RequestInteract();
             yield return WaitFrames(3);
@@ -187,7 +201,7 @@ namespace FGJ.Tests.PlayMode.Exploration
             yield return WaitFrames(2);
 
             Assert.AreEqual(BuildingX, _player.X, 1e-4f);
-            Assert.AreEqual(ClearedPrompt, _controller.PromptMessage);
+            Assert.AreEqual(ClearedPrompt, _hud.PromptMessage);
             Assert.IsFalse(_controller.Entrances[0].transform.Find("PlaceholderMarker").gameObject.activeSelf);
 
             _controller.RequestInteract();

@@ -19,7 +19,7 @@ namespace FGJ.Tests.PlayMode.LiarDice
         [SetUp]
         public void SetUp()
         {
-            _controller = LiarDiceRoomBuilder.Build(null);
+            _controller = TestPrefabs.Instantiate<LiarDiceRoomController>(TestPrefabs.LiarDiceRoomPath);
             _controller.SetMonsterThinkSeconds(0f);
         }
 

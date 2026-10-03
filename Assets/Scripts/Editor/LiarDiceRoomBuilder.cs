@@ -1,9 +1,11 @@
+using FGJ.LiarDice;
+using FGJ.LiarDice.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
-namespace FGJ.LiarDice.UI
+namespace FGJ.Editor
 {
     public static class LiarDiceRoomBuilder
     {
@@ -13,10 +15,10 @@ namespace FGJ.LiarDice.UI
         private static readonly Vector2 Center = new Vector2(0.5f, 0.5f);
         private static readonly Vector2 Bottom = new Vector2(0.5f, 0f);
 
-        public static LiarDiceRoomController Build(LiarDiceConfig config)
+        public static LiarDiceRoomController Build(LiarDiceConfig config, DieSlotView diePrefab)
         {
             var root = new GameObject(RootName);
-            EnsureEventSystem(root.transform);
+            CreateEventSystem(root.transform);
 
             var canvas = CreateCanvas(root.transform);
             var parts = new LiarDiceViewParts();
@@ -30,18 +32,15 @@ namespace FGJ.LiarDice.UI
             BuildResultPanel(canvas.transform, parts);
 
             var view = canvas.gameObject.AddComponent<LiarDiceView>();
-            view.SetParts(parts);
+            view.SetParts(parts, diePrefab);
 
             var controller = root.AddComponent<LiarDiceRoomController>();
             controller.Configure(config, view);
             return controller;
         }
 
-        private static void EnsureEventSystem(Transform root)
+        private static void CreateEventSystem(Transform root)
         {
-            if (Object.FindFirstObjectByType<EventSystem>() != null)
-                return;
-
             var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
             eventSystem.transform.SetParent(root, false);
         }

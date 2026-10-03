@@ -33,7 +33,7 @@ namespace FGJ.Tests.PlayMode.LiarDice
             _building.Configure("Room01", "enter", "cleared", 1.5f, _buildingConfig, _buildingMonster);
             _progress.EnterBuilding(_building);
 
-            _controller = LiarDiceRoomBuilder.Build(null);
+            _controller = TestPrefabs.Instantiate<LiarDiceRoomController>(TestPrefabs.LiarDiceRoomPath);
             _controller.SetMonsterThinkSeconds(0f);
             var flowObject = new GameObject("Flow");
             flowObject.SetActive(false);

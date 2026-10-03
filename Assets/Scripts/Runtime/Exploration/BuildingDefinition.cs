@@ -7,6 +7,8 @@ namespace FGJ.Exploration
     public sealed class BuildingDefinition : ScriptableObject
     {
         [SerializeField] private string buildingId = "Building";
+        [Tooltip("留空時使用場景預設的入口 Prefab")]
+        [SerializeField] private RoomEntrance entrancePrefab;
         [SerializeField] private Sprite exterior;
         [SerializeField] private Vector2 exteriorOffset;
         [SerializeField] private int exteriorSortingOrder = -5;
@@ -17,6 +19,7 @@ namespace FGJ.Exploration
         [SerializeField] private MonsterProfile monster;
 
         public string BuildingId => buildingId;
+        public RoomEntrance EntrancePrefab => entrancePrefab;
         public Sprite Exterior => exterior;
         public Vector2 ExteriorOffset => exteriorOffset;
         public int ExteriorSortingOrder => exteriorSortingOrder;
