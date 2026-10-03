@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using FGJ.LiarDice.Table;
 using FGJ.LiarDice.UI;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,32 +10,46 @@ namespace FGJ.LiarDice
 {
     public sealed class LiarDiceRoomController : MonoBehaviour
     {
+        private const string PlayerSpeaker = "你";
+        private const string PlayerChallengeLine = "「吹牛！開！」";
+
         [SerializeField] private LiarDiceConfig config;
-        [SerializeField] private LiarDiceView view;
         [SerializeField] private MonsterProfile monster;
+        [SerializeField] private LiarDiceHud hud;
+        [SerializeField] private DiceTableView table;
         [Min(0f)] [SerializeField] private float monsterThinkSeconds = 1.2f;
         [SerializeField] private UnityEvent<Side> matchFinished = new UnityEvent<Side>();
 
-        private MonsterAI _monster;
+        private readonly MatchLog _log = new MatchLog();
+        private readonly LiarDiceText _text = new LiarDiceText();
+        private readonly BidPanelRules _panelRules = new BidPanelRules();
+        private MonsterAI _monsterAI;
         private Func<IDiceRoller> _rollerFactory;
-        private Coroutine _monsterTurn;
         private MonsterProfile _fallbackMonster;
+        private bool _believed;
+        private int _roundNumber;
 
         public event Action<Side> MatchFinished;
         public event Action<Side> ExitRequested;
 
         public LiarDiceMatch Match { get; private set; }
+        public LiarDiceHud Hud => hud;
+        public DiceTableView Table => table;
+        public MatchLog Log => _log;
+        public bool IsBusy { get; private set; }
+        public bool HasBelieved => _believed;
+        public bool IsPlayerTurn => Match != null && !IsBusy && Match.Phase == MatchPhase.Bidding &&
+                                    Match.CurrentTurn == Side.Player;
         public MonsterProfile Monster => monster != null ? monster : FallbackMonster;
 
-        private MonsterProfile FallbackMonster =>
-            _fallbackMonster != null ? _fallbackMonster : _fallbackMonster = ScriptableObject.CreateInstance<MonsterProfile>();
-        public LiarDiceView View => view;
-        public bool IsPlayerTurn => Match != null && Match.Phase == MatchPhase.Bidding && Match.CurrentTurn == Side.Player;
+        private MonsterProfile FallbackMonster => _fallbackMonster != null
+            ? _fallbackMonster
+            : _fallbackMonster = ScriptableObject.CreateInstance<MonsterProfile>();
 
-        public void Configure(LiarDiceConfig roomConfig, LiarDiceView roomView)
+        public void Configure(LiarDiceHud roomHud, DiceTableView diceTable)
         {
-            config = roomConfig;
-            view = roomView;
+            hud = roomHud;
+            table = diceTable;
         }
 
         public void UseEncounter(LiarDiceConfig roomConfig, MonsterProfile roomMonster)
@@ -61,35 +76,54 @@ namespace FGJ.LiarDice
         {
             if (_fallbackMonster != null)
                 Destroy(_fallbackMonster);
-            UnbindView();
+            UnbindHud();
         }
 
-        public void Begin(MatchSettings settings, Func<IDiceRoller> rollerFactory, MonsterAI monster)
+        public void Begin(MatchSettings settings, Func<IDiceRoller> rollerFactory, MonsterAI monsterAI)
         {
             _rollerFactory = rollerFactory ?? throw new ArgumentNullException(nameof(rollerFactory));
-            _monster = monster ?? throw new ArgumentNullException(nameof(monster));
-            StopMonsterTurn();
+            _monsterAI = monsterAI ?? throw new ArgumentNullException(nameof(monsterAI));
+            StopAllCoroutines();
+            IsBusy = false;
 
-            UnbindView();
-            view.BidSubmitted += OnBidSubmitted;
-            view.ChallengeRequested += ChallengeAsPlayer;
-            view.ContinueRequested += Continue;
+            UnbindHud();
+            hud.BelieveClicked += Believe;
+            hud.BluffClicked += ChallengeAsPlayer;
+            hud.BidSubmitted += OnBidSubmitted;
+            hud.ContinueClicked += Continue;
 
             Match = new LiarDiceMatch(settings, _rollerFactory());
             Match.Start();
-            view.HideResult();
-            view.ClearInput();
-            view.ClearError();
-            view.SetMonsterName(Monster.DisplayName);
-            view.SetMonsterLine(Monster.Greeting);
-            AdvanceTurn();
+            _roundNumber = 0;
+            _log.Clear();
+            hud.LogView.Bind(_log);
+            hud.ClearError();
+            hud.ClearBidInput();
+            _log.Add(_text.Speech(Monster.DisplayName, Monster.Greeting), LogKind.MonsterSpeech);
+            StartRound();
+        }
+
+        public void Believe()
+        {
+            if (!IsPlayerTurn)
+            {
+                hud.ShowError(LiarDiceText.NotPlayerTurn);
+                return;
+            }
+            if (!Match.CurrentBid.HasValue || !Match.CanRaise)
+                return;
+
+            _believed = true;
+            hud.ClearError();
+            Refresh();
+            hud.FocusQuantity();
         }
 
         public BidInputResult SubmitPlayerBid(string quantityText, string faceText)
         {
             if (!IsPlayerTurn)
             {
-                view.ShowError(LiarDiceText.NotPlayerTurn);
+                hud.ShowError(LiarDiceText.NotPlayerTurn);
                 return BidInputResult.Fail(LiarDiceText.NotPlayerTurn);
             }
 
@@ -97,46 +131,54 @@ namespace FGJ.LiarDice
                 Match.TotalDice);
             if (!input.IsValid)
             {
-                view.ShowError(input.ErrorMessage);
+                hud.ShowError(input.ErrorMessage);
                 return input;
             }
 
+            var answeringBid = Match.CurrentBid.HasValue;
             Match.PlaceBid(Side.Player, input.Bid);
-            view.ClearError();
-            view.ClearInput();
+            _log.Add(_text.PlayerBid(input.Bid, answeringBid), LogKind.PlayerAction);
+            _believed = false;
+            hud.ClearError();
+            hud.ClearBidInput();
             AdvanceTurn();
             return input;
         }
 
         public void ChallengeAsPlayer()
         {
-            if (!IsPlayerTurn || !Match.CanChallenge)
+            if (!IsPlayerTurn)
             {
-                view.ShowError(IsPlayerTurn ? LiarDiceText.NothingToChallenge : LiarDiceText.NotPlayerTurn);
+                hud.ShowError(LiarDiceText.NotPlayerTurn);
+                return;
+            }
+            if (!Match.CanChallenge)
+            {
+                hud.ShowError(LiarDiceText.NothingToChallenge);
                 return;
             }
 
-            view.ClearError();
-            Resolve(Match.Challenge(Side.Player));
+            hud.ClearError();
+            _log.Add(_text.Speech(PlayerSpeaker, PlayerChallengeLine), LogKind.PlayerAction);
+            StartCoroutine(Resolve(Match.Challenge(Side.Player)));
         }
 
         public void Continue()
         {
-            if (Match == null)
+            if (Match == null || IsBusy)
                 return;
 
             switch (Match.Phase)
             {
                 case MatchPhase.RoundOver:
                     Match.NextRound();
-                    view.HideResult();
-                    AdvanceTurn();
+                    StartRound();
                     break;
                 case MatchPhase.MatchOver:
                     if (ExitRequested != null)
                         ExitRequested.Invoke(Match.Winner.Value);
                     else
-                        Begin(Match.Settings, _rollerFactory, _monster);
+                        Begin(Match.Settings, _rollerFactory, _monsterAI);
                     break;
             }
         }
@@ -148,9 +190,9 @@ namespace FGJ.LiarDice
                 return;
 
             if (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame)
-                view.SubmitBid();
+                hud.SubmitBid();
             else if (keyboard.tabKey.wasPressedThisFrame)
-                view.CycleInputFocus();
+                hud.CycleInputFocus();
         }
 
         private void OnBidSubmitted(string quantityText, string faceText)
@@ -158,16 +200,33 @@ namespace FGJ.LiarDice
             SubmitPlayerBid(quantityText, faceText);
         }
 
+        private void StartRound()
+        {
+            _roundNumber++;
+            _believed = false;
+            _log.Add(_text.RoundStart(_roundNumber, Match.CurrentTurn), LogKind.System);
+            StartCoroutine(PlayRoundStart());
+        }
+
+        private IEnumerator PlayRoundStart()
+        {
+            IsBusy = true;
+            Refresh();
+            yield return table.PlayRoundStart(Match);
+            IsBusy = false;
+            AdvanceTurn();
+        }
+
         private void AdvanceTurn()
         {
-            view.Render(Match, false);
+            Refresh();
             if (Match.Phase != MatchPhase.Bidding)
                 return;
 
             if (Match.CurrentTurn == Side.Monster)
-                _monsterTurn = StartCoroutine(PlayMonsterTurn());
-            else
-                view.FocusQuantity();
+                StartCoroutine(PlayMonsterTurn());
+            else if (!Match.CurrentBid.HasValue)
+                hud.FocusQuantity();
         }
 
         private IEnumerator PlayMonsterTurn()
@@ -177,53 +236,60 @@ namespace FGJ.LiarDice
             else
                 yield return null;
 
-            _monsterTurn = null;
-            var decision = _monster.Decide(Match);
+            var decision = _monsterAI.Decide(Match);
             if (decision.IsChallenge)
             {
-                view.SetMonsterLine(Monster.ChallengeLine);
-                Resolve(Match.Challenge(Side.Monster));
+                _log.Add(_text.Speech(Monster.DisplayName, Monster.ChallengeLine), LogKind.MonsterSpeech);
+                yield return Resolve(Match.Challenge(Side.Monster));
                 yield break;
             }
 
             Match.PlaceBid(Side.Monster, decision.Bid);
-            view.SetMonsterLine(Monster.BidLine(decision.Bid));
+            _log.Add(_text.Speech(Monster.DisplayName, Monster.BidLine(decision.Bid)), LogKind.MonsterSpeech);
             AdvanceTurn();
         }
 
-        private void Resolve(RoundResult result)
+        private IEnumerator Resolve(RoundResult result)
         {
-            view.Render(Match, true);
+            IsBusy = true;
+            Refresh();
+            yield return table.PlayReveal(Match);
 
-            var message = LiarDiceText.RoundResult(result, Match.Rules.IsWildFor(result.Bid.Face, Match.WildActive));
+            var wildCounted = Match.Rules.IsWildFor(result.Bid.Face, Match.WildActive);
+            _log.Add(_text.RoundResult(result, wildCounted), LogKind.Result);
+
             if (Match.Phase == MatchPhase.MatchOver)
             {
                 var winner = Match.Winner.Value;
-                view.ShowResult($"{message}\n\n{LiarDiceText.MatchOver(winner)}", LiarDiceText.MatchOverLabel(winner,
-                    ExitRequested != null));
+                _log.Add(_text.MatchOver(winner), LogKind.Result);
+                hud.SetContinueLabel(_text.MatchOverLabel(winner, ExitRequested != null));
+                IsBusy = false;
+                Refresh();
                 MatchFinished?.Invoke(winner);
                 matchFinished.Invoke(winner);
-                return;
+                yield break;
             }
 
-            view.ShowResult(message, LiarDiceText.NextRoundLabel);
+            hud.SetContinueLabel(LiarDiceText.NextRoundLabel);
+            IsBusy = false;
+            Refresh();
         }
 
-        private void StopMonsterTurn()
+        private void Refresh()
         {
-            if (_monsterTurn == null)
-                return;
-            StopCoroutine(_monsterTurn);
-            _monsterTurn = null;
+            hud.ShowOxygen(Match);
+            hud.SetStatus(_text.Status(Match));
+            hud.ApplyPanelState(_panelRules.Evaluate(Match, _believed, IsBusy));
         }
 
-        private void UnbindView()
+        private void UnbindHud()
         {
-            if (view == null)
+            if (hud == null)
                 return;
-            view.BidSubmitted -= OnBidSubmitted;
-            view.ChallengeRequested -= ChallengeAsPlayer;
-            view.ContinueRequested -= Continue;
+            hud.BelieveClicked -= Believe;
+            hud.BluffClicked -= ChallengeAsPlayer;
+            hud.BidSubmitted -= OnBidSubmitted;
+            hud.ContinueClicked -= Continue;
         }
     }
 }

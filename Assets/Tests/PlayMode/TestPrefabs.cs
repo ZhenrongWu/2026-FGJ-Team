@@ -6,6 +6,7 @@ namespace FGJ.Tests.PlayMode
     internal static class TestPrefabs
     {
         public const string LiarDiceRoomPath = "Assets/Prefabs/Gameplay/LiarDiceRoom.prefab";
+        public const string DiceTablePath = "Assets/Prefabs/Gameplay/DiceTable.prefab";
 
         public static T Instantiate<T>(string path) where T : Component
         {

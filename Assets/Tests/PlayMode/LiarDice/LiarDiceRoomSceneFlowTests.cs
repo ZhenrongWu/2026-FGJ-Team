@@ -35,6 +35,7 @@ namespace FGJ.Tests.PlayMode.LiarDice
 
             _controller = TestPrefabs.Instantiate<LiarDiceRoomController>(TestPrefabs.LiarDiceRoomPath);
             _controller.SetMonsterThinkSeconds(0f);
+            _controller.Table.SetAnimationDurations(0f, 0f);
             var flowObject = new GameObject("Flow");
             flowObject.SetActive(false);
             flowObject.transform.SetParent(_controller.transform);
@@ -45,7 +46,7 @@ namespace FGJ.Tests.PlayMode.LiarDice
         [TearDown]
         public void TearDown()
         {
-            Object.Destroy(_controller.gameObject);
+            Object.DestroyImmediate(_controller.gameObject);
             Object.Destroy(_progress);
             Object.Destroy(_router);
             Object.Destroy(_building);
@@ -59,23 +60,29 @@ namespace FGJ.Tests.PlayMode.LiarDice
                 new MonsterAI(new MonsterAIProfile(0.35f, 0.5f, 0f, 2), new System.Random(7)));
         }
 
+        private IEnumerator WaitUntil(System.Func<bool> condition)
+        {
+            for (var frame = 0; frame < 60 && !condition(); frame++)
+                yield return null;
+            Assert.IsTrue(condition(), "等待逾時");
+        }
+
         private IEnumerator FinishMatch()
         {
             BeginOneOxygenMatch();
-            yield return null;
-            yield return null;
+            yield return WaitUntil(() => _controller.IsPlayerTurn);
             _controller.ChallengeAsPlayer();
+            yield return WaitUntil(() => !_controller.IsBusy);
         }
 
         [UnityTest]
         public IEnumerator Awake_UsesConfigAndMonsterOfBuildingBeingEntered()
         {
-            yield return null;
-            yield return null;
+            yield return WaitUntil(() => _controller.IsPlayerTurn);
 
             Assert.AreSame(_buildingMonster, _controller.Monster);
-            Assert.AreEqual("測試怪物", _controller.View.MonsterName);
-            Assert.AreEqual($"<{_controller.Match.CurrentBid.Value}>", _controller.View.MonsterLine);
+            Assert.AreEqual("測試怪物：「測試開場」", _controller.Log.Entries[0].Text);
+            Assert.AreEqual($"測試怪物：<{_controller.Match.CurrentBid.Value}>", _controller.Hud.LogView.LatestText);
 
             Assert.AreEqual(_buildingConfig.PlayerOxygen, _controller.Match.PlayerOxygen);
             Assert.AreEqual(_buildingConfig.PlayerDiceCount, _controller.Match.GetDice(Side.Player).Count);
@@ -86,7 +93,7 @@ namespace FGJ.Tests.PlayMode.LiarDice
         {
             yield return FinishMatch();
             var winner = _controller.Match.Winner.Value;
-            Assert.AreEqual(winner == Side.Player ? "返回洞穴" : "重新開始", _controller.View.ContinueLabel);
+            Assert.AreEqual(winner == Side.Player ? "返回洞穴" : "重新開始", _controller.Hud.ContinueLabel);
 
             _controller.Continue();
 

@@ -103,7 +103,7 @@ namespace FGJ.Tests.EditMode.Exploration
         [TestCase(Side.Player, false, ExpectedResult = "再挑戰一次")]
         public string MatchOverLabel_DependsOnWinnerAndRoomExit(Side winner, bool leavesRoom)
         {
-            return LiarDiceText.MatchOverLabel(winner, leavesRoom);
+            return new LiarDiceText().MatchOverLabel(winner, leavesRoom);
         }
     }
 

@@ -1,9 +1,12 @@
 using System;
 using FGJ.Exploration;
 using FGJ.LiarDice;
+using FGJ.LiarDice.Table;
 using FGJ.LiarDice.UI;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -13,7 +16,11 @@ namespace FGJ.Editor
     {
         public const string GameplayFolder = "Assets/Prefabs/Gameplay";
         public const string ExplorationFolder = "Assets/Prefabs/Exploration";
-        public const string DieSlotPath = GameplayFolder + "/DieSlot.prefab";
+        public const string DiePath = GameplayFolder + "/Die.prefab";
+        public const string DiceCupPath = GameplayFolder + "/DiceCup.prefab";
+        public const string DiceTablePath = GameplayFolder + "/DiceTable.prefab";
+        public const string GameplayHudPath = GameplayFolder + "/GameplayHud.prefab";
+        public const string MonsterPlaceholderPath = GameplayFolder + "/MonsterPlaceholder.prefab";
         public const string LiarDiceRoomPath = GameplayFolder + "/LiarDiceRoom.prefab";
         public const string PlayerPath = ExplorationFolder + "/Player.prefab";
         public const string BackgroundPath = ExplorationFolder + "/CaveBackground.prefab";
@@ -42,12 +49,18 @@ namespace FGJ.Editor
             EnsureFolder("Assets/Prefabs", "Gameplay");
             EnsureFolder("Assets/Prefabs", "Exploration");
 
-            var diePrefab = Ensure(DieSlotPath, () => LiarDiceUIFactory.CreateDie(null).gameObject)
-                .GetComponent<DieSlotView>();
-            Ensure(LiarDiceRoomPath, () => CreateLiarDiceRoom(diePrefab));
+            var dice = new DicePlaceholderBuilder();
+            var ui = new UiFactory();
+            var diePrefab = Ensure(DiePath, dice.CreateDie).GetComponent<DieView>();
+            var cupPrefab = Ensure(DiceCupPath,
+                () => dice.CreateCup(new Vector3(0.42f, 0.08f, 0.2f), new Vector3(0f, 0f, -22f)));
+            var tablePrefab = Ensure(DiceTablePath, () => dice.CreateTable(cupPrefab, diePrefab));
+            var hudPrefab = Ensure(GameplayHudPath, () => new GameplayHudBuilder(ui).Build().gameObject);
+            Ensure(MonsterPlaceholderPath, dice.CreateMonsterPlaceholder);
+            Ensure(LiarDiceRoomPath, () => CreateLiarDiceRoom(hudPrefab, tablePrefab));
             Ensure(PlayerPath, CreatePlayer);
             Ensure(BackgroundPath, CreateBackground);
-            Ensure(HudPath, CreateHud);
+            Ensure(HudPath, () => CreateHud(ui));
             Ensure(PlaceholderEntrancePath, CreatePlaceholderEntrance);
         }
 
@@ -74,12 +87,20 @@ namespace FGJ.Editor
                 AssetDatabase.CreateFolder(parent, name);
         }
 
-        private static GameObject CreateLiarDiceRoom(DieSlotView diePrefab)
+        private static GameObject CreateLiarDiceRoom(GameObject hudPrefab, GameObject tablePrefab)
         {
+            var root = new GameObject("LiarDiceRoom");
+            var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
+            eventSystem.transform.SetParent(root.transform, false);
+
+            var hud = (GameObject)PrefabUtility.InstantiatePrefab(hudPrefab, root.transform);
+            var table = (GameObject)PrefabUtility.InstantiatePrefab(tablePrefab, root.transform);
+
+            var controller = root.AddComponent<LiarDiceRoomController>();
+            controller.Configure(hud.GetComponent<LiarDiceHud>(), table.GetComponent<DiceTableView>());
             var config = AssetDatabase.LoadAssetAtPath<LiarDiceConfig>(LiarDiceSceneMenu.ConfigPath);
-            var controller = LiarDiceRoomBuilder.Build(config, diePrefab);
             controller.UseEncounter(config, LiarDiceSceneMenu.EnsureDefaultMonster());
-            return controller.gameObject;
+            return root;
         }
 
         private static GameObject CreatePlayer()
@@ -128,7 +149,7 @@ namespace FGJ.Editor
             return root;
         }
 
-        private static GameObject CreateHud()
+        private static GameObject CreateHud(UiFactory ui)
         {
             var canvasObject = new GameObject("ExplorationHud", typeof(RectTransform));
             var canvas = canvasObject.AddComponent<Canvas>();
@@ -138,18 +159,18 @@ namespace FGJ.Editor
             scaler.referenceResolution = new Vector2(1920, 1080);
             scaler.matchWidthOrHeight = 0.5f;
 
-            var promptBackground = LiarDiceUIFactory.CreateImage("Prompt", canvasObject.transform,
+            var promptBackground = ui.CreateImage("Prompt", canvasObject.transform,
                 new Color(0.08f, 0.1f, 0.14f, 0.75f));
             promptBackground.raycastTarget = false;
-            LiarDiceUIFactory.Place(promptBackground.rectTransform, new Vector2(0.5f, 0f), new Vector2(0, 90),
+            ui.Place(promptBackground.rectTransform, new Vector2(0.5f, 0f), new Vector2(0, 90),
                 new Vector2(620, 80));
-            var prompt = LiarDiceUIFactory.CreateText("PromptText", promptBackground.transform, string.Empty, 34,
-                LiarDiceUIFactory.Bone);
-            LiarDiceUIFactory.Stretch(prompt.rectTransform);
+            var prompt = ui.CreateText("PromptText", promptBackground.transform, string.Empty, 34,
+                ui.Bone);
+            ui.Stretch(prompt.rectTransform);
             promptBackground.gameObject.SetActive(false);
 
-            var fader = LiarDiceUIFactory.CreateImage("ScreenFader", canvasObject.transform, new Color(0f, 0f, 0f, 0f));
-            LiarDiceUIFactory.Stretch(fader.rectTransform);
+            var fader = ui.CreateImage("ScreenFader", canvasObject.transform, new Color(0f, 0f, 0f, 0f));
+            ui.Stretch(fader.rectTransform);
             fader.raycastTarget = false;
 
             canvasObject.AddComponent<ExplorationHud>().Configure(promptBackground.gameObject, prompt, fader);
