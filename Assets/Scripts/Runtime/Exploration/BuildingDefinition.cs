@@ -29,6 +29,12 @@ namespace FGJ.Exploration
         public LiarDiceConfig GameplayConfig => gameplayConfig;
         public MonsterProfile Monster => monster;
 
+        public void SetExterior(Sprite exteriorSprite, Vector2 offset)
+        {
+            exterior = exteriorSprite;
+            exteriorOffset = offset;
+        }
+
         public void Configure(string id, string enter, string cleared, float range, LiarDiceConfig config,
             MonsterProfile buildingMonster = null)
         {

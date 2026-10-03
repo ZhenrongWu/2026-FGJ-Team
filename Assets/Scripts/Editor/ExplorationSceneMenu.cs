@@ -10,12 +10,16 @@ namespace FGJ.Editor
     {
         public const string ScenePath = "Assets/Scenes/Exploration.unity";
         public const string DataFolder = "Assets/Data/Exploration";
-        public const string FirstBuildingPath = DataFolder + "/Building_SwampWatcher.asset";
+        public const string FirstBuildingPath = DataFolder + "/Building_Tavern.asset";
         public const string RoutePath = DataFolder + "/ExplorationRoute.asset";
 
         private const float GroundY = 1.5f;
         private const float PlayerStartX = 6f;
         private const float FirstBuildingX = 44f;
+        private const string TavernId = "Tavern";
+        private const string TavernEnterPrompt = "按 E 進入酒館";
+        private const string TavernClearedPrompt = "酒館裡已經安靜了";
+        private static readonly Vector2 TavernDoorOffset = new Vector2(0.74f, -0.15f);
 
         [MenuItem("FGJ/Scenes/Build Exploration Scene")]
         public static void BuildFromMenu()
@@ -79,10 +83,18 @@ namespace FGJ.Editor
             if (building == null)
             {
                 building = ScriptableObject.CreateInstance<BuildingDefinition>();
-                building.Configure("SwampWatcher", "按 E 進入洞穴深處", "看守者已經沉默了", 1.5f,
+                building.Configure(TavernId, TavernEnterPrompt, TavernClearedPrompt, 1.5f,
                     AssetDatabase.LoadAssetAtPath<LiarDiceConfig>(LiarDiceSceneMenu.ConfigPath),
                     LiarDiceSceneMenu.EnsureDefaultMonster());
                 AssetDatabase.CreateAsset(building, FirstBuildingPath);
+            }
+
+            if (building.Exterior == null)
+            {
+                building.Configure(TavernId, TavernEnterPrompt, TavernClearedPrompt, building.InteractRange,
+                    building.GameplayConfig, building.Monster);
+                building.SetExterior(ArtImport.LoadSprite("Tavern"), TavernDoorOffset);
+                EditorUtility.SetDirty(building);
             }
 
             var route = AssetDatabase.LoadAssetAtPath<ExplorationRoute>(RoutePath);

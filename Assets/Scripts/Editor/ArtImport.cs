@@ -8,16 +8,21 @@ namespace FGJ.Editor
     {
         public const string BackgroundFolder = "Assets/Art/Sprites/Backgrounds/Cave/";
         public const string CharacterFolder = "Assets/Art/Sprites/Characters/Player/";
+        public const string BuildingFolder = "Assets/Art/Sprites/Buildings/";
 
         private const float BackgroundPixelsPerUnit = 100f;
         private const float CharacterPixelsPerUnit = 600f;
         private const int BackgroundMaxTextureSize = 8192;
         private const int CharacterMaxTextureSize = 2048;
+        private const float BuildingPixelsPerUnit = 190f;
+        private const int BuildingMaxTextureSize = 2048;
+        private static readonly Vector2 BuildingPivot = new Vector2(0.5f, 0.03f);
         private static readonly Vector2 CharacterPivot = new Vector2(0.5f, 0.075f);
 
         public static readonly string[] BackgroundSprites = { "Ocean_01", "Ocean_02", "Ocean_03", "Ocean_04" };
         public static readonly string[] CharacterSprites =
             { "Right_01", "Right_02", "Right_03", "Forward_01", "Forward_02", "Forward_03" };
+        public static readonly string[] BuildingSprites = { "Tavern" };
 
         public static void ConfigureAll()
         {
@@ -27,6 +32,9 @@ namespace FGJ.Editor
             foreach (var name in CharacterSprites)
                 ConfigureSprite(name, CharacterPixelsPerUnit, SpriteAlignment.Custom, CharacterPivot,
                     CharacterMaxTextureSize);
+            foreach (var name in BuildingSprites)
+                ConfigureSprite(name, BuildingPixelsPerUnit, SpriteAlignment.Custom, BuildingPivot,
+                    BuildingMaxTextureSize);
         }
 
         public static Sprite LoadSprite(string name)
@@ -36,7 +44,9 @@ namespace FGJ.Editor
 
         private static string SpritePath(string name)
         {
-            var folder = BackgroundSprites.Contains(name) ? BackgroundFolder : CharacterFolder;
+            var folder = BackgroundSprites.Contains(name) ? BackgroundFolder
+                : BuildingSprites.Contains(name) ? BuildingFolder
+                : CharacterFolder;
             return folder + name + ".png";
         }
 

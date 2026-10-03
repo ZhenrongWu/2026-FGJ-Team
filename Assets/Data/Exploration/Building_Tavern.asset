@@ -10,14 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 681cf37923e30c9418314f49b8d5ac66, type: 3}
-  m_Name: Building_SwampWatcher
+  m_Name: Building_Tavern
   m_EditorClassIdentifier: FGJ.Runtime::FGJ.Exploration.BuildingDefinition
-  buildingId: SwampWatcher
-  exterior: {fileID: 0}
-  exteriorOffset: {x: 0, y: 0}
+  buildingId: Tavern
+  entrancePrefab: {fileID: 0}
+  exterior: {fileID: 21300000, guid: 0f69652186dec044c8a665953326923c, type: 3}
+  exteriorOffset: {x: 0.74, y: -0.15}
   exteriorSortingOrder: -5
-  enterPrompt: "\u6309 E \u9032\u5165\u6D1E\u7A74\u6DF1\u8655"
-  clearedPrompt: "\u770B\u5B88\u8005\u5DF2\u7D93\u6C89\u9ED8\u4E86"
+  enterPrompt: "\u6309 E \u9032\u5165\u9152\u9928"
+  clearedPrompt: "\u9152\u9928\u88E1\u5DF2\u7D93\u5B89\u975C\u4E86"
   interactRange: 1.5
   gameplayConfig: {fileID: 11400000, guid: 0d046963bc814fa41ba45ba1bfc178b1, type: 2}
   monster: {fileID: 11400000, guid: cc3bad4bf002efb4ea28fabf314fff15, type: 2}

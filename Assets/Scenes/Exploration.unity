@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &580261974
+--- !u!1 &363578545
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,10 +127,64 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 580261978}
-  - component: {fileID: 580261977}
-  - component: {fileID: 580261976}
-  - component: {fileID: 580261975}
+  - component: {fileID: 363578547}
+  - component: {fileID: 363578546}
+  m_Layer: 0
+  m_Name: ExplorationController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &363578546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 363578545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04ed081cbe5437a43b566bec6bc35011, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FGJ.Runtime::FGJ.Exploration.ExplorationController
+  player: {fileID: 1411174868}
+  cameraFollow: {fileID: 430922804}
+  hud: {fileID: 1700604598}
+  progress: {fileID: 11400000, guid: a83752dac85cef541a936bb11df15c1f, type: 2}
+  router: {fileID: 11400000, guid: 72c9c2731a138174b8e806c5f70491e4, type: 2}
+  route: {fileID: 11400000, guid: a46b75ded1256954fb22c1caeb9d992d, type: 2}
+  defaultEntrancePrefab: {fileID: 6978617852331988207, guid: b172c45e48458cd48ac8f393e1ef3512, type: 3}
+  buildingGroundY: 1.5
+  enterDuration: 1.2
+  fadeInDuration: 0.6
+--- !u!4 &363578547
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 363578545}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &430922803
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 430922807}
+  - component: {fileID: 430922806}
+  - component: {fileID: 430922805}
+  - component: {fileID: 430922804}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -138,37 +192,37 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &580261975
+--- !u!114 &430922804
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 580261974}
+  m_GameObject: {fileID: 430922803}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7cef1c43f25bdf47be30df6ec3bb72e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FGJ.Runtime::FGJ.Exploration.CameraFollow2D
-  target: {fileID: 1327572215}
+  target: {fileID: 1411174867}
   levelMinX: 0
   levelMaxX: 100000
   smoothTime: 0.15
---- !u!81 &580261976
+--- !u!81 &430922805
 AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 580261974}
+  m_GameObject: {fileID: 430922803}
   m_Enabled: 1
---- !u!20 &580261977
+--- !u!20 &430922806
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 580261974}
+  m_GameObject: {fileID: 430922803}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
@@ -213,13 +267,13 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!4 &580261978
+--- !u!4 &430922807
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 580261974}
+  m_GameObject: {fileID: 430922803}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 6, y: 7.085, z: -10}
@@ -228,7 +282,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &720840815
+--- !u!1001 &1124238328
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -285,61 +339,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0bcf898687593c499c20a8ccd0ab226, type: 3}
---- !u!1 &1153405488
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1153405490}
-  - component: {fileID: 1153405489}
-  m_Layer: 0
-  m_Name: ExplorationController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1153405489
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1153405488}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04ed081cbe5437a43b566bec6bc35011, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: FGJ.Runtime::FGJ.Exploration.ExplorationController
-  player: {fileID: 1327572216}
-  cameraFollow: {fileID: 580261975}
-  hud: {fileID: 1998732717}
-  progress: {fileID: 11400000, guid: a83752dac85cef541a936bb11df15c1f, type: 2}
-  router: {fileID: 11400000, guid: 72c9c2731a138174b8e806c5f70491e4, type: 2}
-  route: {fileID: 11400000, guid: a46b75ded1256954fb22c1caeb9d992d, type: 2}
-  defaultEntrancePrefab: {fileID: 6978617852331988207, guid: b172c45e48458cd48ac8f393e1ef3512, type: 3}
-  buildingGroundY: 1.5
-  enterDuration: 1.2
-  fadeInDuration: 0.6
---- !u!4 &1153405490
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1153405488}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1327572214
+--- !u!1001 &1411174866
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -396,15 +396,15 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b325892f04f1bb4aa623481e7a83600, type: 3}
---- !u!4 &1327572215 stripped
+--- !u!4 &1411174867 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9147554921623787947, guid: 6b325892f04f1bb4aa623481e7a83600, type: 3}
-  m_PrefabInstance: {fileID: 1327572214}
+  m_PrefabInstance: {fileID: 1411174866}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1327572216 stripped
+--- !u!114 &1411174868 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6938679875241761337, guid: 6b325892f04f1bb4aa623481e7a83600, type: 3}
-  m_PrefabInstance: {fileID: 1327572214}
+  m_PrefabInstance: {fileID: 1411174866}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -412,7 +412,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cfef2c935c682c4a816084659e736fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FGJ.Runtime::FGJ.Exploration.SideScrollPlayer
---- !u!1001 &1998732716
+--- !u!1001 &1700604597
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -509,10 +509,10 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7197bd1b756a3a04f994df6e994891fd, type: 3}
---- !u!114 &1998732717 stripped
+--- !u!114 &1700604598 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2154662951428780638, guid: 7197bd1b756a3a04f994df6e994891fd, type: 3}
-  m_PrefabInstance: {fileID: 1998732716}
+  m_PrefabInstance: {fileID: 1700604597}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -524,8 +524,8 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 580261978}
-  - {fileID: 720840815}
-  - {fileID: 1327572214}
-  - {fileID: 1998732716}
-  - {fileID: 1153405490}
+  - {fileID: 430922807}
+  - {fileID: 1124238328}
+  - {fileID: 1411174866}
+  - {fileID: 1700604597}
+  - {fileID: 363578547}

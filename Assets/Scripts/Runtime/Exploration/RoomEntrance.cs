@@ -30,6 +30,17 @@ namespace FGJ.Exploration
             exterior.transform.localPosition = definition.ExteriorOffset;
             exterior.sortingOrder = definition.ExteriorSortingOrder;
             exterior.gameObject.SetActive(true);
+            HidePlaceholderMarker();
+        }
+
+        public bool HasExterior => exterior != null && exterior.gameObject.activeSelf;
+
+        private void HidePlaceholderMarker()
+        {
+            if (activeMarker == null)
+                return;
+            activeMarker.SetActive(false);
+            activeMarker = null;
         }
 
         public bool IsInRange(float playerX) => Mathf.Abs(playerX - X) <= building.InteractRange;
