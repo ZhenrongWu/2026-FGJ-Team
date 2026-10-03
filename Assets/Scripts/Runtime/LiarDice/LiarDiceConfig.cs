@@ -13,6 +13,9 @@ namespace FGJ.LiarDice
         [Min(1)] [SerializeField] private int playerOxygen = 2;
         [Min(1)] [SerializeField] private int monsterOxygen = 2;
 
+        [Header("規則")]
+        [SerializeField] private bool onesAreWild = true;
+
         [Header("回合")]
         [SerializeField] private Side firstTurn = Side.Monster;
 
@@ -28,9 +31,14 @@ namespace FGJ.LiarDice
         public int MonsterOxygen => monsterOxygen;
         public Side FirstTurn => firstTurn;
 
+        public bool OnesAreWild => onesAreWild;
+
+        public ILiarDiceRules ToRules() => new LiarDiceRules(onesAreWild);
+
         public MatchSettings ToMatchSettings()
         {
-            return new MatchSettings(playerDiceCount, monsterDiceCount, playerOxygen, monsterOxygen, firstTurn);
+            return new MatchSettings(playerDiceCount, monsterDiceCount, playerOxygen, monsterOxygen, firstTurn,
+                ToRules());
         }
 
         public MonsterAIProfile ToMonsterProfile()

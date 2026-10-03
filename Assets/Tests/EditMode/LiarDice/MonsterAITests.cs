@@ -14,20 +14,20 @@ namespace FGJ.Tests.EditMode.LiarDice
         [Test]
         public void Probability_KnownDiceAlreadyEnough_IsOne()
         {
-            Assert.AreEqual(1.0, MonsterAI.Probability(new[] { 4, 4, 1, 2, 3 }, 5, new Bid(3, 4), true));
+            Assert.AreEqual(1.0, CreateAI().Probability(new[] { 4, 4, 1, 2, 3 }, 5, new Bid(3, 4), true));
         }
 
         [Test]
         public void Probability_NeedMoreThanUnknownDice_IsZero()
         {
-            Assert.AreEqual(0.0, MonsterAI.Probability(new[] { 2, 2, 2, 2, 2 }, 5, new Bid(6, 4), true));
+            Assert.AreEqual(0.0, CreateAI().Probability(new[] { 2, 2, 2, 2, 2 }, 5, new Bid(6, 4), true));
         }
 
         [Test]
         public void Probability_MatchesBinomial()
         {
-            Assert.AreEqual(1.0 / 3.0, MonsterAI.Probability(new[] { 2, 3, 5, 6, 6 }, 1, new Bid(1, 4), true), 1e-9);
-            Assert.AreEqual(1.0 / 6.0, MonsterAI.Probability(new[] { 2, 3, 5, 6, 6 }, 1, new Bid(1, 4), false), 1e-9);
+            Assert.AreEqual(1.0 / 3.0, CreateAI().Probability(new[] { 2, 3, 5, 6, 6 }, 1, new Bid(1, 4), true), 1e-9);
+            Assert.AreEqual(1.0 / 6.0, CreateAI().Probability(new[] { 2, 3, 5, 6, 6 }, 1, new Bid(1, 4), false), 1e-9);
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace FGJ.Tests.EditMode.LiarDice
             var decision = CreateAI().Decide(new[] { 4, 4, 4, 1, 1 }, 5, current, true);
 
             Assert.IsFalse(decision.IsChallenge);
-            Assert.AreEqual(BidValidation.Valid, LiarDiceRules.Validate(current, decision.Bid, 10));
+            Assert.AreEqual(BidValidation.Valid, new LiarDiceRules().Validate(current, decision.Bid, 10));
         }
 
         [Test]
@@ -61,8 +61,8 @@ namespace FGJ.Tests.EditMode.LiarDice
             var decision = CreateAI().Decide(ownDice, 5, null, true);
 
             Assert.IsFalse(decision.IsChallenge);
-            Assert.AreEqual(BidValidation.Valid, LiarDiceRules.Validate(null, decision.Bid, 10));
-            Assert.GreaterOrEqual(MonsterAI.Probability(ownDice, 5, decision.Bid, decision.Bid.Face != 1), 0.5);
+            Assert.AreEqual(BidValidation.Valid, new LiarDiceRules().Validate(null, decision.Bid, 10));
+            Assert.GreaterOrEqual(CreateAI().Probability(ownDice, 5, decision.Bid, decision.Bid.Face != 1), 0.5);
         }
 
         [Test]
@@ -74,8 +74,15 @@ namespace FGJ.Tests.EditMode.LiarDice
             {
                 var decision = ai.Decide(new[] { 3, 3, 1, 2, 6 }, 5, current, true);
                 Assert.IsFalse(decision.IsChallenge);
-                Assert.AreEqual(BidValidation.Valid, LiarDiceRules.Validate(current, decision.Bid, 10));
+                Assert.AreEqual(BidValidation.Valid, new LiarDiceRules().Validate(current, decision.Bid, 10));
             }
+        }
+
+        [Test]
+        public void Probability_OnesNotWild_UsesSingleFaceChance()
+        {
+            var ai = new MonsterAI(new MonsterAIProfile(), new Random(1), new LiarDiceRules(onesAreWild: false));
+            Assert.AreEqual(1.0 / 6.0, ai.Probability(new[] { 2, 3, 5, 6, 6 }, 1, new Bid(1, 4), true), 1e-9);
         }
     }
 }

@@ -93,8 +93,9 @@ namespace FGJ.LiarDice.UI
             parts.turnStatusText.text = LiarDiceText.TurnStatus(match);
 
             var highlightFace = revealMonsterDice ? match.CurrentBid?.Face : null;
-            RenderDice(_playerDice, parts.playerDiceRow, match.GetDice(Side.Player), false, highlightFace, match.WildActive);
-            RenderDice(_monsterDice, parts.monsterDiceRow, match.GetDice(Side.Monster), !revealMonsterDice,
+            RenderDice(match.Rules, _playerDice, parts.playerDiceRow, match.GetDice(Side.Player), false, highlightFace,
+                match.WildActive);
+            RenderDice(match.Rules, _monsterDice, parts.monsterDiceRow, match.GetDice(Side.Monster), !revealMonsterDice,
                 highlightFace, match.WildActive);
 
             var playerCanAct = match.Phase == MatchPhase.Bidding && match.CurrentTurn == Side.Player;
@@ -156,7 +157,7 @@ namespace FGJ.LiarDice.UI
             input.ActivateInputField();
         }
 
-        private static void RenderDice(List<DieSlot> slots, RectTransform row, IReadOnlyList<int> dice, bool hidden,
+        private static void RenderDice(ILiarDiceRules rules, List<DieSlot> slots, RectTransform row, IReadOnlyList<int> dice, bool hidden,
             int? highlightFace, bool wildActive)
         {
             while (slots.Count < dice.Count)
@@ -179,7 +180,7 @@ namespace FGJ.LiarDice.UI
                 }
 
                 var matches = highlightFace.HasValue &&
-                              LiarDiceRules.CountMatching(new[] { dice[i] }, highlightFace.Value, wildActive) > 0;
+                              rules.CountMatching(new[] { dice[i] }, highlightFace.Value, wildActive) > 0;
                 slot.Face.color = matches ? LiarDiceUIFactory.Highlight : LiarDiceUIFactory.Bone;
                 slot.Label.color = LiarDiceUIFactory.Ink;
                 slot.Label.text = dice[i].ToString();

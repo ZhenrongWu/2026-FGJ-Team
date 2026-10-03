@@ -44,7 +44,8 @@ namespace FGJ.LiarDice
         private void Start()
         {
             if (Match == null && config != null)
-                Begin(config.ToMatchSettings(), () => new RandomDiceRoller(), new MonsterAI(config.ToMonsterProfile()));
+                Begin(config.ToMatchSettings(), () => new RandomDiceRoller(),
+                    new MonsterAI(config.ToMonsterProfile(), rules: config.ToRules()));
         }
 
         private void OnDestroy()
@@ -80,7 +81,8 @@ namespace FGJ.LiarDice
                 return BidInputResult.Fail(LiarDiceText.NotPlayerTurn);
             }
 
-            var input = BidInputValidator.Validate(quantityText, faceText, Match.CurrentBid, Match.TotalDice);
+            var input = new BidInputValidator(Match.Rules).Validate(quantityText, faceText, Match.CurrentBid,
+                Match.TotalDice);
             if (!input.IsValid)
             {
                 view.ShowError(input.ErrorMessage);
@@ -181,7 +183,7 @@ namespace FGJ.LiarDice
         {
             view.Render(Match, true);
 
-            var message = LiarDiceText.RoundResult(result, Match.WildActive);
+            var message = LiarDiceText.RoundResult(result, Match.Rules.IsWildFor(result.Bid.Face, Match.WildActive));
             if (Match.Phase == MatchPhase.MatchOver)
             {
                 var winner = Match.Winner.Value;

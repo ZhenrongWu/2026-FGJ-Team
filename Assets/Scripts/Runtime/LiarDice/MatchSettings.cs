@@ -9,9 +9,10 @@ namespace FGJ.LiarDice
         public int PlayerOxygen { get; }
         public int MonsterOxygen { get; }
         public Side FirstTurn { get; }
+        public ILiarDiceRules Rules { get; }
 
         public MatchSettings(int playerDiceCount, int monsterDiceCount, int playerOxygen, int monsterOxygen,
-            Side firstTurn = Side.Monster)
+            Side firstTurn = Side.Monster, ILiarDiceRules rules = null)
         {
             if (playerDiceCount < 1) throw new ArgumentOutOfRangeException(nameof(playerDiceCount));
             if (monsterDiceCount < 1) throw new ArgumentOutOfRangeException(nameof(monsterDiceCount));
@@ -23,6 +24,7 @@ namespace FGJ.LiarDice
             PlayerOxygen = playerOxygen;
             MonsterOxygen = monsterOxygen;
             FirstTurn = firstTurn;
+            Rules = rules ?? new LiarDiceRules();
         }
     }
 }

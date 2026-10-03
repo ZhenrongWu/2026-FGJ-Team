@@ -8,6 +8,11 @@ namespace FGJ.LiarDice
         Monster
     }
 
+    public static class SideExtensions
+    {
+        public static Side Opponent(this Side side) => side == Side.Player ? Side.Monster : Side.Player;
+    }
+
     public enum BidValidation
     {
         Valid,
@@ -17,28 +22,46 @@ namespace FGJ.LiarDice
         NotHigher
     }
 
-    public static class LiarDiceRules
+    public interface ILiarDiceRules
+    {
+        bool OnesAreWild { get; }
+        bool CancelsWild(Bid bid);
+        bool IsWildFor(int face, bool wildActive);
+        int CountMatching(IEnumerable<int> dice, int face, bool wildActive);
+        BidValidation Validate(Bid? currentBid, Bid next, int totalDice);
+        bool CanRaise(Bid? currentBid, int totalDice);
+    }
+
+    public sealed class LiarDiceRules : ILiarDiceRules
     {
         public const int MinFace = 1;
         public const int MaxFace = 6;
         public const int WildFace = 1;
 
-        public static Side Opponent(Side side) => side == Side.Player ? Side.Monster : Side.Player;
+        public bool OnesAreWild { get; }
 
-        public static bool CancelsWild(Bid bid) => bid.Face == WildFace;
-
-        public static int CountMatching(IEnumerable<int> dice, int face, bool wildActive)
+        public LiarDiceRules(bool onesAreWild = true)
         {
+            OnesAreWild = onesAreWild;
+        }
+
+        public bool CancelsWild(Bid bid) => OnesAreWild && bid.Face == WildFace;
+
+        public bool IsWildFor(int face, bool wildActive) => OnesAreWild && wildActive && face != WildFace;
+
+        public int CountMatching(IEnumerable<int> dice, int face, bool wildActive)
+        {
+            var wildCounts = IsWildFor(face, wildActive);
             var count = 0;
             foreach (var die in dice)
             {
-                if (die == face || (wildActive && face != WildFace && die == WildFace))
+                if (die == face || (wildCounts && die == WildFace))
                     count++;
             }
             return count;
         }
 
-        public static BidValidation Validate(Bid? currentBid, Bid next, int totalDice)
+        public BidValidation Validate(Bid? currentBid, Bid next, int totalDice)
         {
             if (next.Face < MinFace || next.Face > MaxFace)
                 return BidValidation.FaceOutOfRange;
@@ -51,7 +74,7 @@ namespace FGJ.LiarDice
             return BidValidation.Valid;
         }
 
-        public static bool CanRaise(Bid? currentBid, int totalDice)
+        public bool CanRaise(Bid? currentBid, int totalDice)
         {
             if (!currentBid.HasValue)
                 return totalDice > 0;

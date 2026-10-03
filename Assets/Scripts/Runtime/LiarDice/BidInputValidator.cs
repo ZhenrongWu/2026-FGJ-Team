@@ -17,9 +17,16 @@ namespace FGJ.LiarDice
         public static BidInputResult Fail(string message) => new BidInputResult(false, default, message);
     }
 
-    public static class BidInputValidator
+    public sealed class BidInputValidator
     {
-        public static BidInputResult Validate(string quantityText, string faceText, Bid? currentBid, int totalDice)
+        private readonly ILiarDiceRules _rules;
+
+        public BidInputValidator(ILiarDiceRules rules)
+        {
+            _rules = rules ?? throw new System.ArgumentNullException(nameof(rules));
+        }
+
+        public BidInputResult Validate(string quantityText, string faceText, Bid? currentBid, int totalDice)
         {
             quantityText = quantityText?.Trim();
             faceText = faceText?.Trim();
@@ -34,7 +41,7 @@ namespace FGJ.LiarDice
                 return BidInputResult.Fail("點數必須是整數。");
 
             var bid = new Bid(quantity, face);
-            switch (LiarDiceRules.Validate(currentBid, bid, totalDice))
+            switch (_rules.Validate(currentBid, bid, totalDice))
             {
                 case BidValidation.FaceOutOfRange:
                     return BidInputResult.Fail($"點數必須介於 {LiarDiceRules.MinFace}～{LiarDiceRules.MaxFace}。");

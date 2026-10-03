@@ -55,9 +55,10 @@ namespace FGJ.LiarDice
         public Side? Winner { get; private set; }
 
         public MatchSettings Settings => _settings;
+        public ILiarDiceRules Rules => _settings.Rules;
         public int TotalDice => _playerDice.Length + _monsterDice.Length;
         public bool CanChallenge => Phase == MatchPhase.Bidding && CurrentBid.HasValue;
-        public bool CanRaise => Phase == MatchPhase.Bidding && LiarDiceRules.CanRaise(CurrentBid, TotalDice);
+        public bool CanRaise => Phase == MatchPhase.Bidding && Rules.CanRaise(CurrentBid, TotalDice);
 
         public LiarDiceMatch(MatchSettings settings, IDiceRoller roller)
         {
@@ -90,15 +91,15 @@ namespace FGJ.LiarDice
             EnsurePhase(MatchPhase.Bidding);
             EnsureTurn(side);
 
-            var validation = LiarDiceRules.Validate(CurrentBid, bid, TotalDice);
+            var validation = Rules.Validate(CurrentBid, bid, TotalDice);
             if (validation != BidValidation.Valid)
                 return validation;
 
             CurrentBid = bid;
             CurrentBidder = side;
-            if (LiarDiceRules.CancelsWild(bid))
+            if (Rules.CancelsWild(bid))
                 WildActive = false;
-            CurrentTurn = LiarDiceRules.Opponent(side);
+            CurrentTurn = side.Opponent();
 
             BidPlaced?.Invoke(side, bid);
             return BidValidation.Valid;
@@ -113,7 +114,7 @@ namespace FGJ.LiarDice
 
             var bid = CurrentBid.Value;
             var bidder = CurrentBidder.Value;
-            var actual = LiarDiceRules.CountMatching(_playerDice.Concat(_monsterDice), bid.Face, WildActive);
+            var actual = Rules.CountMatching(_playerDice.Concat(_monsterDice), bid.Face, WildActive);
             var loser = actual >= bid.Quantity ? challenger : bidder;
 
             if (loser == Side.Player)
@@ -128,7 +129,7 @@ namespace FGJ.LiarDice
             RoundResolved?.Invoke(result);
             if (Phase == MatchPhase.MatchOver)
             {
-                Winner = LiarDiceRules.Opponent(loser);
+                Winner = loser.Opponent();
                 MatchEnded?.Invoke(Winner.Value);
             }
             return result;
@@ -140,7 +141,7 @@ namespace FGJ.LiarDice
             Roll(_monsterDice);
             CurrentBid = null;
             CurrentBidder = null;
-            WildActive = true;
+            WildActive = Rules.OnesAreWild;
             CurrentTurn = starter;
             Phase = MatchPhase.Bidding;
             RoundStarted?.Invoke(starter);

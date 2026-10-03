@@ -42,30 +42,43 @@ namespace FGJ.LiarDice
     {
         private readonly MonsterAIProfile _profile;
         private readonly Random _random;
+        private readonly ILiarDiceRules _rules;
 
-        public MonsterAI(MonsterAIProfile profile, Random random = null)
+        public MonsterAI(MonsterAIProfile profile, Random random = null, ILiarDiceRules rules = null)
         {
             _profile = profile ?? throw new ArgumentNullException(nameof(profile));
             _random = random ?? new Random();
+            _rules = rules ?? new LiarDiceRules();
         }
 
         public MonsterDecision Decide(LiarDiceMatch match)
         {
-            return Decide(match.GetDice(Side.Monster), match.GetDice(Side.Player).Count, match.CurrentBid,
-                match.WildActive);
+            return Decide(match.Settings.Rules, match.GetDice(Side.Monster), match.GetDice(Side.Player).Count,
+                match.CurrentBid, match.WildActive);
         }
 
         public MonsterDecision Decide(IReadOnlyList<int> ownDice, int unknownDiceCount, Bid? currentBid,
             bool wildActive)
         {
+            return Decide(_rules, ownDice, unknownDiceCount, currentBid, wildActive);
+        }
+
+        public double Probability(IReadOnlyList<int> ownDice, int unknownDiceCount, Bid bid, bool wildActive)
+        {
+            return Probability(_rules, ownDice, unknownDiceCount, bid, wildActive);
+        }
+
+        private MonsterDecision Decide(ILiarDiceRules rules, IReadOnlyList<int> ownDice, int unknownDiceCount,
+            Bid? currentBid, bool wildActive)
+        {
             var totalDice = ownDice.Count + unknownDiceCount;
 
             if (currentBid.HasValue)
             {
-                if (!LiarDiceRules.CanRaise(currentBid, totalDice))
+                if (!rules.CanRaise(currentBid, totalDice))
                     return MonsterDecision.Challenge();
 
-                var p = Probability(ownDice, unknownDiceCount, currentBid.Value, wildActive);
+                var p = Probability(rules, ownDice, unknownDiceCount, currentBid.Value, wildActive);
                 if (p < _profile.ChallengeThreshold)
                     return MonsterDecision.Challenge();
             }
@@ -82,11 +95,11 @@ namespace FGJ.LiarDice
                 for (var face = LiarDiceRules.MinFace; face <= LiarDiceRules.MaxFace; face++)
                 {
                     var bid = new Bid(quantity, face);
-                    if (LiarDiceRules.Validate(currentBid, bid, totalDice) != BidValidation.Valid)
+                    if (rules.Validate(currentBid, bid, totalDice) != BidValidation.Valid)
                         continue;
 
-                    var wildAfterBid = wildActive && !LiarDiceRules.CancelsWild(bid);
-                    var p = Probability(ownDice, unknownDiceCount, bid, wildAfterBid);
+                    var wildAfterBid = wildActive && !rules.CancelsWild(bid);
+                    var p = Probability(rules, ownDice, unknownDiceCount, bid, wildAfterBid);
                     if (p >= _profile.ConfidentBidThreshold)
                         confident.Add(bid);
                     else
@@ -108,16 +121,17 @@ namespace FGJ.LiarDice
             return MonsterDecision.Raise(bestBid);
         }
 
-        public static double Probability(IReadOnlyList<int> ownDice, int unknownDiceCount, Bid bid, bool wildActive)
+        private static double Probability(ILiarDiceRules rules, IReadOnlyList<int> ownDice, int unknownDiceCount,
+            Bid bid, bool wildActive)
         {
-            var known = LiarDiceRules.CountMatching(ownDice, bid.Face, wildActive);
+            var known = rules.CountMatching(ownDice, bid.Face, wildActive);
             var needed = bid.Quantity - known;
             if (needed <= 0)
                 return 1.0;
             if (needed > unknownDiceCount)
                 return 0.0;
 
-            var faceChance = wildActive && bid.Face != LiarDiceRules.WildFace ? 2.0 / 6.0 : 1.0 / 6.0;
+            var faceChance = rules.IsWildFor(bid.Face, wildActive) ? 2.0 / 6.0 : 1.0 / 6.0;
             return BinomialAtLeast(unknownDiceCount, needed, faceChance);
         }
 

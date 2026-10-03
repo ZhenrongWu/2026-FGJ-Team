@@ -22,6 +22,7 @@ namespace FGJ.Tests.EditMode.LiarDice
                 Assert.AreEqual(2, settings.MonsterOxygen);
                 Assert.AreEqual(Side.Monster, settings.FirstTurn);
                 Assert.IsNotNull(config.ToMonsterProfile());
+                Assert.IsTrue(settings.Rules.OnesAreWild);
             }
             finally
             {

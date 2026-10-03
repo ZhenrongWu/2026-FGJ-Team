@@ -55,9 +55,9 @@ namespace FGJ.LiarDice.UI
 
         public static string MonsterBidLine(Bid bid) => $"「{bid}。」";
 
-        public static string RoundResult(RoundResult result, bool wildActive)
+        public static string RoundResult(RoundResult result, bool wildCounted)
         {
-            var wildNote = wildActive && result.Bid.Face != LiarDiceRules.WildFace ? "（含萬用 1 點）" : string.Empty;
+            var wildNote = wildCounted ? "（含萬用 1 點）" : string.Empty;
             var verdict = result.Loser == Side.Player ? "你輸了，扣一格氧氣。" : "怪物輸了，扣一格氧氣。";
             return $"{SideName(result.Challenger)}質疑「{result.Bid}」\n全場符合 {result.ActualCount} 顆{wildNote}\n{verdict}";
         }

@@ -6,6 +6,7 @@ namespace FGJ.Tests.EditMode.LiarDice
     public class BidInputValidatorTests
     {
         private static readonly Bid Current = new Bid(3, 4);
+        private readonly BidInputValidator _validator = new BidInputValidator(new LiarDiceRules());
 
         [TestCase("", "4", "請輸入數量。")]
         [TestCase("  ", "4", "請輸入數量。")]
@@ -18,7 +19,7 @@ namespace FGJ.Tests.EditMode.LiarDice
         [TestCase("3", "2", "必須比目前的「3 個 4 點」大：數量更多，或同數量點數更大。")]
         public void InvalidInput_ReturnsMessage(string quantity, string face, string expectedMessage)
         {
-            var result = BidInputValidator.Validate(quantity, face, Current, 10);
+            var result = _validator.Validate(quantity, face, Current, 10);
 
             Assert.IsFalse(result.IsValid);
             Assert.AreEqual(expectedMessage, result.ErrorMessage);
@@ -27,13 +28,13 @@ namespace FGJ.Tests.EditMode.LiarDice
         [Test]
         public void NullInput_ReturnsMessage()
         {
-            Assert.IsFalse(BidInputValidator.Validate(null, null, null, 10).IsValid);
+            Assert.IsFalse(_validator.Validate(null, null, null, 10).IsValid);
         }
 
         [Test]
         public void ValidInput_TrimsAndReturnsBid()
         {
-            var result = BidInputValidator.Validate(" 4 ", " 2", Current, 10);
+            var result = _validator.Validate(" 4 ", " 2", Current, 10);
 
             Assert.IsTrue(result.IsValid);
             Assert.AreEqual(new Bid(4, 2), result.Bid);
