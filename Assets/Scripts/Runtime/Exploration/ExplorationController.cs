@@ -144,7 +144,7 @@ namespace FGJ.Exploration
         private bool InteractKeyPressed()
         {
             var keyboard = Keyboard.current;
-            return keyboard != null && keyboard.eKey.wasPressedThisFrame;
+            return keyboard != null && (keyboard.upArrowKey.wasPressedThisFrame || keyboard.wKey.wasPressedThisFrame);
         }
     }
 }

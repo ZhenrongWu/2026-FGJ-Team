@@ -11,7 +11,7 @@ namespace FGJ.Tests.PlayMode.Exploration
     {
         public const string RoomId = "TestBuilding";
         public const float BuildingX = 10f;
-        public const string EnterPrompt = "按 E 進入測試建築";
+        public const string EnterPrompt = "按 ↑ 進入測試建築";
         public const string ClearedPrompt = "測試建築已通過";
 
         private readonly List<Object> _created = new List<Object>();
@@ -57,7 +57,7 @@ namespace FGJ.Tests.PlayMode.Exploration
             {
                 new SpriteClip(SideScrollPlayer.IdleClip, new[] { CreateSprite() }, 1f, true),
                 new SpriteClip(SideScrollPlayer.WalkClip, new[] { CreateSprite(), CreateSprite() }, 6f, true),
-                new SpriteClip(SideScrollPlayer.EnterClip, new[] { CreateSprite() }, 6f, true)
+                new SpriteClip(SideScrollPlayer.EnterClip, new[] { CreateSprite() }, 6f, false)
             });
             Player = playerObject.AddComponent<SideScrollPlayer>();
             Player.Configure(renderer, animator, 0f, 1000f, 50f);

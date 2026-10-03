@@ -125,7 +125,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 2b09ccffb6037d14e987ae8efde20803, type: 3}
     - {fileID: 21300000, guid: bad6840f86862c344ad7eb57999a4a0d, type: 3}
     framesPerSecond: 6
-    loop: 1
+    loop: 0
 --- !u!114 &6938679875241761337
 MonoBehaviour:
   m_ObjectHideFlags: 0

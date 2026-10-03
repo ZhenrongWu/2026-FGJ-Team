@@ -41,7 +41,7 @@ namespace FGJ.Tests.PlayMode.Exploration
         private BuildingDefinition CreateBuilding(Sprite exterior, Vector2 offset)
         {
             var building = Track(ScriptableObject.CreateInstance<BuildingDefinition>());
-            building.Configure("Tavern", "按 E 進入酒館", "酒館裡已經安靜了", 1.5f, null);
+            building.Configure("Tavern", "按 ↑ 進入酒館", "酒館裡已經安靜了", 1.5f, null);
             building.SetExterior(exterior, offset);
             return building;
         }
@@ -63,7 +63,7 @@ namespace FGJ.Tests.PlayMode.Exploration
             Assert.IsTrue(_entrance.HasExterior);
             Assert.AreSame(sprite, _exterior.sprite);
             Assert.AreEqual(new Vector3(0.74f, -0.15f, 0f), _exterior.transform.localPosition);
-            Assert.AreEqual("按 E 進入酒館", _entrance.Prompt);
+            Assert.AreEqual("按 ↑ 進入酒館", _entrance.Prompt);
         }
 
         [Test]
@@ -94,7 +94,7 @@ namespace FGJ.Tests.PlayMode.Exploration
 
             _entrance.SetCleared(false);
             Assert.IsFalse(_entrance.HasExterior);
-            Assert.AreEqual("按 E 進入酒館", _entrance.Prompt);
+            Assert.AreEqual("按 ↑ 進入酒館", _entrance.Prompt);
 
             _entrance.SetCleared(true);
             Assert.IsTrue(_entrance.IsCleared);

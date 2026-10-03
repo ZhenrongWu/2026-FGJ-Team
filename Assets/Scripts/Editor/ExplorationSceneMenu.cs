@@ -17,7 +17,7 @@ namespace FGJ.Editor
         private const float PlayerStartX = 6f;
         private const float FirstBuildingX = 44f;
         private const string TavernId = "Tavern";
-        private const string TavernEnterPrompt = "按 E 進入酒館";
+        private const string TavernEnterPrompt = "按 ↑ 進入酒館";
         private const string TavernClearedPrompt = "酒館裡已經安靜了";
         private static readonly Vector2 TavernDoorOffset = new Vector2(0.74f, -0.15f);
 

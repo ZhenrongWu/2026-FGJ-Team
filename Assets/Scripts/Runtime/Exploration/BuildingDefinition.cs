@@ -14,7 +14,7 @@ namespace FGJ.Exploration
         [SerializeField] private Vector2 exteriorOffset;
         [SerializeField] private Vector2 exteriorScale = Vector2.one;
         [SerializeField] private int exteriorSortingOrder = -5;
-        [SerializeField] private string enterPrompt = "按 E 進入";
+        [SerializeField] private string enterPrompt = "按 ↑ 進入";
         [SerializeField] private string clearedPrompt = "這裡已經安靜了";
         [Min(0f)] [SerializeField] private float interactRange = 1.5f;
         [SerializeField] private LiarDiceConfig gameplayConfig;
