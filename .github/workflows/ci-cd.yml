@@ -3,13 +3,11 @@ name: CI/CD
 on:
   pull_request:
     branches: [main]
-  push:
-    branches: [main]
   workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
 
 env:
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -43,12 +41,13 @@ jobs:
         if: always()
         with:
           name: test-results
-          path: ${{ steps.tests.outputs.artifactsPath }}
+          path: artifacts
+          if-no-files-found: ignore
 
   build-webgl:
     name: 建置 WebGL
     needs: test
-    if: github.event_name != 'pull_request'
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: read
