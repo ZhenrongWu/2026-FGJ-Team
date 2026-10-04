@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,7 +6,7 @@ namespace FGJ.Editor
 {
     public sealed class UiFactory
     {
-        private const string BuiltinFontName = "LegacyRuntime.ttf";
+        public const string FontPath = "Assets/Art/Fonts/NotoSansTC-Medium.ttf";
 
         public readonly Color Background = new Color32(10, 18, 14, 255);
         public readonly Color Panel = new Color32(150, 150, 150, 215);
@@ -21,7 +22,7 @@ namespace FGJ.Editor
 
         private Font _font;
 
-        public Font Font => _font != null ? _font : _font = Resources.GetBuiltinResource<Font>(BuiltinFontName);
+        public Font Font => _font != null ? _font : _font = AssetDatabase.LoadAssetAtPath<Font>(FontPath);
 
         public RectTransform CreateRect(string name, Transform parent)
         {
