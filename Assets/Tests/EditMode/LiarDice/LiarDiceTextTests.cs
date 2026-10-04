@@ -9,6 +9,12 @@ namespace FGJ.Tests.EditMode.LiarDice
         private readonly LiarDiceText _text = new LiarDiceText();
 
         [Test]
+        public void ItemTooltip_ShowsNameThenDescription()
+        {
+            Assert.AreEqual("重搖：雙方立刻重新搖骰，喊數保留。", _text.ItemTooltip(ItemType.Reroll));
+        }
+
+        [Test]
         public void CurrentBid_NoBid_ShowsNotYetBid()
         {
             Assert.AreEqual("尚未喊數", _text.CurrentBid(null, null));

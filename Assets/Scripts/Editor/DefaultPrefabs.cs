@@ -79,6 +79,21 @@ namespace FGJ.Editor
             }
         }
 
+        [MenuItem("FGJ/Prefabs/Apply Gameplay Hud Art")]
+        public static void ApplyGameplayHudArt()
+        {
+            var root = PrefabUtility.LoadPrefabContents(GameplayHudPath);
+            try
+            {
+                new GameplayHudBuilder(new UiFactory()).ApplyArt(root.GetComponent<LiarDiceHud>());
+                PrefabUtility.SaveAsPrefabAsset(root, GameplayHudPath);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+        }
+
         [MenuItem("FGJ/Prefabs/Rebuild Gameplay Hud Log Decoration")]
         public static void RebuildGameplayHudLogDecoration()
         {

@@ -53,6 +53,12 @@ namespace FGJ.LiarDice.UI
             segmentTemplate = template;
         }
 
+        public void SetSegmentColors(Color filled, Color empty)
+        {
+            filledColor = filled;
+            emptyColor = empty;
+        }
+
         public void Show(int current, int max)
         {
             while (_segments.Count < max)

@@ -24,15 +24,18 @@ namespace FGJ.LiarDice.UI
         public MatchLogView logView;
         public ItemBarView playerItems;
         public ItemBarView monsterItems;
+        public Text itemTooltip;
     }
 
     public sealed class LiarDiceHud : MonoBehaviour
     {
         [SerializeField] private LiarDiceHudParts parts;
         [SerializeField] private GameAudio gameAudio;
+        [SerializeField] private ItemIconSet itemIcons;
 
         private readonly LiarDiceText _text = new LiarDiceText();
-        private readonly List<string> _itemLabels = new List<string>();
+        private readonly List<ItemSlot> _itemSlots = new List<ItemSlot>();
+        private readonly List<ItemType> _playerItems = new List<ItemType>();
         private bool _listenersWired;
         private ItemBarView _wiredItemBar;
 
@@ -55,10 +58,17 @@ namespace FGJ.LiarDice.UI
         public bool IsBidInputEnabled => parts.quantityInput.interactable;
         public ItemBarView PlayerItems => parts.playerItems;
         public ItemBarView MonsterItems => parts.monsterItems;
+        public ItemIconSet ItemIcons => itemIcons;
+        public string ItemTooltip => parts.itemTooltip != null ? parts.itemTooltip.text : string.Empty;
 
         public void SetAudio(GameAudio audio)
         {
             gameAudio = audio;
+        }
+
+        public void SetItemIcons(ItemIconSet icons)
+        {
+            itemIcons = icons;
         }
 
         public void SetParts(LiarDiceHudParts hudParts)
@@ -113,9 +123,27 @@ namespace FGJ.LiarDice.UI
             if (parts.playerItems == null || _wiredItemBar == parts.playerItems)
                 return;
             if (_wiredItemBar != null)
+            {
                 _wiredItemBar.SlotClicked -= OnItemSlotClicked;
+                _wiredItemBar.SlotHovered -= ShowItemTooltip;
+                _wiredItemBar.HoverEnded -= ClearItemTooltip;
+            }
             _wiredItemBar = parts.playerItems;
             _wiredItemBar.SlotClicked += OnItemSlotClicked;
+            _wiredItemBar.SlotHovered += ShowItemTooltip;
+            _wiredItemBar.HoverEnded += ClearItemTooltip;
+        }
+
+        private void ShowItemTooltip(int index)
+        {
+            if (parts.itemTooltip != null && index < _playerItems.Count)
+                parts.itemTooltip.text = _text.ItemTooltip(_playerItems[index]);
+        }
+
+        private void ClearItemTooltip()
+        {
+            if (parts.itemTooltip != null)
+                parts.itemTooltip.text = string.Empty;
         }
 
         private void OnItemSlotClicked(int index)
@@ -133,24 +161,29 @@ namespace FGJ.LiarDice.UI
         public void ShowItems(LiarDiceMatch match, bool playerCanUse)
         {
             var levelHasItems = match.Settings.ItemCount > 0;
+            ClearItemTooltip();
+            _playerItems.Clear();
+            _playerItems.AddRange(match.GetItems(Side.Player));
             if (parts.playerItems != null)
             {
                 parts.playerItems.gameObject.SetActive(levelHasItems);
-                _itemLabels.Clear();
-                foreach (var item in match.GetItems(Side.Player))
-                    _itemLabels.Add(_text.ItemName(item));
-                parts.playerItems.Show(_itemLabels, playerCanUse);
+                _itemSlots.Clear();
+                foreach (var item in _playerItems)
+                    _itemSlots.Add(new ItemSlot(_text.ItemName(item), IconFor(item)));
+                parts.playerItems.Show(_itemSlots, playerCanUse);
             }
 
             if (parts.monsterItems != null)
             {
                 parts.monsterItems.gameObject.SetActive(levelHasItems);
-                _itemLabels.Clear();
+                _itemSlots.Clear();
                 for (var i = 0; i < match.GetItems(Side.Monster).Count; i++)
-                    _itemLabels.Add(LiarDiceText.HiddenItemLabel);
-                parts.monsterItems.Show(_itemLabels, false);
+                    _itemSlots.Add(new ItemSlot(LiarDiceText.HiddenItemLabel, null));
+                parts.monsterItems.Show(_itemSlots, false);
             }
         }
+
+        private Sprite IconFor(ItemType item) => itemIcons != null ? itemIcons.IconFor(item) : null;
 
         public void SubmitBid()
         {

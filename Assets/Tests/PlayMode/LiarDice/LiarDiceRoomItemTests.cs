@@ -74,6 +74,31 @@ namespace FGJ.Tests.PlayMode.LiarDice
         }
 
         [UnityTest]
+        public IEnumerator PlayerTurn_ItemBarShowsIconsAndMonsterIconsStayHidden()
+        {
+            Begin(Items(ItemType.SealTape, ItemType.Reroll), Items(ItemType.Reroll));
+            yield return WaitForPlayerTurn();
+
+            var icons = Hud.ItemIcons;
+            CollectionAssert.AreEqual(new[] { icons.IconFor(ItemType.SealTape), icons.IconFor(ItemType.Reroll) },
+                Hud.PlayerItems.Icons);
+            CollectionAssert.AreEqual(new Sprite[] { null }, Hud.MonsterItems.Icons);
+        }
+
+        [UnityTest]
+        public IEnumerator HoveringItemSlot_ShowsNameAndDescriptionUntilPointerLeaves()
+        {
+            Begin(Items(ItemType.SealTape, ItemType.Reroll), Items(ItemType.Reroll));
+            yield return WaitForPlayerTurn();
+
+            Hud.PlayerItems.Hover(1);
+            Assert.AreEqual(_text.ItemTooltip(ItemType.Reroll), Hud.ItemTooltip);
+
+            Hud.PlayerItems.EndHover();
+            Assert.AreEqual(string.Empty, Hud.ItemTooltip);
+        }
+
+        [UnityTest]
         public IEnumerator ClickingItemSlot_UsesItemAndLogsIt()
         {
             Begin(Items(ItemType.SealTape, ItemType.Reroll), Items(ItemType.Reroll, ItemType.Reroll));

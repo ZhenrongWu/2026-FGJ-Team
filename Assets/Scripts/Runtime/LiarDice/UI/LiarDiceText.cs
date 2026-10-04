@@ -58,6 +58,8 @@ namespace FGJ.LiarDice.UI
             }
         }
 
+        public string ItemTooltip(ItemType item) => $"{ItemName(item)}：{ItemDescription(item)}";
+
         public string ItemUsed(Side side, ItemType item)
         {
             switch (item)
