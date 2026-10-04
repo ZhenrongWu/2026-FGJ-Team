@@ -56,6 +56,50 @@ namespace FGJ.Tests.PlayMode.LiarDice
         }
 
         [Test]
+        public void ShowDead_MonsterWithDeadSprite_SwapsToDeadSprite()
+        {
+            var monster = Track(ScriptableObject.CreateInstance<MonsterProfile>());
+            var dead = CreateSprite();
+            monster.SetSprite(CreateSprite());
+            monster.SetDeadSprite(dead);
+            _view.Show(monster);
+
+            _view.ShowDead(monster);
+
+            Assert.AreSame(dead, _view.CurrentSprite);
+            Assert.IsTrue(_view.IsShowingDead);
+        }
+
+        [Test]
+        public void ShowDead_MonsterWithoutDeadSprite_KeepsAliveSprite()
+        {
+            var monster = Track(ScriptableObject.CreateInstance<MonsterProfile>());
+            var alive = CreateSprite();
+            monster.SetSprite(alive);
+            _view.Show(monster);
+
+            _view.ShowDead(monster);
+
+            Assert.AreSame(alive, _view.CurrentSprite);
+            Assert.IsFalse(_view.IsShowingDead);
+        }
+
+        [Test]
+        public void Show_AfterDeath_RestoresAliveSprite()
+        {
+            var monster = Track(ScriptableObject.CreateInstance<MonsterProfile>());
+            var alive = CreateSprite();
+            monster.SetSprite(alive);
+            monster.SetDeadSprite(CreateSprite());
+            _view.ShowDead(monster);
+
+            _view.Show(monster);
+
+            Assert.AreSame(alive, _view.CurrentSprite);
+            Assert.IsFalse(_view.IsShowingDead);
+        }
+
+        [Test]
         public void Show_MonsterWithoutSprite_FallsBackToPlaceholder()
         {
             _view.Show(Track(ScriptableObject.CreateInstance<MonsterProfile>()));

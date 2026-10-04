@@ -12,7 +12,7 @@ namespace FGJ.Editor
         public const string MonsterPath = "Assets/Data/LiarDice/Monster_BlobfishScumbag.asset";
         private const string DataFolder = "Assets/Data/LiarDice";
         private static readonly string[] LevelMonsters =
-            { "BlobfishScumbag", "LophiiformesBartender", "GoblinSharkGang", "Level04" };
+            { "BlobfishScumbag", "LophiiformesBartender", "GoblinSharkGang", "GiantSquidMayor" };
 
         [MenuItem("FGJ/Scenes/Build Gameplay Scene")]
         public static void BuildRoomSceneFromMenu()
@@ -79,9 +79,11 @@ namespace FGJ.Editor
             return AssetDatabase.LoadAssetAtPath<LiarDiceConfig>($"{DataFolder}/LiarDiceConfig_Level{level:00}.asset");
         }
 
+        public static string LevelMonsterName(int level) => LevelMonsters[level - 1];
+
         public static MonsterProfile LevelMonster(int level)
         {
-            return AssetDatabase.LoadAssetAtPath<MonsterProfile>($"{DataFolder}/Monster_{LevelMonsters[level - 1]}.asset");
+            return AssetDatabase.LoadAssetAtPath<MonsterProfile>($"{DataFolder}/Monster_{LevelMonsterName(level)}.asset");
         }
 
         public static MonsterProfile EnsureDefaultMonster()

@@ -374,6 +374,8 @@ namespace FGJ.LiarDice
             {
                 var winner = Match.Winner.Value;
                 _log.Add(_text.MatchOver(winner), LogKind.Result);
+                if (winner == Side.Player && monsterView != null)
+                    monsterView.ShowDead(Monster);
                 hud.SetContinueLabel(_text.MatchOverLabel(winner, ExitRequested != null, EndsGame));
                 IsBusy = false;
                 Refresh();

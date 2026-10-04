@@ -88,6 +88,7 @@ namespace FGJ.Tests.EditMode.LiarDice
         [TestCase(1, "BlobfishScumbag")]
         [TestCase(2, "LophiiformesBartender")]
         [TestCase(3, "GoblinSharkGang")]
+        [TestCase(4, "GiantSquidMayor")]
         public void LevelAsset_UsesAssignedMonsterSprite(int level, string spriteName)
         {
             var monster = LoadBuilding(level).Monster;
@@ -97,13 +98,28 @@ namespace FGJ.Tests.EditMode.LiarDice
             Assert.AreEqual(spriteName, monster.Sprite.name);
         }
 
-        [Test]
-        public void LevelFourMonster_UsesPlaceholderUntilArtArrives()
+        private static TextureImporterSettings SpriteSettings(Sprite sprite)
         {
-            var monster = LoadBuilding(4).Monster;
+            var importer = (TextureImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(sprite));
+            var settings = new TextureImporterSettings();
+            importer.ReadTextureSettings(settings);
+            return settings;
+        }
 
-            Assert.IsNotNull(monster);
-            Assert.IsNull(monster.Sprite);
+        [TestCase(1, "BlobfishScumbag_Dead")]
+        [TestCase(2, "LophiiformesBartender_Dead")]
+        [TestCase(3, "GoblinSharkGang_Dead")]
+        [TestCase(4, "GiantSquidMayor_Dead")]
+        public void LevelAsset_HasDeadSpriteAtSameScaleAsAliveSprite(int level, string spriteName)
+        {
+            var monster = LoadBuilding(level).Monster;
+
+            Assert.IsNotNull(monster.DeadSprite, $"第 {level} 關怪物沒有死亡圖");
+            Assert.AreEqual(spriteName, monster.DeadSprite.name);
+            var alive = SpriteSettings(monster.Sprite);
+            var dead = SpriteSettings(monster.DeadSprite);
+            Assert.AreEqual(alive.spritePixelsPerUnit, dead.spritePixelsPerUnit);
+            Assert.AreEqual(alive.spriteAlignment, dead.spriteAlignment);
         }
     }
 }

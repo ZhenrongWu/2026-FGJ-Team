@@ -14,6 +14,7 @@ namespace FGJ.Tests.PlayMode.LiarDice
     {
         private const int FrameLimit = 60;
         private static readonly int[] DiceSequence = { 1, 4, 4, 2, 6, 3, 4, 5, 5, 1 };
+        private static readonly int[] SixesAndTwos = { 6, 6, 6, 6, 6, 2, 2, 2, 2, 2 };
 
         private LiarDiceRoomController _controller;
         private RecordingGameAudio _audio;
@@ -237,6 +238,60 @@ namespace FGJ.Tests.PlayMode.LiarDice
             Assert.AreEqual(MatchPhase.Bidding, Match.Phase);
             Assert.AreEqual(1, Match.PlayerOxygen);
             Assert.AreEqual(1, Match.MonsterOxygen);
+        }
+
+        [UnityTest]
+        public IEnumerator PlayerWinsMatch_MonsterShowsDeadSpriteUntilRematch()
+        {
+            var profile = new MonsterAIProfile(0.35f, 0.5f, 0f, 2);
+            _controller.Begin(new MatchSettings(5, 5, 5, 1), () => new CyclingDiceRoller(SixesAndTwos),
+                new MonsterAI(profile, new System.Random(7)));
+
+            while (Match.Phase != MatchPhase.MatchOver)
+            {
+                yield return WaitUntil(() => _controller.IsPlayerTurn || Match.Phase != MatchPhase.Bidding);
+                if (_controller.IsPlayerTurn)
+                    PlayHonestly();
+                yield return WaitForIdle();
+                if (Match.Phase == MatchPhase.RoundOver)
+                    _controller.Continue();
+            }
+            yield return WaitUntil(() => !_controller.IsBusy && Hud.IsContinueVisible);
+
+            Assert.AreEqual(Side.Player, Match.Winner);
+            Assert.IsTrue(_controller.MonsterView.IsShowingDead);
+            Assert.AreSame(_controller.Monster.DeadSprite, _controller.MonsterView.CurrentSprite);
+
+            _controller.Continue();
+
+            Assert.IsFalse(_controller.MonsterView.IsShowingDead);
+            Assert.AreSame(_controller.Monster.Sprite, _controller.MonsterView.CurrentSprite);
+        }
+
+        private void PlayHonestly()
+        {
+            var bid = Match.CurrentBid;
+            if (Match.CanChallenge && bid.HasValue && CountOnTable(bid.Value.Face) < bid.Value.Quantity)
+            {
+                _controller.ChallengeAsPlayer();
+                return;
+            }
+            if (!_controller.SubmitPlayerBid("5", "6").IsValid && Match.CanChallenge)
+                _controller.ChallengeAsPlayer();
+        }
+
+        private int CountOnTable(int face)
+        {
+            var count = 0;
+            foreach (var side in new[] { Side.Player, Side.Monster })
+            {
+                foreach (var die in Match.GetDice(side))
+                {
+                    if (die == face)
+                        count++;
+                }
+            }
+            return count;
         }
 
         [Test]

@@ -9,6 +9,8 @@ namespace FGJ.LiarDice
         [SerializeField] private string displayName = "沼澤看守者";
         [Tooltip("留空時顯示佔位剪影")]
         [SerializeField] private Sprite sprite;
+        [Tooltip("怪物氧氣歸零時顯示，留空時維持原圖")]
+        [SerializeField] private Sprite deadSprite;
         [TextArea] [SerializeField] private string greeting = "「來吧，旅人。用你的氧氣，跟我賭一把。」";
         [SerializeField] private string challengeLine = "「你在吹牛。開！」";
         [Tooltip("{0} 會替換成喊數，例如「3 個 4 點」")]
@@ -22,6 +24,7 @@ namespace FGJ.LiarDice
 
         public string DisplayName => displayName;
         public Sprite Sprite => sprite;
+        public Sprite DeadSprite => deadSprite;
         public string Greeting => greeting;
         public string ChallengeLine => challengeLine;
 
@@ -35,6 +38,11 @@ namespace FGJ.LiarDice
         public void SetSprite(Sprite monsterSprite)
         {
             sprite = monsterSprite;
+        }
+
+        public void SetDeadSprite(Sprite monsterDeadSprite)
+        {
+            deadSprite = monsterDeadSprite;
         }
 
         public void Configure(string name, string greetingLine, string challenge, string bidFormat)

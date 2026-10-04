@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ebdf515a228b0d4598ba6b1e7417123, type: 3}
-  m_Name: Monster_Level04
+  m_Name: Monster_GiantSquidMayor
   m_EditorClassIdentifier: FGJ.Runtime::FGJ.LiarDice.MonsterProfile
   displayName: "\u6DF1\u6DF5\u4E4B\u4E3B"
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: acfcb42acc1741045857761a00fdbfd8, type: 3}
+  deadSprite: {fileID: 21300000, guid: 9ca4210fd3044cc47a6cc8abac54cd07, type: 3}
   greeting: "\u300C\u2026\u2026\u4F60\u7D42\u65BC\u4F86\u4E86\u3002\u6700\u5F8C\u4E00\u5C40\uFF0C\u8CED\u4E0A\u5168\u90E8\u7684\u6C27\u6C23\u3002\u300D"
   challengeLine: "\u300C\u2026\u2026\u958B\u3002\u300D"
   bidLineFormat: "\u300C\u2026\u2026{0}\u3002\u300D"
