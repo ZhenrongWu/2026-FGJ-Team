@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ebdf515a228b0d4598ba6b1e7417123, type: 3}
   m_Name: Monster_GoblinSharkGang
   m_EditorClassIdentifier: FGJ.Runtime::FGJ.LiarDice.MonsterProfile
-  displayName: "\u54E5\u5E03\u6797\u9BCA\u5E6B"
+  displayName: "\u9ED1\u9BCA\u8001\u5927"
   sprite: {fileID: 21300000, guid: 32bc8f025a0ba9048be21c9e8670f14e, type: 3}
   deadSprite: {fileID: 21300000, guid: 96e99c4bb25d6bf408cbae3c0981b17c, type: 3}
+  positionY: -0.12
   greeting: "\u300C\u9019\u7247\u6D77\u6E9D\u662F\u6211\u5011\u7684\u5730\u76E4\uFF0C\u8F38\u4E86\u5C31\u628A\u6C27\u6C23\u7559\u4E0B\uFF01\u300D"
   challengeLine: "\u300C\u9A19\u8AB0\u554A\uFF1F\u5144\u5F1F\u5011\uFF0C\u958B\uFF01\u300D"
   bidLineFormat: "\u300C{0}\uFF01\u4E0D\u670D\u5C31\u958B\uFF01\u300D"
