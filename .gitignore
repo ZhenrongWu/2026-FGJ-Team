@@ -68,6 +68,9 @@ crashlytics-build.properties
 *.ipa
 *.unitypackage
 *.app
+/Release/
+/Release.zip
+/Release.rar
 
 ### Unity Version Control (Plastic SCM, via com.unity.collab-proxy) ###
 /.plastic/
