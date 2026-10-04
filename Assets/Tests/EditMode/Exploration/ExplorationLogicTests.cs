@@ -144,6 +144,15 @@ namespace FGJ.Tests.EditMode.Exploration
             return ParallaxLayer.TilePositionX(offset, index, 56f, mirrored);
         }
 
+        [TestCase(-1, 1, ExpectedResult = true)]
+        [TestCase(0, 1, ExpectedResult = true)]
+        [TestCase(1, 1, ExpectedResult = false)]
+        [TestCase(0, 0, ExpectedResult = false)]
+        public bool IsOpeningTile_OnlyTilesBeforeOpeningCount(int tileIndex, int openingTileCount)
+        {
+            return ParallaxLayer.IsOpeningTile(tileIndex, openingTileCount);
+        }
+
         [TestCase(25f, ExpectedResult = 2)]
         [TestCase(56f, ExpectedResult = 2)]
         [TestCase(60f, ExpectedResult = 3)]

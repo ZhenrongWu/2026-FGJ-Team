@@ -9,12 +9,18 @@ namespace FGJ.Exploration
         [Min(0.01f)] [SerializeField] private float tileWidth = 1f;
         [SerializeField] private Transform[] tiles = new Transform[0];
         [SerializeField] private bool mirrorAlternateTiles = true;
+        [SerializeField] private Sprite tileSprite;
+        [Tooltip("開頭幾塊改用這張圖，例如走出洞穴的地面")]
+        [SerializeField] private Sprite openingSprite;
+        [Min(0)] [SerializeField] private int openingTileCount;
 
         private SpriteRenderer[] _tileRenderers;
 
         public float FollowFactor => followFactor;
 
         public static bool IsMirrored(int tileIndex) => tileIndex % 2 != 0;
+
+        public static bool IsOpeningTile(int tileIndex, int openingTileCount) => tileIndex < openingTileCount;
 
         public static float TilePositionX(float offset, int tileIndex, float tileWidth, bool mirrored)
         {
@@ -28,6 +34,18 @@ namespace FGJ.Exploration
             followFactor = factor;
             tileWidth = width;
             tiles = layerTiles;
+        }
+
+        public void SetOpening(Sprite tile, Sprite opening, int openingTiles)
+        {
+            tileSprite = tile;
+            openingSprite = opening;
+            openingTileCount = openingTiles;
+        }
+
+        public Sprite SpriteForTile(int tileIndex)
+        {
+            return openingSprite != null && IsOpeningTile(tileIndex, openingTileCount) ? openingSprite : tileSprite;
         }
 
         public static int TilesNeeded(float viewWidth, float tileWidth)
@@ -62,8 +80,11 @@ namespace FGJ.Exploration
                 var position = tiles[i].position;
                 position.x = TilePositionX(offset, tileIndex, tileWidth, mirrored);
                 tiles[i].position = position;
-                if (_tileRenderers[i] != null)
-                    _tileRenderers[i].flipX = mirrored;
+                if (_tileRenderers[i] == null)
+                    continue;
+                _tileRenderers[i].flipX = mirrored;
+                if (tileSprite != null)
+                    _tileRenderers[i].sprite = SpriteForTile(tileIndex);
             }
         }
     }

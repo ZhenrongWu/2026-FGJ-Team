@@ -34,11 +34,17 @@ namespace FGJ.Editor
         public const float WorldMaxX = 100000f;
         private const float PlayerSpeed = 4f;
 
-        private static readonly (string sprite, string name, int order, float factor)[] Layers =
+        public const string GroundLayerName = "Layer_SeabedGround";
+        public const string GroundSprite = "Ocean_02_Flat";
+        public const string CaveExitSprite = "Ocean_02_Cave";
+        public const int CaveExitTileCount = 1;
+
+        public static readonly (string sprite, string name, int order, float factor)[] Layers =
         {
-            ("Ocean_04", "Layer_FarStalactites", -30, 0.8f),
-            ("Ocean_03", "Layer_MidRocks", -20, 0.5f),
-            ("Ocean_02", "Layer_CaveGround", -10, 0f),
+            ("Ocean_05", "Layer_FarStalactites", -40, 0.8f),
+            ("Ocean_04", "Layer_MidRocks", -30, 0.5f),
+            ("Ocean_03", "Layer_PaleCave", -20, 0.25f),
+            (GroundSprite, GroundLayerName, -10, 0f),
             ("Ocean_01", "Layer_ForegroundSilhouettes", 10, 0f)
         };
 
@@ -177,9 +183,33 @@ namespace FGJ.Editor
 
         private static Sprite[] Frames(params string[] names) => Array.ConvertAll(names, ArtImport.LoadSprite);
 
+        [MenuItem("FGJ/Prefabs/Rebuild Cave Background")]
+        public static void RebuildCaveBackground()
+        {
+            ArtImport.ConfigureAll();
+            var root = PrefabUtility.LoadPrefabContents(BackgroundPath);
+            try
+            {
+                for (var i = root.transform.childCount - 1; i >= 0; i--)
+                    Object.DestroyImmediate(root.transform.GetChild(i).gameObject);
+                AddBackgroundLayers(root);
+                PrefabUtility.SaveAsPrefabAsset(root, BackgroundPath);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+        }
+
         private static GameObject CreateBackground()
         {
             var root = new GameObject("CaveBackground");
+            AddBackgroundLayers(root);
+            return root;
+        }
+
+        private static void AddBackgroundLayers(GameObject root)
+        {
             var tileCount = ParallaxLayer.TilesNeeded(ViewHeight * WidestSupportedAspect, TileWidth);
             foreach (var layer in Layers)
             {
@@ -197,9 +227,11 @@ namespace FGJ.Editor
                     renderer.sortingOrder = layer.order;
                     tiles[i] = tile.transform;
                 }
-                layerObject.AddComponent<ParallaxLayer>().Configure(null, layer.factor, TileWidth, tiles);
+                var parallax = layerObject.AddComponent<ParallaxLayer>();
+                parallax.Configure(null, layer.factor, TileWidth, tiles);
+                if (layer.name == GroundLayerName)
+                    parallax.SetOpening(sprite, ArtImport.LoadSprite(CaveExitSprite), CaveExitTileCount);
             }
-            return root;
         }
 
         private static GameObject CreateHud(UiFactory ui)

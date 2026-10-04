@@ -19,7 +19,8 @@ namespace FGJ.Editor
         private static readonly Vector2 BuildingPivot = new Vector2(0.5f, 0.03f);
         private static readonly Vector2 CharacterPivot = new Vector2(0.5f, 0.063f);
 
-        public static readonly string[] BackgroundSprites = { "Ocean_01", "Ocean_02", "Ocean_03", "Ocean_04" };
+        public static readonly string[] BackgroundSprites =
+            { "Ocean_01", "Ocean_02_Cave", "Ocean_02_Flat", "Ocean_03", "Ocean_04", "Ocean_05" };
         public static readonly string[] CharacterSprites =
             { "Right_01", "Right_02", "Right_03", "Forward_01", "Forward_02", "Forward_03" };
         public static readonly string[] BuildingSprites =
