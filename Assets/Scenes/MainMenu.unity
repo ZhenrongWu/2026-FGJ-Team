@@ -236,11 +236,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0ec666f449a2b74398ecc3cc0a33424, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FGJ.Runtime::FGJ.MainMenu.MainMenuController
+  gameAudio: {fileID: 11400000, guid: 1cf5c2640e924a7aaccdf343fdfa746d, type: 2}
   router: {fileID: 11400000, guid: 72c9c2731a138174b8e806c5f70491e4, type: 2}
   startButton: {fileID: 582829644}
   exitButton: {fileID: 1405062499}
   hoverSound: {fileID: 8300000, guid: 1eb0e33252361f14fa3f270eb8d593fe, type: 3}
-  clickSound: {fileID: 8300000, guid: d133f1516b584284babe18475abed9d1, type: 3}
+  clickSound: {fileID: 8300000, guid: ebbbfe5979fc89740aa44155e8a7941c, type: 3}
 --- !u!82 &97400953
 AudioSource:
   m_ObjectHideFlags: 0

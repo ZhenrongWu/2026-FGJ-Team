@@ -119,6 +119,7 @@ namespace FGJ.Editor
             var controller = root.AddComponent<LiarDiceRoomController>();
             controller.Configure(hud.GetComponent<LiarDiceHud>(), table.GetComponent<DiceTableView>(),
                 monster.GetComponent<MonsterView>());
+            controller.SetAudio(AudioAssets.GameAudio);
             var config = AssetDatabase.LoadAssetAtPath<LiarDiceConfig>(LiarDiceSceneMenu.ConfigPath);
             controller.UseEncounter(config, LiarDiceSceneMenu.EnsureDefaultMonster());
             return root;
@@ -138,8 +139,9 @@ namespace FGJ.Editor
                 new SpriteClip(SideScrollPlayer.EnterClip, Frames("Forward_01"), 6f, false)
             });
 
-            playerObject.AddComponent<SideScrollPlayer>()
-                .Configure(renderer, animator, WalkMinX, WorldMaxX, PlayerSpeed);
+            var player = playerObject.AddComponent<SideScrollPlayer>();
+            player.Configure(renderer, animator, WalkMinX, WorldMaxX, PlayerSpeed);
+            player.SetAudio(AudioAssets.GameAudio);
             return playerObject;
         }
 

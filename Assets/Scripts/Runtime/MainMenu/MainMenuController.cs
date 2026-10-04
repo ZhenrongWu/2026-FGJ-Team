@@ -1,4 +1,5 @@
 using System.Collections;
+using FGJ.Audio;
 using FGJ.Flow;
 using UnityEngine;
 using UnityEngine.Events;
@@ -15,6 +16,7 @@ namespace FGJ.MainMenu
         [SerializeField] private Button exitButton;
         [SerializeField] private AudioClip hoverSound;
         [SerializeField] private AudioClip clickSound;
+        [SerializeField] private GameAudio gameAudio;
 
         private AudioSource audioSource;
 
@@ -27,6 +29,11 @@ namespace FGJ.MainMenu
             clickSound = click;
         }
 
+        public void SetAudio(GameAudio audio)
+        {
+            gameAudio = audio;
+        }
+
         private void Awake()
         {
             audioSource = GetComponent<AudioSource>();
@@ -34,6 +41,8 @@ namespace FGJ.MainMenu
 
         private void Start()
         {
+            if (gameAudio != null)
+                gameAudio.PlayExplorationMusic();
             BindButton(startButton, router.GoToExploration);
             BindButton(exitButton, router.QuitGame);
         }

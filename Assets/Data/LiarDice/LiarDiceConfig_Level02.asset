@@ -20,4 +20,5 @@ MonoBehaviour:
   itemCount: 1
   onesAreWild: 1
   firstTurn: 1
+  music: {fileID: 8300000, guid: 28e8a75ff58912a4ca02bab47ee8281e, type: 3}
   endsGame: 0

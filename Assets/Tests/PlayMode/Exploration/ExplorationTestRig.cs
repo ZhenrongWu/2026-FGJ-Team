@@ -19,6 +19,7 @@ namespace FGJ.Tests.PlayMode.Exploration
 
         public GameProgress Progress { get; }
         public RecordingSceneRouter Router { get; }
+        public RecordingGameAudio Audio { get; }
         public SideScrollPlayer Player { get; private set; }
         public ExplorationController Controller { get; private set; }
         public ExplorationHud Hud { get; private set; }
@@ -42,6 +43,7 @@ namespace FGJ.Tests.PlayMode.Exploration
         {
             Progress = Track(ScriptableObject.CreateInstance<GameProgress>());
             Router = Track(ScriptableObject.CreateInstance<RecordingSceneRouter>());
+            Audio = Track(RecordingGameAudio.Create());
         }
 
         public void Build(float playerStartX)
@@ -62,6 +64,7 @@ namespace FGJ.Tests.PlayMode.Exploration
             });
             Player = playerObject.AddComponent<SideScrollPlayer>();
             Player.Configure(renderer, animator, 0f, 1000f, 50f);
+            Player.SetAudio(Audio);
             follow.Configure(playerObject.transform, 0f, 1000f);
 
             var canvas = Track(new GameObject("Canvas", typeof(Canvas)));
@@ -79,6 +82,7 @@ namespace FGJ.Tests.PlayMode.Exploration
             Controller.SetRoute(CreateRoute(), CreateEntranceTemplate(), 0f);
             Controller.SetTransitionDurations(0f, 0f);
             Controller.SetServices(Progress, Router);
+            Controller.SetAudio(Audio);
         }
 
         public void Dispose()

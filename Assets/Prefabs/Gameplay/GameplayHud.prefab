@@ -2288,6 +2288,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37efbcc4a10a569488cb2a98037b5fb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FGJ.Runtime::FGJ.LiarDice.UI.LiarDiceHud
+  gameAudio: {fileID: 11400000, guid: 1cf5c2640e924a7aaccdf343fdfa746d, type: 2}
   parts:
     playerOxygen: {fileID: 3047565811460587452}
     monsterOxygen: {fileID: 272958862135433637}

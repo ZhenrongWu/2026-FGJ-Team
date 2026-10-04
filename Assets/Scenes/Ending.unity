@@ -148,6 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c74427b7443dc447930509f0bf5049c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FGJ.Runtime::FGJ.Ending.EndingController
+  gameAudio: {fileID: 11400000, guid: 1cf5c2640e924a7aaccdf343fdfa746d, type: 2}
   router: {fileID: 11400000, guid: 72c9c2731a138174b8e806c5f70491e4, type: 2}
   quitButton: {fileID: 1203857889}
 --- !u!4 &153654640

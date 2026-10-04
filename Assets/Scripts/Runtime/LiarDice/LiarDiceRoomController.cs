@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using FGJ.Audio;
 using FGJ.LiarDice.Table;
 using FGJ.LiarDice.UI;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace FGJ.LiarDice
         [SerializeField] private LiarDiceHud hud;
         [SerializeField] private DiceTableView table;
         [SerializeField] private MonsterView monsterView;
+        [SerializeField] private GameAudio gameAudio;
         [Min(0f)] [SerializeField] private float monsterThinkSeconds = 1.2f;
         [SerializeField] private UnityEvent<Side> matchFinished = new UnityEvent<Side>();
 
@@ -31,6 +33,7 @@ namespace FGJ.LiarDice
         private int _playerStartOxygen;
         private bool _believed;
         private int _roundNumber;
+        private int _shownPlayerOxygen;
 
         public event Action<Side> MatchFinished;
         public event Action<Side> ExitRequested;
@@ -58,6 +61,11 @@ namespace FGJ.LiarDice
             hud = roomHud;
             table = diceTable;
             monsterView = roomMonsterView;
+        }
+
+        public void SetAudio(GameAudio audio)
+        {
+            gameAudio = audio;
         }
 
         public void UseEncounter(LiarDiceConfig roomConfig, MonsterProfile roomMonster)
@@ -115,7 +123,10 @@ namespace FGJ.LiarDice
 
             Match = new LiarDiceMatch(settings, _rollerFactory(), _dealerFactory());
             Match.Start();
+            _shownPlayerOxygen = Match.PlayerOxygen;
             _roundNumber = 0;
+            if (config != null)
+                PlayMusic(config.Music);
             _log.Clear();
             hud.LogView.Bind(_log);
             hud.ClearError();
@@ -272,6 +283,7 @@ namespace FGJ.LiarDice
         {
             IsBusy = true;
             Refresh();
+            PlayEffect(SoundEffect.DiceShake);
             yield return table.PlayRoundStart(Match);
             IsBusy = false;
             AdvanceTurn();
@@ -337,6 +349,7 @@ namespace FGJ.LiarDice
         {
             IsBusy = true;
             Refresh();
+            PlayEffect(SoundEffect.DiceShake);
             yield return table.PlayReroll(Match);
             IsBusy = false;
             Refresh();
@@ -377,10 +390,33 @@ namespace FGJ.LiarDice
         private void Refresh()
         {
             var state = _panelRules.Evaluate(Match, _believed, IsBusy);
+            PlayOxygenChange();
             hud.ShowOxygen(Match);
             hud.SetStatus(_text.Status(Match));
             hud.ApplyPanelState(state);
             hud.ShowItems(Match, state.ItemsEnabled);
+        }
+
+        private void PlayOxygenChange()
+        {
+            var oxygen = Match.PlayerOxygen;
+            if (oxygen > _shownPlayerOxygen)
+                PlayEffect(SoundEffect.OxygenGain);
+            else if (oxygen < _shownPlayerOxygen)
+                PlayEffect(SoundEffect.OxygenLoss);
+            _shownPlayerOxygen = oxygen;
+        }
+
+        private void PlayEffect(SoundEffect effect)
+        {
+            if (gameAudio != null)
+                gameAudio.Play(effect);
+        }
+
+        private void PlayMusic(AudioClip clip)
+        {
+            if (gameAudio != null)
+                gameAudio.PlayMusic(clip);
         }
 
         private void UnbindHud()

@@ -59,7 +59,9 @@ namespace FGJ.Editor
             var quit = ui.CreateButton("QuitButton", canvasObject.transform, QuitLabel, ui.Danger, ui.TextLight, 36);
             ui.Place((RectTransform)quit.transform, BottomCenter, new Vector2(0f, 140f), new Vector2(360f, 90f));
 
-            new GameObject("EndingController").AddComponent<EndingController>().Configure(FlowAssets.Router, quit);
+            var ending = new GameObject("EndingController").AddComponent<EndingController>();
+            ending.Configure(FlowAssets.Router, quit);
+            ending.SetAudio(AudioAssets.GameAudio);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
         }

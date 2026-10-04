@@ -1,3 +1,4 @@
+using FGJ.Audio;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,10 +15,12 @@ namespace FGJ.Exploration
         [Min(0f)] [SerializeField] private float moveSpeed = 4f;
         [SerializeField] private float minX = 2f;
         [SerializeField] private float maxX = 54f;
+        [SerializeField] private GameAudio gameAudio;
 
         private SideScrollMotor _motor;
         private float? _moveInputOverride;
         private bool _isEntering;
+        private bool _footstepsPlaying;
 
         public bool InputLocked { get; set; }
         public float X => transform.position.x;
@@ -37,6 +40,11 @@ namespace FGJ.Exploration
             _motor = null;
         }
 
+        public void SetAudio(GameAudio audio)
+        {
+            gameAudio = audio;
+        }
+
         public void SetMoveInputOverride(float? input)
         {
             _moveInputOverride = input;
@@ -52,6 +60,7 @@ namespace FGJ.Exploration
         {
             InputLocked = true;
             _isEntering = true;
+            SetFootsteps(false);
             spriteRenderer.flipX = false;
             animator.Play(EnterClip);
         }
@@ -72,6 +81,20 @@ namespace FGJ.Exploration
             ApplyPosition();
             spriteRenderer.flipX = Motor.Facing < 0;
             animator.Play(Motor.IsMoving ? WalkClip : IdleClip);
+            SetFootsteps(Motor.IsMoving);
+        }
+
+        private void OnDisable()
+        {
+            SetFootsteps(false);
+        }
+
+        private void SetFootsteps(bool walking)
+        {
+            if (gameAudio == null || walking == _footstepsPlaying)
+                return;
+            _footstepsPlaying = walking;
+            gameAudio.SetFootsteps(walking);
         }
 
         private void ApplyPosition()

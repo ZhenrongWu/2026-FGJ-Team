@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using FGJ.Audio;
 using FGJ.Flow;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,6 +15,7 @@ namespace FGJ.Exploration
         [SerializeField] private GameProgress progress;
         [SerializeField] private SceneRouter router;
         [SerializeField] private ExplorationRoute route;
+        [SerializeField] private GameAudio gameAudio;
         [SerializeField] private RoomEntrance defaultEntrancePrefab;
         [SerializeField] private float buildingGroundY = 1.5f;
         [Min(0f)] [SerializeField] private float enterDuration = 1.2f;
@@ -47,6 +49,11 @@ namespace FGJ.Exploration
             buildingGroundY = groundY;
         }
 
+        public void SetAudio(GameAudio audio)
+        {
+            gameAudio = audio;
+        }
+
         public void SetTransitionDurations(float enter, float fadeIn)
         {
             enterDuration = Mathf.Max(0f, enter);
@@ -63,6 +70,8 @@ namespace FGJ.Exploration
             SpawnBuildings();
             PlacePlayerAtReturnEntrance();
             MoveEntrancesNear(player.X);
+            if (gameAudio != null)
+                gameAudio.PlayExplorationMusic();
             hud.SetFade(1f);
             StartCoroutine(hud.Fade(1f, 0f, fadeInDuration));
         }
@@ -160,6 +169,8 @@ namespace FGJ.Exploration
             hud.HidePrompt();
             HighlightOnly(null);
             player.PlayEnter();
+            if (gameAudio != null)
+                gameAudio.Play(SoundEffect.DoorOpen);
             progress.EnterBuilding(entrance.Building, entrance.X);
             yield return hud.Fade(0f, 1f, enterDuration);
             router.GoToGameplay();

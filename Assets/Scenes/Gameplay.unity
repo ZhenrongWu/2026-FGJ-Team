@@ -187,6 +187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f50b6f9c02bdb346b29c3e2cdfa0109, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FGJ.Runtime::FGJ.LiarDice.LiarDiceRoomController
+  gameAudio: {fileID: 11400000, guid: 1cf5c2640e924a7aaccdf343fdfa746d, type: 2}
 --- !u!1 &506589114
 GameObject:
   m_ObjectHideFlags: 0

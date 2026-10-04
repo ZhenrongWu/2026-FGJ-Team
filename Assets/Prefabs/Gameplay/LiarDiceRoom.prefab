@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f50b6f9c02bdb346b29c3e2cdfa0109, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FGJ.Runtime::FGJ.LiarDice.LiarDiceRoomController
+  gameAudio: {fileID: 11400000, guid: 1cf5c2640e924a7aaccdf343fdfa746d, type: 2}
   config: {fileID: 11400000, guid: 0d046963bc814fa41ba45ba1bfc178b1, type: 2}
   monster: {fileID: 11400000, guid: cc3bad4bf002efb4ea28fabf314fff15, type: 2}
   hud: {fileID: 6151378286434843894}
@@ -249,6 +250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37efbcc4a10a569488cb2a98037b5fb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FGJ.Runtime::FGJ.LiarDice.UI.LiarDiceHud
+  gameAudio: {fileID: 11400000, guid: 1cf5c2640e924a7aaccdf343fdfa746d, type: 2}
 --- !u!1001 &4082609686149540684
 PrefabInstance:
   m_ObjectHideFlags: 0

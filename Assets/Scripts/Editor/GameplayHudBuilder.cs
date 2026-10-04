@@ -46,6 +46,7 @@ namespace FGJ.Editor
 
             var hud = canvasObject.AddComponent<LiarDiceHud>();
             hud.SetParts(parts);
+            hud.SetAudio(AudioAssets.GameAudio);
             return hud;
         }
 

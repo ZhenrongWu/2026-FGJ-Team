@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FGJ.Audio;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -28,6 +29,7 @@ namespace FGJ.LiarDice.UI
     public sealed class LiarDiceHud : MonoBehaviour
     {
         [SerializeField] private LiarDiceHudParts parts;
+        [SerializeField] private GameAudio gameAudio;
 
         private readonly LiarDiceText _text = new LiarDiceText();
         private readonly List<string> _itemLabels = new List<string>();
@@ -53,6 +55,11 @@ namespace FGJ.LiarDice.UI
         public bool IsBidInputEnabled => parts.quantityInput.interactable;
         public ItemBarView PlayerItems => parts.playerItems;
         public ItemBarView MonsterItems => parts.monsterItems;
+
+        public void SetAudio(GameAudio audio)
+        {
+            gameAudio = audio;
+        }
 
         public void SetParts(LiarDiceHudParts hudParts)
         {
@@ -90,9 +97,13 @@ namespace FGJ.LiarDice.UI
             if (_listenersWired || parts.believeButton == null)
                 return;
 
+            parts.believeButton.onClick.AddListener(PlayButtonPress);
             parts.believeButton.onClick.AddListener(() => BelieveClicked?.Invoke());
+            parts.bluffButton.onClick.AddListener(PlayButtonPress);
             parts.bluffButton.onClick.AddListener(() => BluffClicked?.Invoke());
+            parts.submitButton.onClick.AddListener(PlayButtonPress);
             parts.submitButton.onClick.AddListener(SubmitBid);
+            parts.continueButton.onClick.AddListener(PlayButtonPress);
             parts.continueButton.onClick.AddListener(() => ContinueClicked?.Invoke());
             _listenersWired = true;
         }
@@ -109,7 +120,14 @@ namespace FGJ.LiarDice.UI
 
         private void OnItemSlotClicked(int index)
         {
+            PlayButtonPress();
             ItemClicked?.Invoke(index);
+        }
+
+        private void PlayButtonPress()
+        {
+            if (gameAudio != null)
+                gameAudio.Play(SoundEffect.ButtonPress);
         }
 
         public void ShowItems(LiarDiceMatch match, bool playerCanUse)

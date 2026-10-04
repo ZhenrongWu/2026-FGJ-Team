@@ -1,4 +1,5 @@
 using System.Collections;
+using FGJ.Audio;
 using FGJ.Exploration;
 using FGJ.Flow;
 using NUnit.Framework;
@@ -68,6 +69,43 @@ namespace FGJ.Tests.PlayMode.Exploration
         }
 
         [UnityTest]
+        public IEnumerator Start_PlaysExplorationMusic()
+        {
+            _rig.Build(2f);
+            yield return null;
+
+            CollectionAssert.AreEqual(new[] { _rig.Audio.ExplorationMusic }, _rig.Audio.Music);
+        }
+
+        [UnityTest]
+        public IEnumerator Walking_LoopsFootstepsUntilPlayerStops()
+        {
+            _rig.Build(2f);
+            yield return null;
+
+            _rig.Player.SetMoveInputOverride(1f);
+            yield return WaitFrames(3);
+            CollectionAssert.AreEqual(new[] { true }, _rig.Audio.FootstepChanges);
+
+            _rig.Player.SetMoveInputOverride(0f);
+            yield return WaitFrames(2);
+            CollectionAssert.AreEqual(new[] { true, false }, _rig.Audio.FootstepChanges);
+        }
+
+        [UnityTest]
+        public IEnumerator EnteringWhileWalking_StopsFootsteps()
+        {
+            _rig.Build(2f);
+            yield return null;
+            _rig.Player.SetMoveInputOverride(1f);
+            yield return WaitFrames(2);
+
+            _rig.Player.PlayEnter();
+
+            CollectionAssert.AreEqual(new[] { true, false }, _rig.Audio.FootstepChanges);
+        }
+
+        [UnityTest]
         public IEnumerator FarFromBuilding_HidesPrompt()
         {
             _rig.Build(2f);
@@ -94,6 +132,7 @@ namespace FGJ.Tests.PlayMode.Exploration
             Assert.AreSame(_rig.Building, _rig.Progress.CurrentBuilding);
             Assert.AreSame(_rig.BuildingConfig, _rig.Progress.CurrentBuilding.GameplayConfig);
             CollectionAssert.AreEqual(new[] { SceneNames.Gameplay }, _rig.Router.LoadedScenes);
+            CollectionAssert.AreEqual(new[] { SoundEffect.DoorOpen }, _rig.Audio.Effects);
         }
 
         [UnityTest]

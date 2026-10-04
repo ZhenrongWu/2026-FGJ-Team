@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7547c210eea6214c9ae9394fdc54988, type: 3}
+  m_Name: GameAudio
+  m_EditorClassIdentifier: FGJ.Runtime::FGJ.Audio.GameAudio
+  explorationMusic: {fileID: 8300000, guid: 0a70b6746b66e524aba74c07ad3cba82, type: 3}
+  endingMusic: {fileID: 8300000, guid: 8909e9f400a693448be34fb3b222126a, type: 3}
+  musicVolume: 0.6
+  buttonPress: {fileID: 8300000, guid: ebbbfe5979fc89740aa44155e8a7941c, type: 3}
+  hover: {fileID: 8300000, guid: 1eb0e33252361f14fa3f270eb8d593fe, type: 3}
+  footstep: {fileID: 8300000, guid: 1ea38f9d75ddf18449d806966a487ab1, type: 3}
+  doorOpen: {fileID: 8300000, guid: 05904ab5aad8f794a9b0082c4282b47a, type: 3}
+  diceShake: {fileID: 8300000, guid: 84d2ad19743f89e4e9c2c505edf74b9a, type: 3}
+  oxygenGain: {fileID: 8300000, guid: 79cdd6d1ef5d4f44f87408072f1df332, type: 3}
+  oxygenLoss: {fileID: 8300000, guid: 7c0c4414980bef54abd16eac6fb029c7, type: 3}
+  effectVolume: 1

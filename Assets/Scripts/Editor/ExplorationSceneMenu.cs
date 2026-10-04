@@ -63,6 +63,7 @@ namespace FGJ.Editor
             var controller = new GameObject("ExplorationController").AddComponent<ExplorationController>();
             controller.Configure(player, follow, hud);
             controller.SetServices(FlowAssets.Progress, FlowAssets.Router);
+            controller.SetAudio(AudioAssets.GameAudio);
             controller.SetRoute(route, DefaultPrefabs.Load<RoomEntrance>(DefaultPrefabs.EntrancePath),
                 GroundY);
 

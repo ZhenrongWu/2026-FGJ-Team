@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using FGJ.Audio;
 using FGJ.LiarDice;
 using FGJ.LiarDice.UI;
 using NUnit.Framework;
@@ -15,6 +16,7 @@ namespace FGJ.Tests.PlayMode.LiarDice
         private static readonly int[] DiceSequence = { 1, 4, 4, 2, 6, 3, 4, 5, 5, 1 };
 
         private LiarDiceRoomController _controller;
+        private RecordingGameAudio _audio;
 
         private LiarDiceHud Hud => _controller.Hud;
         private LiarDiceMatch Match => _controller.Match;
@@ -23,6 +25,9 @@ namespace FGJ.Tests.PlayMode.LiarDice
         public void SetUp()
         {
             _controller = TestPrefabs.Instantiate<LiarDiceRoomController>(TestPrefabs.LiarDiceRoomPath);
+            _audio = RecordingGameAudio.Create();
+            _controller.SetAudio(_audio);
+            _controller.Hud.SetAudio(_audio);
             _controller.SetMonsterThinkSeconds(0f);
             _controller.Table.SetAnimationDurations(0f, 0f);
             _controller.Table.SetYawRandom(new System.Random(3));
@@ -32,6 +37,7 @@ namespace FGJ.Tests.PlayMode.LiarDice
         public void TearDown()
         {
             Object.DestroyImmediate(_controller.gameObject);
+            Object.Destroy(_audio);
         }
 
         private void Begin(int oxygen = 2)
@@ -151,6 +157,46 @@ namespace FGJ.Tests.PlayMode.LiarDice
             Assert.AreEqual(Match.PlayerOxygen, Hud.PlayerOxygen.FilledCount);
             Assert.AreEqual(Match.MonsterOxygen, Hud.MonsterOxygen.FilledCount);
             StringAssert.StartsWith("你喊吹牛", Hud.LogView.LatestText);
+        }
+
+        [UnityTest]
+        public IEnumerator Begin_PlaysLevelMusicAndShakesDice()
+        {
+            _audio.Music.Clear();
+            _audio.Effects.Clear();
+
+            Begin();
+            yield return WaitForPlayerTurn();
+
+            Assert.IsNotNull(_controller.Config.Music);
+            CollectionAssert.AreEqual(new[] { _controller.Config.Music }, _audio.Music);
+            CollectionAssert.AreEqual(new[] { SoundEffect.DiceShake }, _audio.Effects);
+        }
+
+        [UnityTest]
+        public IEnumerator Challenge_PlaysOxygenLossOnlyWhenPlayerLoses()
+        {
+            Begin();
+            yield return WaitForPlayerTurn();
+            _audio.Effects.Clear();
+
+            _controller.ChallengeAsPlayer();
+            yield return WaitForIdle();
+
+            var playerLost = Match.LastResult.Value.Loser == Side.Player;
+            CollectionAssert.AreEqual(playerLost ? new[] { SoundEffect.OxygenLoss } : new SoundEffect[0], _audio.Effects);
+        }
+
+        [UnityTest]
+        public IEnumerator HudButton_Clicked_PlaysButtonPress()
+        {
+            Begin();
+            yield return WaitForPlayerTurn();
+            _audio.Effects.Clear();
+
+            Hud.Parts.bluffButton.onClick.Invoke();
+
+            Assert.AreEqual(SoundEffect.ButtonPress, _audio.Effects[0]);
         }
 
         [UnityTest]

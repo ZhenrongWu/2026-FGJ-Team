@@ -26,6 +26,9 @@ namespace FGJ.LiarDice
         [Header("回合")]
         [SerializeField] private Side firstTurn = Side.Monster;
 
+        [Header("音樂")]
+        [SerializeField] private AudioClip music;
+
         [Header("流程")]
         [Tooltip("勾選後，獲勝會進入結局而不是繼續探索")]
         [SerializeField] private bool endsGame;
@@ -38,6 +41,7 @@ namespace FGJ.LiarDice
         public int ItemCount => itemCount;
         public Side FirstTurn => firstTurn;
         public bool EndsGame => endsGame;
+        public AudioClip Music => music;
 
         public bool OnesAreWild => onesAreWild;
 
@@ -54,6 +58,11 @@ namespace FGJ.LiarDice
         public int OxygenAfterVictory(int remainingOxygen)
         {
             return Mathf.Min(playerOxygen, remainingOxygen + winOxygenReward);
+        }
+
+        public void SetMusic(AudioClip clip)
+        {
+            music = clip;
         }
 
         public void Configure(int diceCount, int monsterStartOxygen, int itemsPerSide, bool finalLevel)

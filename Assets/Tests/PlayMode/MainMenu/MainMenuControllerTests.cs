@@ -20,12 +20,14 @@ namespace FGJ.Tests.PlayMode.MainMenu
         private Button _start;
         private Button _exit;
         private AudioClip _hover;
+        private RecordingGameAudio _gameAudio;
 
         [SetUp]
         public void SetUp()
         {
             _router = Track(ScriptableObject.CreateInstance<RecordingSceneRouter>());
             _hover = Track(CreateClip("Hover", 0.05f));
+            _gameAudio = Track(RecordingGameAudio.Create());
         }
 
         [TearDown]
@@ -54,6 +56,7 @@ namespace FGJ.Tests.PlayMode.MainMenu
             _exit = CreateButton(canvas, "ExitButton");
             _menu = canvas.AddComponent<RecordingMainMenuController>();
             _menu.Configure(_router, _start, _exit, _hover, clickSound);
+            _menu.SetAudio(_gameAudio);
             yield return null;
         }
 
@@ -62,6 +65,14 @@ namespace FGJ.Tests.PlayMode.MainMenu
             var buttonObject = new GameObject(buttonName);
             buttonObject.transform.SetParent(parent.transform, false);
             return buttonObject.AddComponent<Button>();
+        }
+
+        [UnityTest]
+        public IEnumerator Start_PlaysSharedExplorationMusic()
+        {
+            yield return BuildMenu(null);
+
+            CollectionAssert.AreEqual(new[] { _gameAudio.ExplorationMusic }, _gameAudio.Music);
         }
 
         [UnityTest]
