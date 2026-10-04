@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: FGJ.Runtime::FGJ.Exploration.BuildingDefinition
   buildingId: Building02
   entrancePrefab: {fileID: 0}
-  exterior: {fileID: 21300000, guid: cf7c72364d9c43f985e89736b984c063, type: 3}
-  outline: {fileID: 21300000, guid: 399fb58eb6f74525ab6a988a97affa04, type: 3}
-  exteriorOffset: {x: 0.22, y: -0.01}
+  exterior: {fileID: 21300000, guid: 0f69652186dec044c8a665953326923c, type: 3}
+  outline: {fileID: 21300000, guid: 7ae0fd3572bc4131b24c0e41818d18c3, type: 3}
+  exteriorOffset: {x: 0.74, y: -0.15}
   exteriorScale: {x: 2, y: 2}
   exteriorSortingOrder: -5
   enterPrompt: "\u6309 \u2191 \u9032\u5165"
   clearedPrompt: "\u9019\u88E1\u5DF2\u7D93\u5B89\u975C\u4E86"
   interactRange: 1.5
-  interactSpan: {x: 8.118, y: 10.672}
+  interactSpan: {x: 3.409474, y: 6.474737}
   gameplayConfig: {fileID: 11400000, guid: a477f44a690c4504be7ffe2cc50cefcd, type: 2}
   monster: {fileID: 11400000, guid: fb126d0d22d14742a06c31774da8c33c, type: 2}

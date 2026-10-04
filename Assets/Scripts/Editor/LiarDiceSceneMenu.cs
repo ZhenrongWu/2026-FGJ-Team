@@ -10,6 +10,9 @@ namespace FGJ.Editor
         public const string ScenePath = "Assets/Scenes/Gameplay.unity";
         public const string ConfigPath = "Assets/Data/LiarDice/LiarDiceConfig_Level01.asset";
         public const string MonsterPath = "Assets/Data/LiarDice/Monster_BlobfishScumbag.asset";
+        private const string DataFolder = "Assets/Data/LiarDice";
+        private static readonly string[] LevelMonsters =
+            { "BlobfishScumbag", "LophiiformesBartender", "GoblinSharkGang", "Level04" };
 
         [MenuItem("FGJ/Scenes/Build Gameplay Scene")]
         public static void BuildRoomSceneFromMenu()
@@ -69,6 +72,16 @@ namespace FGJ.Editor
 
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
             RenderSettings.ambientLight = new Color32(28, 36, 32, 255);
+        }
+
+        public static LiarDiceConfig LevelConfig(int level)
+        {
+            return AssetDatabase.LoadAssetAtPath<LiarDiceConfig>($"{DataFolder}/LiarDiceConfig_Level{level:00}.asset");
+        }
+
+        public static MonsterProfile LevelMonster(int level)
+        {
+            return AssetDatabase.LoadAssetAtPath<MonsterProfile>($"{DataFolder}/Monster_{LevelMonsters[level - 1]}.asset");
         }
 
         public static MonsterProfile EnsureDefaultMonster()

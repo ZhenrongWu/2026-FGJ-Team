@@ -1,5 +1,4 @@
 using FGJ.Exploration;
-using FGJ.LiarDice;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -24,9 +23,10 @@ namespace FGJ.Editor
         private const string OutlineSuffix = "_Outline";
         private static readonly Vector2 ExteriorScale = new Vector2(2f, 2f);
 
+        private static readonly (string art, Vector2 doorOffset) Home = ("Home", new Vector2(-0.93f, -1.33f));
         private static readonly (string art, Vector2 doorOffset) Tavern = ("Tavern", new Vector2(0.74f, -0.15f));
         private static readonly (string art, Vector2 doorOffset) Mayor = ("Mayor", new Vector2(0.22f, -0.01f));
-        private static readonly (string art, Vector2 doorOffset)[] LevelArt = { Tavern, Mayor, Tavern, Tavern };
+        private static readonly (string art, Vector2 doorOffset)[] LevelArt = { Home, Tavern, Tavern, Mayor };
 
         [MenuItem("FGJ/Scenes/Build Exploration Scene")]
         public static void BuildFromMenu()
@@ -34,6 +34,13 @@ namespace FGJ.Editor
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 return;
             BuildScene();
+        }
+
+        [MenuItem("FGJ/Data/Update Exploration Buildings")]
+        public static void UpdateBuildings()
+        {
+            ArtImport.ConfigureAll();
+            EnsureRoute();
         }
 
         public static void BuildScene()
@@ -119,8 +126,7 @@ namespace FGJ.Editor
             }
 
             building.Configure(BuildingId(level), EnterPrompt, ClearedPrompt, InteractRange,
-                AssetDatabase.LoadAssetAtPath<LiarDiceConfig>(LiarDiceSceneMenu.ConfigPath),
-                LiarDiceSceneMenu.EnsureDefaultMonster());
+                LiarDiceSceneMenu.LevelConfig(level), LiarDiceSceneMenu.LevelMonster(level));
             var (art, doorOffset) = LevelArt[level - 1];
             building.SetExterior(ArtImport.LoadSprite(art + ExteriorSuffix), doorOffset);
             building.SetOutline(ArtImport.LoadSprite(art + OutlineSuffix));

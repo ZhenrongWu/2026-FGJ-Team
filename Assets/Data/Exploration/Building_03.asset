@@ -22,6 +22,6 @@ MonoBehaviour:
   enterPrompt: "\u6309 \u2191 \u9032\u5165"
   clearedPrompt: "\u9019\u88E1\u5DF2\u7D93\u5B89\u975C\u4E86"
   interactRange: 1.5
-  interactSpan: {x: 3.409, y: 6.485}
+  interactSpan: {x: 3.409474, y: 6.474737}
   gameplayConfig: {fileID: 11400000, guid: 85a46f3b393c41bc9fa2b6078d924009, type: 2}
   monster: {fileID: 11400000, guid: 30ac2a5c1e274d64b37f2b52a7f600c4, type: 2}

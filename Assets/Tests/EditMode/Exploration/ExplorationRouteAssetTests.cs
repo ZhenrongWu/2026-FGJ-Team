@@ -72,6 +72,17 @@ namespace FGJ.Tests.EditMode.Exploration
         }
 
         [Test]
+        public void Route_EachBuildingUsesItsLevelEncounter()
+        {
+            for (var level = 1; level <= _route.Placements.Count; level++)
+            {
+                var building = _route.Placements[level - 1].building;
+                Assert.AreSame(LiarDiceSceneMenu.LevelConfig(level), building.GameplayConfig, building.name);
+                Assert.AreSame(LiarDiceSceneMenu.LevelMonster(level), building.Monster, building.name);
+            }
+        }
+
+        [Test]
         public void Route_EachBuildingHasMatchingExteriorAndOutline()
         {
             foreach (var building in _route.Placements.Select(placement => placement.building))
@@ -85,10 +96,10 @@ namespace FGJ.Tests.EditMode.Exploration
             }
         }
 
-        [TestCase(1, "Tavern_Exterior")]
-        [TestCase(2, "Mayor_Exterior")]
+        [TestCase(1, "Home_Exterior")]
+        [TestCase(2, "Tavern_Exterior")]
         [TestCase(3, "Tavern_Exterior")]
-        [TestCase(4, "Tavern_Exterior")]
+        [TestCase(4, "Mayor_Exterior")]
         public void Route_LevelUsesItsBuildingArt(int level, string exteriorName)
         {
             Assert.AreEqual(exteriorName, _route.Placements[level - 1].building.Exterior.name);
