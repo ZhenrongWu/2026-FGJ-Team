@@ -86,3 +86,7 @@ $RECYCLE.BIN/
 
 ### Claude Code（本機指令與設定，不上傳） ###
 /.claude/
+/CLAUDE.md
+
+### Unity 編輯器本機設定 ###
+/ProjectSettings/SceneTemplateSettings.json
