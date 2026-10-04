@@ -21,7 +21,7 @@ MonoBehaviour:
   exteriorSortingOrder: -5
   enterPrompt: "\u6309 \u2191 \u9032\u5165"
   clearedPrompt: "\u9019\u88E1\u5DF2\u7D93\u5B89\u975C\u4E86"
-  interactRange: 1.5
-  interactSpan: {x: 3.409474, y: 6.474737}
+  doorRange: 1.5
+  buildingSpan: {x: 3.409474, y: 6.474737}
   gameplayConfig: {fileID: 11400000, guid: a477f44a690c4504be7ffe2cc50cefcd, type: 2}
   monster: {fileID: 11400000, guid: fb126d0d22d14742a06c31774da8c33c, type: 2}

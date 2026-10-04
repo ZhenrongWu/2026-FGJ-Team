@@ -172,17 +172,31 @@ namespace FGJ.Tests.PlayMode.Exploration
         }
 
         [Test]
-        public void IsInRange_WithInteractSpan_CoversBuildingWidthAroundDoor()
+        public void IsNearBuilding_WithBuildingSpan_CoversBuildingWidthAroundDoor()
         {
             var building = CreateBuilding(CreateSprite(), Vector2.zero);
-            building.SetInteractSpan(8f, 10.5f);
+            building.SetBuildingSpan(8f, 10.5f);
             _entrance.Bind(building);
             _entrance.transform.position = new Vector3(68f, 0f, 0f);
 
-            Assert.IsTrue(_entrance.IsInRange(60f));
-            Assert.IsTrue(_entrance.IsInRange(78.5f));
-            Assert.IsFalse(_entrance.IsInRange(59.5f));
-            Assert.IsFalse(_entrance.IsInRange(79f));
+            Assert.IsTrue(_entrance.IsNearBuilding(60f));
+            Assert.IsTrue(_entrance.IsNearBuilding(78.5f));
+            Assert.IsFalse(_entrance.IsNearBuilding(59.5f));
+            Assert.IsFalse(_entrance.IsNearBuilding(79f));
+        }
+
+        [Test]
+        public void IsAtDoor_WithBuildingSpan_OnlyCoversDoorRange()
+        {
+            var building = CreateBuilding(CreateSprite(), Vector2.zero);
+            building.SetBuildingSpan(8f, 10.5f);
+            _entrance.Bind(building);
+            _entrance.transform.position = new Vector3(68f, 0f, 0f);
+
+            Assert.IsTrue(_entrance.IsAtDoor(66.5f));
+            Assert.IsTrue(_entrance.IsAtDoor(69.5f));
+            Assert.IsFalse(_entrance.IsAtDoor(60f));
+            Assert.IsFalse(_entrance.IsAtDoor(78.5f));
         }
     }
 }

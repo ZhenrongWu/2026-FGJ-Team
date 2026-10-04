@@ -26,6 +26,7 @@ namespace FGJ.Exploration
         private bool _interactRequested;
 
         public RoomEntrance NearbyEntrance { get; private set; }
+        public RoomEntrance DoorEntrance { get; private set; }
         public IReadOnlyList<RoomEntrance> Entrances => _entrances;
         public bool IsEnteringRoom { get; private set; }
 
@@ -82,17 +83,18 @@ namespace FGJ.Exploration
                 return;
 
             MoveEntrancesNear(player.X);
-            NearbyEntrance = FindEntranceInRange(player.X);
+            NearbyEntrance = FindEntrance(entrance => entrance.IsNearBuilding(player.X));
+            DoorEntrance = FindEntrance(entrance => entrance.IsAtDoor(player.X));
             HighlightOnly(NearbyEntrance != null && !NearbyEntrance.IsCleared ? NearbyEntrance : null);
-            if (NearbyEntrance != null)
-                hud.ShowPrompt(NearbyEntrance.Prompt);
+            if (DoorEntrance != null)
+                hud.ShowPrompt(DoorEntrance.Prompt);
             else
                 hud.HidePrompt();
 
             var interact = _interactRequested || InteractKeyPressed();
             _interactRequested = false;
-            if (interact && NearbyEntrance != null && !NearbyEntrance.IsCleared)
-                StartCoroutine(EnterRoom(NearbyEntrance));
+            if (interact && DoorEntrance != null && !DoorEntrance.IsCleared)
+                StartCoroutine(EnterRoom(DoorEntrance));
         }
 
         private void SpawnBuildings()
@@ -153,11 +155,11 @@ namespace FGJ.Exploration
                 entrance.SetHighlighted(entrance == target);
         }
 
-        private RoomEntrance FindEntranceInRange(float playerX)
+        private RoomEntrance FindEntrance(System.Predicate<RoomEntrance> inRange)
         {
             foreach (var entrance in _entrances)
             {
-                if (entrance.IsInRange(playerX))
+                if (inRange(entrance))
                     return entrance;
             }
             return null;

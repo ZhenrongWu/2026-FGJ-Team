@@ -56,7 +56,7 @@ namespace FGJ.Tests.EditMode.Exploration
                 Assert.AreEqual(first.ExteriorSortingOrder, building.ExteriorSortingOrder, building.name);
                 Assert.AreEqual(first.EnterPrompt, building.EnterPrompt, building.name);
                 Assert.AreEqual(first.ClearedPrompt, building.ClearedPrompt, building.name);
-                Assert.AreEqual(first.InteractRange, building.InteractRange, building.name);
+                Assert.AreEqual(first.DoorRange, building.DoorRange, building.name);
             }
         }
 
@@ -106,21 +106,21 @@ namespace FGJ.Tests.EditMode.Exploration
         }
 
         [Test]
-        public void Route_InteractSpanMatchesBuildingWidth()
+        public void Route_BuildingSpanMatchesBuildingWidth()
         {
-            var measurer = new BuildingInteractSpanMeasurer();
+            var measurer = new BuildingSpanMeasurer();
 
             foreach (var building in _route.Placements.Select(placement => placement.building))
             {
                 var expected = measurer.Measure(building);
-                Assert.IsTrue(building.UsesInteractSpan, building.name);
-                Assert.AreEqual(expected.x, building.InteractSpan.x, 0.01f, building.name);
-                Assert.AreEqual(expected.y, building.InteractSpan.y, 0.01f, building.name);
+                Assert.IsTrue(building.UsesBuildingSpan, building.name);
+                Assert.AreEqual(expected.x, building.BuildingSpan.x, 0.01f, building.name);
+                Assert.AreEqual(expected.y, building.BuildingSpan.y, 0.01f, building.name);
             }
         }
 
         [Test]
-        public void Route_InteractSpansOfNeighbouringBuildingsDoNotOverlap()
+        public void Route_BuildingSpansOfNeighbouringBuildingsDoNotOverlap()
         {
             var placements = _route.Placements;
             for (var i = 0; i < placements.Count; i++)
@@ -128,8 +128,8 @@ namespace FGJ.Tests.EditMode.Exploration
                 var current = placements[i];
                 var next = placements[(i + 1) % placements.Count];
                 var nextX = i + 1 < placements.Count ? next.x : next.x + _route.LoopLength;
-                var currentRight = current.x + current.building.InteractSpan.y;
-                var nextLeft = nextX - next.building.InteractSpan.x;
+                var currentRight = current.x + current.building.BuildingSpan.y;
+                var nextLeft = nextX - next.building.BuildingSpan.x;
                 Assert.Less(currentRight, nextLeft, $"{current.building.name} → {next.building.name}");
             }
         }

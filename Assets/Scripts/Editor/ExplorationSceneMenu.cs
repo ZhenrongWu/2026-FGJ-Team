@@ -16,7 +16,7 @@ namespace FGJ.Editor
         private const float PlayerStartX = 6f;
         private const float FirstBuildingX = 44f;
         private const float BuildingSpacing = 24f;
-        private const float InteractRange = 1.5f;
+        private const float DoorRange = 1.5f;
         private const string EnterPrompt = "按 ↑ 進入";
         private const string ClearedPrompt = "這裡已經安靜了";
         private const string ExteriorSuffix = "_Exterior";
@@ -126,14 +126,14 @@ namespace FGJ.Editor
                 AssetDatabase.CreateAsset(building, path);
             }
 
-            building.Configure(BuildingId(level), EnterPrompt, ClearedPrompt, InteractRange,
+            building.Configure(BuildingId(level), EnterPrompt, ClearedPrompt, DoorRange,
                 LiarDiceSceneMenu.LevelConfig(level), LiarDiceSceneMenu.LevelMonster(level));
             var (art, doorOffset) = LevelArt[level - 1];
             building.SetExterior(ArtImport.LoadSprite(art + ExteriorSuffix), doorOffset);
             building.SetOutline(ArtImport.LoadSprite(art + OutlineSuffix));
             building.SetExteriorScale(ExteriorScale);
-            var span = new BuildingInteractSpanMeasurer().Measure(building);
-            building.SetInteractSpan(span.x, span.y);
+            var span = new BuildingSpanMeasurer().Measure(building);
+            building.SetBuildingSpan(span.x, span.y);
             EditorUtility.SetDirty(building);
             return building;
         }

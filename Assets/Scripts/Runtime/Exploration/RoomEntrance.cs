@@ -39,7 +39,9 @@ namespace FGJ.Exploration
             BindOutline(definition);
         }
 
-        public bool IsInRange(float playerX) => building.IsWithinInteract(playerX - X);
+        public bool IsAtDoor(float playerX) => building.IsWithinDoor(playerX - X);
+
+        public bool IsNearBuilding(float playerX) => building.IsWithinBuilding(playerX - X);
 
         public void SetCleared(bool cleared)
         {

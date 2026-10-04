@@ -240,7 +240,7 @@ namespace FGJ.Tests.EditMode.Exploration
         }
     }
 
-    public class BuildingInteractSpanTests
+    public class BuildingRangeTests
     {
         private BuildingDefinition _building;
 
@@ -258,33 +258,52 @@ namespace FGJ.Tests.EditMode.Exploration
         }
 
         [Test]
-        public void IsWithinInteract_WithoutSpan_UsesSymmetricInteractRange()
+        public void IsWithinDoor_UsesSymmetricDoorRange()
         {
-            Assert.IsFalse(_building.UsesInteractSpan);
-            Assert.IsTrue(_building.IsWithinInteract(-1.5f));
-            Assert.IsTrue(_building.IsWithinInteract(1.5f));
-            Assert.IsFalse(_building.IsWithinInteract(2f));
+            Assert.IsTrue(_building.IsWithinDoor(-1.5f));
+            Assert.IsTrue(_building.IsWithinDoor(1.5f));
+            Assert.IsFalse(_building.IsWithinDoor(-2f));
+            Assert.IsFalse(_building.IsWithinDoor(2f));
         }
 
         [Test]
-        public void IsWithinInteract_WithSpan_FollowsBuildingWidthOnEachSide()
+        public void IsWithinDoor_IgnoresBuildingSpan()
         {
-            _building.SetInteractSpan(8f, 10.5f);
+            _building.SetBuildingSpan(8f, 10.5f);
 
-            Assert.IsTrue(_building.UsesInteractSpan);
-            Assert.IsTrue(_building.IsWithinInteract(-8f));
-            Assert.IsTrue(_building.IsWithinInteract(10.5f));
-            Assert.IsFalse(_building.IsWithinInteract(-8.1f));
-            Assert.IsFalse(_building.IsWithinInteract(10.6f));
+            Assert.IsTrue(_building.IsWithinDoor(1f));
+            Assert.IsFalse(_building.IsWithinDoor(5f));
+            Assert.IsFalse(_building.IsWithinDoor(-5f));
         }
 
         [Test]
-        public void SetInteractSpan_Negative_ClampsToZero()
+        public void IsWithinBuilding_WithoutSpan_FallsBackToDoorRange()
         {
-            _building.SetInteractSpan(-3f, -1f);
+            Assert.IsFalse(_building.UsesBuildingSpan);
+            Assert.IsTrue(_building.IsWithinBuilding(-1.5f));
+            Assert.IsTrue(_building.IsWithinBuilding(1.5f));
+            Assert.IsFalse(_building.IsWithinBuilding(2f));
+        }
 
-            Assert.AreEqual(UnityEngine.Vector2.zero, _building.InteractSpan);
-            Assert.IsFalse(_building.UsesInteractSpan);
+        [Test]
+        public void IsWithinBuilding_WithSpan_FollowsBuildingWidthOnEachSide()
+        {
+            _building.SetBuildingSpan(8f, 10.5f);
+
+            Assert.IsTrue(_building.UsesBuildingSpan);
+            Assert.IsTrue(_building.IsWithinBuilding(-8f));
+            Assert.IsTrue(_building.IsWithinBuilding(10.5f));
+            Assert.IsFalse(_building.IsWithinBuilding(-8.1f));
+            Assert.IsFalse(_building.IsWithinBuilding(10.6f));
+        }
+
+        [Test]
+        public void SetBuildingSpan_Negative_ClampsToZero()
+        {
+            _building.SetBuildingSpan(-3f, -1f);
+
+            Assert.AreEqual(UnityEngine.Vector2.zero, _building.BuildingSpan);
+            Assert.IsFalse(_building.UsesBuildingSpan);
         }
     }
 }

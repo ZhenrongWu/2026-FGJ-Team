@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FGJ.Editor
 {
-    public sealed class BuildingInteractSpanMeasurer
+    public sealed class BuildingSpanMeasurer
     {
         private const byte SolidAlpha = 128;
 

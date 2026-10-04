@@ -1,5 +1,6 @@
 using FGJ.LiarDice;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace FGJ.Exploration
 {
@@ -18,9 +19,12 @@ namespace FGJ.Exploration
         [SerializeField] private int exteriorSortingOrder = -5;
         [SerializeField] private string enterPrompt = "按 ↑ 進入";
         [SerializeField] private string clearedPrompt = "這裡已經安靜了";
-        [Min(0f)] [SerializeField] private float interactRange = 1.5f;
-        [Tooltip("依建築寬度的觸發範圍：x 為入口往左距離、y 為往右距離；皆為 0 時改用 Interact Range")]
-        [SerializeField] private Vector2 interactSpan;
+        [Tooltip("門的半寬：角色在入口左右這個距離內才顯示進入提示並可進入")]
+        [FormerlySerializedAs("interactRange")]
+        [Min(0f)] [SerializeField] private float doorRange = 1.5f;
+        [Tooltip("依建築寬度的外框閃爍範圍：x 為入口往左距離、y 為往右距離；皆為 0 時改用 Door Range")]
+        [FormerlySerializedAs("interactSpan")]
+        [SerializeField] private Vector2 buildingSpan;
         [SerializeField] private LiarDiceConfig gameplayConfig;
         [SerializeField] private MonsterProfile monster;
 
@@ -34,9 +38,9 @@ namespace FGJ.Exploration
         public int ExteriorSortingOrder => exteriorSortingOrder;
         public string EnterPrompt => enterPrompt;
         public string ClearedPrompt => clearedPrompt;
-        public float InteractRange => interactRange;
-        public Vector2 InteractSpan => interactSpan;
-        public bool UsesInteractSpan => interactSpan.x > 0f || interactSpan.y > 0f;
+        public float DoorRange => doorRange;
+        public Vector2 BuildingSpan => buildingSpan;
+        public bool UsesBuildingSpan => buildingSpan.x > 0f || buildingSpan.y > 0f;
         public LiarDiceConfig GameplayConfig => gameplayConfig;
         public MonsterProfile Monster => monster;
 
@@ -51,16 +55,18 @@ namespace FGJ.Exploration
             outline = outlineSprite;
         }
 
-        public void SetInteractSpan(float left, float right)
+        public void SetBuildingSpan(float left, float right)
         {
-            interactSpan = new Vector2(Mathf.Max(0f, left), Mathf.Max(0f, right));
+            buildingSpan = new Vector2(Mathf.Max(0f, left), Mathf.Max(0f, right));
         }
 
-        public bool IsWithinInteract(float offsetFromEntrance)
+        public bool IsWithinDoor(float offsetFromEntrance) => Mathf.Abs(offsetFromEntrance) <= doorRange;
+
+        public bool IsWithinBuilding(float offsetFromEntrance)
         {
-            if (!UsesInteractSpan)
-                return Mathf.Abs(offsetFromEntrance) <= interactRange;
-            return offsetFromEntrance >= -interactSpan.x && offsetFromEntrance <= interactSpan.y;
+            if (!UsesBuildingSpan)
+                return IsWithinDoor(offsetFromEntrance);
+            return offsetFromEntrance >= -buildingSpan.x && offsetFromEntrance <= buildingSpan.y;
         }
 
         public void SetExteriorScale(Vector2 scale)
@@ -68,14 +74,14 @@ namespace FGJ.Exploration
             exteriorScale = scale;
         }
 
-        public void Configure(string id, string enter, string cleared, float range, LiarDiceConfig config,
+        public void Configure(string id, string enter, string cleared, float door, LiarDiceConfig config,
             MonsterProfile buildingMonster = null)
         {
             monster = buildingMonster;
             buildingId = id;
             enterPrompt = enter;
             clearedPrompt = cleared;
-            interactRange = range;
+            doorRange = door;
             gameplayConfig = config;
         }
     }

@@ -112,6 +112,7 @@ namespace FGJ.Tests.PlayMode.Exploration
             yield return WaitFrames(2);
 
             Assert.IsNull(_rig.Controller.NearbyEntrance);
+            Assert.IsNull(_rig.Controller.DoorEntrance);
             Assert.AreEqual(string.Empty, _rig.Hud.PromptMessage);
         }
 
@@ -230,6 +231,48 @@ namespace FGJ.Tests.PlayMode.Exploration
 
             Assert.IsTrue(_rig.Controller.IsEnteringRoom);
             Assert.IsFalse(_rig.Controller.Entrances[0].IsHighlighted);
+        }
+
+        [UnityTest]
+        public IEnumerator InsideBuildingButAwayFromDoor_HighlightsWithoutPrompt()
+        {
+            _rig.Building.SetBuildingSpan(5f, 5f);
+            _rig.Build(ExplorationTestRig.BuildingX + 4f);
+            yield return WaitFrames(2);
+
+            Assert.AreSame(_rig.Controller.Entrances[0], _rig.Controller.NearbyEntrance);
+            Assert.IsNull(_rig.Controller.DoorEntrance);
+            Assert.IsTrue(_rig.Controller.Entrances[0].IsHighlighted);
+            Assert.AreEqual(string.Empty, _rig.Hud.PromptMessage);
+        }
+
+        [UnityTest]
+        public IEnumerator InsideBuildingButAwayFromDoor_InteractDoesNotEnter()
+        {
+            _rig.Building.SetBuildingSpan(5f, 5f);
+            _rig.Build(ExplorationTestRig.BuildingX - 4f);
+            yield return WaitFrames(2);
+
+            _rig.Controller.RequestInteract();
+            yield return WaitFrames(2);
+
+            Assert.IsFalse(_rig.Controller.IsEnteringRoom);
+            Assert.IsEmpty(_rig.Router.LoadedScenes);
+        }
+
+        [UnityTest]
+        public IEnumerator AtDoorOfWideBuilding_ShowsPromptAndEnters()
+        {
+            _rig.Building.SetBuildingSpan(5f, 5f);
+            _rig.Build(ExplorationTestRig.BuildingX + 1f);
+            yield return WaitFrames(2);
+            Assert.AreSame(_rig.Controller.Entrances[0], _rig.Controller.DoorEntrance);
+            Assert.AreEqual(ExplorationTestRig.EnterPrompt, _rig.Hud.PromptMessage);
+
+            _rig.Controller.RequestInteract();
+            yield return WaitFrames(2);
+
+            Assert.IsTrue(_rig.Controller.IsEnteringRoom);
         }
     }
 }
