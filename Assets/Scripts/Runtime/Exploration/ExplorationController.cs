@@ -20,6 +20,7 @@ namespace FGJ.Exploration
         [Min(0f)] [SerializeField] private float fadeInDuration = 0.6f;
 
         private readonly List<RoomEntrance> _entrances = new List<RoomEntrance>();
+        private readonly List<float> _entranceBaseXs = new List<float>();
         private bool _interactRequested;
 
         public RoomEntrance NearbyEntrance { get; private set; }
@@ -61,6 +62,7 @@ namespace FGJ.Exploration
         {
             SpawnBuildings();
             PlacePlayerAtReturnEntrance();
+            MoveEntrancesNear(player.X);
             hud.SetFade(1f);
             StartCoroutine(hud.Fade(1f, 0f, fadeInDuration));
         }
@@ -70,7 +72,9 @@ namespace FGJ.Exploration
             if (IsEnteringRoom)
                 return;
 
+            MoveEntrancesNear(player.X);
             NearbyEntrance = FindEntranceInRange(player.X);
+            HighlightOnly(NearbyEntrance != null && !NearbyEntrance.IsCleared ? NearbyEntrance : null);
             if (NearbyEntrance != null)
                 hud.ShowPrompt(NearbyEntrance.Prompt);
             else
@@ -85,6 +89,7 @@ namespace FGJ.Exploration
         private void SpawnBuildings()
         {
             _entrances.Clear();
+            _entranceBaseXs.Clear();
             if (route == null)
                 return;
 
@@ -102,6 +107,18 @@ namespace FGJ.Exploration
                 entrance.Bind(placement.building);
                 entrance.SetCleared(progress.IsCleared(entrance.RoomId));
                 _entrances.Add(entrance);
+                _entranceBaseXs.Add(placement.x);
+            }
+        }
+
+        private void MoveEntrancesNear(float x)
+        {
+            for (var i = 0; i < _entrances.Count; i++)
+            {
+                var entranceTransform = _entrances[i].transform;
+                var position = entranceTransform.position;
+                position.x = route.NearestCopyX(_entranceBaseXs[i], x);
+                entranceTransform.position = position;
             }
         }
 
@@ -111,14 +128,20 @@ namespace FGJ.Exploration
             if (returnRoomId == null)
                 return;
 
-            foreach (var entrance in _entrances)
+            for (var i = 0; i < _entrances.Count; i++)
             {
-                if (entrance.RoomId != returnRoomId)
+                if (_entrances[i].RoomId != returnRoomId)
                     continue;
-                player.PlaceAt(entrance.X);
+                player.PlaceAt(route.NearestCopyX(_entranceBaseXs[i], progress.ReturnX));
                 cameraFollow.SnapToTarget();
                 return;
             }
+        }
+
+        private void HighlightOnly(RoomEntrance target)
+        {
+            foreach (var entrance in _entrances)
+                entrance.SetHighlighted(entrance == target);
         }
 
         private RoomEntrance FindEntranceInRange(float playerX)
@@ -135,8 +158,9 @@ namespace FGJ.Exploration
         {
             IsEnteringRoom = true;
             hud.HidePrompt();
+            HighlightOnly(null);
             player.PlayEnter();
-            progress.EnterBuilding(entrance.Building);
+            progress.EnterBuilding(entrance.Building, entrance.X);
             yield return hud.Fade(0f, 1f, enterDuration);
             router.GoToGameplay();
         }

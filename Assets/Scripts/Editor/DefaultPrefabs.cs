@@ -120,7 +120,7 @@ namespace FGJ.Editor
             {
                 new SpriteClip(SideScrollPlayer.IdleClip, new[] { ArtImport.LoadSprite("Right_01") }, 1f, true),
                 new SpriteClip(SideScrollPlayer.WalkClip, Frames("Right_01", "Right_02", "Right_03"), 6f, true),
-                new SpriteClip(SideScrollPlayer.EnterClip, Frames("Forward_01", "Forward_02", "Forward_03"), 6f, false)
+                new SpriteClip(SideScrollPlayer.EnterClip, Frames("Forward_01"), 6f, false)
             });
 
             playerObject.AddComponent<SideScrollPlayer>()
@@ -193,7 +193,13 @@ namespace FGJ.Editor
             exteriorRenderer.sortingOrder = -5;
             exterior.SetActive(false);
 
-            root.AddComponent<RoomEntrance>().Configure(exteriorRenderer);
+            var outline = new GameObject("Outline");
+            outline.transform.SetParent(root.transform, false);
+            var outlineRenderer = outline.AddComponent<SpriteRenderer>();
+            outlineRenderer.sortingOrder = -4;
+            outline.SetActive(false);
+
+            root.AddComponent<RoomEntrance>().Configure(exteriorRenderer, outlineRenderer);
             return root;
         }
     }

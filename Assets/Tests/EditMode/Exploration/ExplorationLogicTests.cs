@@ -152,4 +152,91 @@ namespace FGJ.Tests.EditMode.Exploration
             return ParallaxLayer.TilesNeeded(viewWidth, 56f);
         }
     }
+
+    public class ExplorationRouteTests
+    {
+        private ExplorationRoute _route;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _route = ScriptableObject.CreateInstance<ExplorationRoute>();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Object.DestroyImmediate(_route);
+        }
+
+        [Test]
+        public void NearestCopyX_WithoutLoop_ReturnsBaseX()
+        {
+            Assert.IsFalse(_route.Loops);
+            Assert.AreEqual(44f, _route.NearestCopyX(44f, 500f), 1e-4f);
+        }
+
+        [Test]
+        public void NearestCopyX_PastLastBuilding_ReturnsNextLoopCopy()
+        {
+            _route.SetLoopLength(120f);
+
+            Assert.AreEqual(164f, _route.NearestCopyX(44f, 150f), 1e-4f);
+            Assert.AreEqual(284f, _route.NearestCopyX(44f, 290f), 1e-4f);
+        }
+
+        [Test]
+        public void NearestCopyX_BeforeFirstLoop_NeverGoesBelowBaseX()
+        {
+            _route.SetLoopLength(120f);
+
+            Assert.AreEqual(44f, _route.NearestCopyX(44f, -500f), 1e-4f);
+        }
+
+        [Test]
+        public void SetLoopLength_Negative_DisablesLoop()
+        {
+            _route.SetLoopLength(-5f);
+
+            Assert.IsFalse(_route.Loops);
+        }
+    }
+
+    public class OutlinePulseTests
+    {
+        [Test]
+        public void AlphaAt_Start_IsMinAlpha()
+        {
+            var pulse = new OutlinePulse(1f, 0.2f, 0.9f);
+
+            Assert.AreEqual(0.2f, pulse.AlphaAt(0f), 1e-4f);
+        }
+
+        [Test]
+        public void AlphaAt_HalfPeriod_IsMaxAlpha()
+        {
+            var pulse = new OutlinePulse(1f, 0.2f, 0.9f);
+
+            Assert.AreEqual(0.9f, pulse.AlphaAt(0.5f), 1e-4f);
+        }
+
+        [Test]
+        public void AlphaAt_FullPeriod_RepeatsFromMinAlpha()
+        {
+            var pulse = new OutlinePulse(1f, 0.2f, 0.9f);
+
+            Assert.AreEqual(pulse.AlphaAt(0.3f), pulse.AlphaAt(1.3f), 1e-4f);
+            Assert.AreEqual(0.2f, pulse.AlphaAt(2f), 1e-4f);
+        }
+
+        [Test]
+        public void Constructor_OutOfRangeValues_AreClamped()
+        {
+            var pulse = new OutlinePulse(0f, -1f, 2f);
+
+            Assert.Greater(pulse.Period, 0f);
+            Assert.AreEqual(0f, pulse.MinAlpha);
+            Assert.AreEqual(1f, pulse.MaxAlpha);
+        }
+    }
 }

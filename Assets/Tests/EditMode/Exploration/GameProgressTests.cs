@@ -55,6 +55,16 @@ namespace FGJ.Tests.EditMode.Exploration
         }
 
         [Test]
+        public void CompleteBuilding_PlayerWon_RemembersEntranceXForReturn()
+        {
+            _progress.EnterBuilding(CreateBuilding("Room01"), 164f);
+
+            _progress.CompleteBuilding(true);
+
+            Assert.AreEqual(164f, _progress.ReturnX, 1e-4f);
+        }
+
+        [Test]
         public void CompleteBuilding_PlayerLost_ResetsWholeRun()
         {
             _progress.EnterBuilding(CreateBuilding("Room01"));

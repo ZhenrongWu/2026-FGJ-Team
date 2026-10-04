@@ -10,6 +10,7 @@ namespace FGJ.Tests.PlayMode.Exploration
         private readonly List<Object> _created = new List<Object>();
         private RoomEntrance _entrance;
         private SpriteRenderer _exterior;
+        private SpriteRenderer _outline;
 
         [SetUp]
         public void SetUp()
@@ -20,8 +21,14 @@ namespace FGJ.Tests.PlayMode.Exploration
             _exterior = exteriorObject.AddComponent<SpriteRenderer>();
             exteriorObject.SetActive(false);
 
+            var outlineObject = new GameObject("Outline");
+            outlineObject.transform.SetParent(root.transform, false);
+            _outline = outlineObject.AddComponent<SpriteRenderer>();
+            outlineObject.SetActive(false);
+
             _entrance = root.AddComponent<RoomEntrance>();
-            _entrance.Configure(_exterior);
+            _entrance.Configure(_exterior, _outline);
+            _entrance.SetOutlinePulse(new OutlinePulse(1f, 0.2f, 0.9f));
         }
 
         [TearDown]
@@ -99,6 +106,69 @@ namespace FGJ.Tests.PlayMode.Exploration
             _entrance.SetCleared(true);
             Assert.IsTrue(_entrance.IsCleared);
             Assert.AreEqual("酒館裡已經安靜了", _entrance.Prompt);
+        }
+
+        [Test]
+        public void Bind_WithOutline_AlignsWithExteriorAndStaysHidden()
+        {
+            var outline = CreateSprite();
+            var building = CreateBuilding(CreateSprite(), new Vector2(0.74f, -0.15f));
+            building.SetExteriorScale(new Vector2(2f, 2f));
+            building.SetOutline(outline);
+
+            _entrance.Bind(building);
+
+            Assert.IsTrue(_entrance.HasOutline);
+            Assert.AreSame(outline, _outline.sprite);
+            Assert.AreEqual(_exterior.transform.localPosition, _outline.transform.localPosition);
+            Assert.AreEqual(_exterior.transform.localScale, _outline.transform.localScale);
+            Assert.Greater(_outline.sortingOrder, _exterior.sortingOrder);
+            Assert.IsFalse(_outline.gameObject.activeSelf);
+            Assert.AreEqual(0f, _entrance.OutlineAlpha);
+        }
+
+        [Test]
+        public void SetHighlighted_PulsesOutlineAlpha()
+        {
+            var building = CreateBuilding(CreateSprite(), Vector2.zero);
+            building.SetOutline(CreateSprite());
+            _entrance.Bind(building);
+
+            _entrance.SetHighlighted(true);
+            Assert.IsTrue(_outline.gameObject.activeSelf);
+            Assert.AreEqual(0.2f, _entrance.OutlineAlpha, 1e-4f);
+
+            _entrance.AdvanceHighlight(0.5f);
+            Assert.AreEqual(0.9f, _entrance.OutlineAlpha, 1e-4f);
+
+            _entrance.AdvanceHighlight(0.5f);
+            Assert.AreEqual(0.2f, _entrance.OutlineAlpha, 1e-4f);
+        }
+
+        [Test]
+        public void SetHighlighted_False_HidesOutline()
+        {
+            var building = CreateBuilding(CreateSprite(), Vector2.zero);
+            building.SetOutline(CreateSprite());
+            _entrance.Bind(building);
+            _entrance.SetHighlighted(true);
+
+            _entrance.SetHighlighted(false);
+
+            Assert.IsFalse(_entrance.IsHighlighted);
+            Assert.IsFalse(_outline.gameObject.activeSelf);
+            Assert.AreEqual(0f, _entrance.OutlineAlpha);
+        }
+
+        [Test]
+        public void SetHighlighted_WithoutOutlineSprite_KeepsOutlineHidden()
+        {
+            _entrance.Bind(CreateBuilding(CreateSprite(), Vector2.zero));
+
+            _entrance.SetHighlighted(true);
+
+            Assert.IsTrue(_entrance.IsHighlighted);
+            Assert.IsFalse(_outline.gameObject.activeSelf);
         }
     }
 }

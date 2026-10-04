@@ -10,16 +10,20 @@ namespace FGJ.Editor
     {
         public const string ScenePath = "Assets/Scenes/Exploration.unity";
         public const string DataFolder = "Assets/Data/Exploration";
-        public const string FirstBuildingPath = DataFolder + "/Building_Tavern.asset";
         public const string RoutePath = DataFolder + "/ExplorationRoute.asset";
+        public const int LevelCount = 4;
 
         private const float GroundY = 1.5f;
         private const float PlayerStartX = 6f;
         private const float FirstBuildingX = 44f;
-        private const string TavernId = "Tavern";
-        private const string TavernEnterPrompt = "按 ↑ 進入酒館";
-        private const string TavernClearedPrompt = "酒館裡已經安靜了";
-        private static readonly Vector2 TavernDoorOffset = new Vector2(0.74f, -0.15f);
+        private const float BuildingSpacing = 24f;
+        private const float InteractRange = 1.5f;
+        private const string EnterPrompt = "按 ↑ 進入";
+        private const string ClearedPrompt = "這裡已經安靜了";
+        private const string ExteriorSprite = "Tavern_Exterior";
+        private const string OutlineSprite = "Tavern_Outline";
+        private static readonly Vector2 DoorOffset = new Vector2(0.74f, -0.15f);
+        private static readonly Vector2 ExteriorScale = new Vector2(2f, 2f);
 
         [MenuItem("FGJ/Scenes/Build Exploration Scene")]
         public static void BuildFromMenu()
@@ -79,34 +83,46 @@ namespace FGJ.Editor
             if (!AssetDatabase.IsValidFolder(DataFolder))
                 AssetDatabase.CreateFolder("Assets/Data", "Exploration");
 
-            var building = AssetDatabase.LoadAssetAtPath<BuildingDefinition>(FirstBuildingPath);
-            if (building == null)
-            {
-                building = ScriptableObject.CreateInstance<BuildingDefinition>();
-                building.Configure(TavernId, TavernEnterPrompt, TavernClearedPrompt, 1.5f,
-                    AssetDatabase.LoadAssetAtPath<LiarDiceConfig>(LiarDiceSceneMenu.ConfigPath),
-                    LiarDiceSceneMenu.EnsureDefaultMonster());
-                AssetDatabase.CreateAsset(building, FirstBuildingPath);
-            }
-
-            if (building.Exterior == null)
-            {
-                building.Configure(TavernId, TavernEnterPrompt, TavernClearedPrompt, building.InteractRange,
-                    building.GameplayConfig, building.Monster);
-                building.SetExterior(ArtImport.LoadSprite("Tavern"), TavernDoorOffset);
-                EditorUtility.SetDirty(building);
-            }
+            var placements = new BuildingPlacement[LevelCount];
+            for (var i = 0; i < LevelCount; i++)
+                placements[i] = new BuildingPlacement(EnsureBuilding(i + 1), FirstBuildingX + i * BuildingSpacing);
 
             var route = AssetDatabase.LoadAssetAtPath<ExplorationRoute>(RoutePath);
             if (route == null)
             {
                 route = ScriptableObject.CreateInstance<ExplorationRoute>();
-                route.SetPlacements(new[] { new BuildingPlacement(building, FirstBuildingX) });
                 AssetDatabase.CreateAsset(route, RoutePath);
             }
+            route.SetPlacements(placements);
+            route.SetLoopLength(LevelCount * BuildingSpacing);
+            EditorUtility.SetDirty(route);
 
             AssetDatabase.SaveAssets();
             return route;
+        }
+
+        private static string BuildingPath(int level) => $"{DataFolder}/Building_{level:00}.asset";
+
+        private static string BuildingId(int level) => $"Building{level:00}";
+
+        private static BuildingDefinition EnsureBuilding(int level)
+        {
+            var path = BuildingPath(level);
+            var building = AssetDatabase.LoadAssetAtPath<BuildingDefinition>(path);
+            if (building == null)
+            {
+                building = ScriptableObject.CreateInstance<BuildingDefinition>();
+                AssetDatabase.CreateAsset(building, path);
+            }
+
+            building.Configure(BuildingId(level), EnterPrompt, ClearedPrompt, InteractRange,
+                AssetDatabase.LoadAssetAtPath<LiarDiceConfig>(LiarDiceSceneMenu.ConfigPath),
+                LiarDiceSceneMenu.EnsureDefaultMonster());
+            building.SetExterior(ArtImport.LoadSprite(ExteriorSprite), DoorOffset);
+            building.SetOutline(ArtImport.LoadSprite(OutlineSprite));
+            building.SetExteriorScale(ExteriorScale);
+            EditorUtility.SetDirty(building);
+            return building;
         }
     }
 }

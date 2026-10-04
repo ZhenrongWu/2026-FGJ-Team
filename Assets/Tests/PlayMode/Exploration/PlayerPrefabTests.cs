@@ -35,5 +35,20 @@ namespace FGJ.Tests.PlayMode.Exploration
             Assert.IsTrue(animator.IsFinished);
             Assert.AreEqual(heldFrame, animator.CurrentFrame);
         }
+
+        [Test]
+        public void PlayEnter_ShowsOnlyForwardFirstFrame()
+        {
+            var animator = _player.GetComponentInChildren<SpriteFrameAnimator>();
+            var spriteRenderer = _player.GetComponentInChildren<SpriteRenderer>();
+
+            _player.PlayEnter();
+            Assert.AreEqual("Forward_01", spriteRenderer.sprite.name);
+
+            animator.Advance(10f);
+
+            Assert.AreEqual(0, animator.CurrentFrame);
+            Assert.AreEqual("Forward_01", spriteRenderer.sprite.name);
+        }
     }
 }

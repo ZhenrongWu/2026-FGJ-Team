@@ -114,5 +114,83 @@ namespace FGJ.Tests.PlayMode.Exploration
             Assert.IsFalse(_rig.Controller.IsEnteringRoom);
             Assert.IsEmpty(_rig.Router.LoadedScenes);
         }
+
+        [UnityTest]
+        public IEnumerator WalkingPastLastBuilding_BuildingRepeatsInNextLoop()
+        {
+            _rig.LoopLength = 20f;
+            _rig.Build(ExplorationTestRig.BuildingX + 21f);
+            yield return WaitFrames(2);
+
+            Assert.AreEqual(ExplorationTestRig.BuildingX + 20f, _rig.Controller.Entrances[0].X, 1e-4f);
+            Assert.AreSame(_rig.Controller.Entrances[0], _rig.Controller.NearbyEntrance);
+            Assert.AreEqual(ExplorationTestRig.EnterPrompt, _rig.Hud.PromptMessage);
+        }
+
+        [UnityTest]
+        public IEnumerator EnteringLoopedBuilding_ReturnsPlayerToSameLoop()
+        {
+            _rig.LoopLength = 20f;
+            _rig.Build(ExplorationTestRig.BuildingX + 41f);
+            yield return WaitFrames(2);
+
+            _rig.Controller.RequestInteract();
+            yield return WaitFrames(3);
+            _rig.Progress.CompleteBuilding(true);
+
+            Assert.AreEqual(ExplorationTestRig.BuildingX + 40f, _rig.Progress.ReturnX, 1e-4f);
+        }
+
+        [UnityTest]
+        public IEnumerator ReturningFromLoopedBuilding_SpawnsAtThatLoopCopy()
+        {
+            _rig.LoopLength = 20f;
+            _rig.Progress.EnterBuilding(_rig.Building, ExplorationTestRig.BuildingX + 40f);
+            _rig.Progress.CompleteBuilding(true);
+            _rig.Build(2f);
+            yield return WaitFrames(2);
+
+            Assert.AreEqual(ExplorationTestRig.BuildingX + 40f, _rig.Player.X, 1e-4f);
+            Assert.AreEqual(ExplorationTestRig.BuildingX + 40f, _rig.Controller.Entrances[0].X, 1e-4f);
+            Assert.AreEqual(ExplorationTestRig.ClearedPrompt, _rig.Hud.PromptMessage);
+        }
+
+        [UnityTest]
+        public IEnumerator NearBuilding_HighlightsItAndLeavingTurnsItOff()
+        {
+            _rig.Build(ExplorationTestRig.BuildingX + 1f);
+            yield return WaitFrames(2);
+            Assert.IsTrue(_rig.Controller.Entrances[0].IsHighlighted);
+
+            _rig.Player.PlaceAt(2f);
+            yield return WaitFrames(2);
+
+            Assert.IsFalse(_rig.Controller.Entrances[0].IsHighlighted);
+        }
+
+        [UnityTest]
+        public IEnumerator NearClearedBuilding_DoesNotHighlight()
+        {
+            _rig.Progress.EnterBuilding(_rig.Building);
+            _rig.Progress.CompleteBuilding(true);
+            _rig.Build(2f);
+            yield return WaitFrames(2);
+
+            Assert.AreSame(_rig.Controller.Entrances[0], _rig.Controller.NearbyEntrance);
+            Assert.IsFalse(_rig.Controller.Entrances[0].IsHighlighted);
+        }
+
+        [UnityTest]
+        public IEnumerator EnteringBuilding_TurnsHighlightOff()
+        {
+            _rig.Build(ExplorationTestRig.BuildingX + 1f);
+            yield return WaitFrames(2);
+
+            _rig.Controller.RequestInteract();
+            yield return WaitFrames(2);
+
+            Assert.IsTrue(_rig.Controller.IsEnteringRoom);
+            Assert.IsFalse(_rig.Controller.Entrances[0].IsHighlighted);
+        }
     }
 }

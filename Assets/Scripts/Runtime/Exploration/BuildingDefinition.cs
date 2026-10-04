@@ -10,6 +10,8 @@ namespace FGJ.Exploration
         [Tooltip("留空時使用場景預設的入口 Prefab")]
         [SerializeField] private RoomEntrance entrancePrefab;
         [SerializeField] private Sprite exterior;
+        [Tooltip("角色靠近時閃爍的外框圖，需與外觀圖同尺寸")]
+        [SerializeField] private Sprite outline;
         [Tooltip("以 Scale 為 1 時的位置設定，實際位置會隨 Scale 一起縮放，讓門口維持對齊")]
         [SerializeField] private Vector2 exteriorOffset;
         [SerializeField] private Vector2 exteriorScale = Vector2.one;
@@ -23,6 +25,7 @@ namespace FGJ.Exploration
         public string BuildingId => buildingId;
         public RoomEntrance EntrancePrefab => entrancePrefab;
         public Sprite Exterior => exterior;
+        public Sprite Outline => outline;
         public Vector2 ExteriorOffset => exteriorOffset;
         public Vector2 ExteriorScale => exteriorScale;
         public Vector2 ScaledExteriorOffset => Vector2.Scale(exteriorOffset, exteriorScale);
@@ -37,6 +40,11 @@ namespace FGJ.Exploration
         {
             exterior = exteriorSprite;
             exteriorOffset = offset;
+        }
+
+        public void SetOutline(Sprite outlineSprite)
+        {
+            outline = outlineSprite;
         }
 
         public void SetExteriorScale(Vector2 scale)

@@ -22,7 +22,7 @@ namespace FGJ.Editor
         public static readonly string[] BackgroundSprites = { "Ocean_01", "Ocean_02", "Ocean_03", "Ocean_04" };
         public static readonly string[] CharacterSprites =
             { "Right_01", "Right_02", "Right_03", "Forward_01", "Forward_02", "Forward_03" };
-        public static readonly string[] BuildingSprites = { "Tavern" };
+        public static readonly string[] BuildingSprites = { "Tavern_Exterior", "Tavern_Outline" };
 
         public static void ConfigureAll()
         {

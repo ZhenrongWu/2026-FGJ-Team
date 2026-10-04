@@ -23,6 +23,7 @@ namespace FGJ.Tests.PlayMode.Exploration
         public ExplorationController Controller { get; private set; }
         public ExplorationHud Hud { get; private set; }
         public LiarDiceConfig BuildingConfig { get; private set; }
+        public float LoopLength { get; set; }
 
         public BuildingDefinition Building
         {
@@ -106,6 +107,7 @@ namespace FGJ.Tests.PlayMode.Exploration
         {
             var route = Track(ScriptableObject.CreateInstance<ExplorationRoute>());
             route.SetPlacements(new[] { new BuildingPlacement(Building, BuildingX) });
+            route.SetLoopLength(LoopLength);
             return route;
         }
 
