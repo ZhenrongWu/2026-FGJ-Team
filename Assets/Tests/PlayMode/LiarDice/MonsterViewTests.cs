@@ -100,6 +100,32 @@ namespace FGJ.Tests.PlayMode.LiarDice
         }
 
         [Test]
+        public void Show_MonsterWithPositionY_MovesOnlyVertically()
+        {
+            _view.transform.localPosition = new Vector3(0.5f, 0f, 1.1f);
+            var monster = Track(ScriptableObject.CreateInstance<MonsterProfile>());
+            monster.SetPositionY(-0.3f);
+
+            _view.Show(monster);
+
+            Assert.AreEqual(new Vector3(0.5f, -0.3f, 1.1f), _view.transform.localPosition);
+        }
+
+        [Test]
+        public void ShowDead_KeepsMonsterHeight()
+        {
+            var monster = Track(ScriptableObject.CreateInstance<MonsterProfile>());
+            monster.SetSprite(CreateSprite());
+            monster.SetDeadSprite(CreateSprite());
+            monster.SetPositionY(0.25f);
+            _view.Show(monster);
+
+            _view.ShowDead(monster);
+
+            Assert.AreEqual(0.25f, _view.transform.localPosition.y, 1e-5f);
+        }
+
+        [Test]
         public void Show_MonsterWithoutSprite_FallsBackToPlaceholder()
         {
             _view.Show(Track(ScriptableObject.CreateInstance<MonsterProfile>()));

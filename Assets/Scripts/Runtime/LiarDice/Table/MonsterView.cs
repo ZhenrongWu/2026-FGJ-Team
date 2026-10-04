@@ -21,6 +21,14 @@ namespace FGJ.LiarDice.Table
         {
             IsShowingDead = false;
             spriteRenderer.sprite = monster != null && monster.Sprite != null ? monster.Sprite : placeholderSprite;
+            if (monster != null)
+                MoveToHeight(monster.PositionY);
+        }
+
+        private void MoveToHeight(float y)
+        {
+            var position = transform.localPosition;
+            transform.localPosition = new Vector3(position.x, y, position.z);
         }
 
         public void ShowDead(MonsterProfile monster)

@@ -52,6 +52,16 @@ namespace FGJ.Tests.EditMode.LiarDice
         }
 
         [Test]
+        public void PositionY_DefaultsToTableHeightAndCanBeChanged()
+        {
+            Assert.AreEqual(MonsterProfile.DefaultPositionY, _monster.PositionY, 1e-5f);
+
+            _monster.SetPositionY(0.4f);
+
+            Assert.AreEqual(0.4f, _monster.PositionY, 1e-5f);
+        }
+
+        [Test]
         public void ToAIProfile_UsesPersonalityDefaults()
         {
             var profile = _monster.ToAIProfile();

@@ -117,7 +117,7 @@ namespace FGJ.Editor
                 AssetDatabase.CreateFolder(parent, name);
         }
 
-        private static readonly Vector3 MonsterLocalPosition = new Vector3(0f, 0.12f, 1.1f);
+        private static readonly Vector3 MonsterLocalPosition = new Vector3(0f, MonsterProfile.DefaultPositionY, 1.1f);
 
         private static GameObject CreateLiarDiceRoom(GameObject hudPrefab, GameObject tablePrefab,
             GameObject monsterPrefab)
