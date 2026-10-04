@@ -22,6 +22,8 @@ namespace FGJ.LiarDice.Table
         public IReadOnlyList<DieView> MonsterDice => _monsterDice;
         public DiceCupView PlayerCup => playerCup;
         public DiceCupView MonsterCup => monsterCup;
+        public float PlayerDieScale { get; private set; } = 1f;
+        public float MonsterDieScale { get; private set; } = 1f;
 
         public void Configure(DiceCupView player, DiceCupView monster, DieView dieTemplate)
         {
@@ -58,6 +60,11 @@ namespace FGJ.LiarDice.Table
             yield return playerCup.AnimateLift(true, liftDuration);
         }
 
+        public IEnumerator PlayReroll(LiarDiceMatch match)
+        {
+            yield return PlayRoundStart(match);
+        }
+
         public IEnumerator PlayReveal(LiarDiceMatch match)
         {
             playerCup.SetLiftedImmediate(true);
@@ -67,16 +74,19 @@ namespace FGJ.LiarDice.Table
 
         public void ShowDice(LiarDiceMatch match)
         {
-            Arrange(_playerDice, playerCup, match.GetDice(Side.Player));
-            Arrange(_monsterDice, monsterCup, match.GetDice(Side.Monster));
+            PlayerDieScale = Arrange(_playerDice, playerCup, match.GetDice(Side.Player));
+            MonsterDieScale = Arrange(_monsterDice, monsterCup, match.GetDice(Side.Monster));
         }
 
-        private void Arrange(List<DieView> dice, DiceCupView cup, IReadOnlyList<int> values)
+        private float Arrange(List<DieView> dice, DiceCupView cup, IReadOnlyList<int> values)
         {
             while (dice.Count < values.Count)
                 dice.Add(Instantiate(diePrefab, cup.DiceRoot));
 
+            var baseScale = diePrefab.transform.localScale;
             var positions = _trayLayout.Positions(values.Count, cup.TrayRadius);
+            var scale = _trayLayout.DieScale(positions, cup.TrayRadius, baseScale.x);
+            var sink = Vector3.down * (1f - scale) * baseScale.y * 0.5f;
             for (var i = 0; i < dice.Count; i++)
             {
                 var visible = i < values.Count;
@@ -84,10 +94,12 @@ namespace FGJ.LiarDice.Table
                 if (!visible)
                     continue;
 
-                dice[i].transform.localPosition = positions[i];
+                dice[i].transform.localScale = baseScale * scale;
+                dice[i].transform.localPosition = positions[i] + sink;
                 dice[i].ShowValue(values[i], (float)_yawRandom.NextDouble() * 360f, _faceLayout);
                 dice[i].SetHighlighted(false);
             }
+            return scale;
         }
 
         private void HighlightMatches(LiarDiceMatch match)

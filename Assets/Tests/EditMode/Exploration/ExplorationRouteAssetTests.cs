@@ -46,7 +46,7 @@ namespace FGJ.Tests.EditMode.Exploration
         }
 
         [Test]
-        public void Route_BuildingsShareTheSameSettingsExceptArt()
+        public void Route_BuildingsShareTheSameSettingsExceptArtAndEncounter()
         {
             var first = _route.Placements[0].building;
 
@@ -57,9 +57,18 @@ namespace FGJ.Tests.EditMode.Exploration
                 Assert.AreEqual(first.EnterPrompt, building.EnterPrompt, building.name);
                 Assert.AreEqual(first.ClearedPrompt, building.ClearedPrompt, building.name);
                 Assert.AreEqual(first.InteractRange, building.InteractRange, building.name);
-                Assert.AreSame(first.GameplayConfig, building.GameplayConfig, building.name);
-                Assert.AreSame(first.Monster, building.Monster, building.name);
             }
+        }
+
+        [Test]
+        public void Route_EachBuildingHasItsOwnLevelConfigAndMonster()
+        {
+            var buildings = _route.Placements.Select(placement => placement.building).ToList();
+
+            CollectionAssert.AllItemsAreNotNull(buildings.Select(building => building.GameplayConfig));
+            CollectionAssert.AllItemsAreNotNull(buildings.Select(building => building.Monster));
+            CollectionAssert.AllItemsAreUnique(buildings.Select(building => building.GameplayConfig));
+            CollectionAssert.AllItemsAreUnique(buildings.Select(building => building.Monster));
         }
 
         [Test]

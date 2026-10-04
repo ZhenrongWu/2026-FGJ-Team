@@ -13,6 +13,7 @@ namespace FGJ.Flow
         [NonSerialized] private string _returnBuildingId;
         [NonSerialized] private float _enteredX;
         [NonSerialized] private float _returnX;
+        [NonSerialized] private int _playerOxygen;
 
         public BuildingDefinition CurrentBuilding => _currentBuilding;
         public string ReturnBuildingId => _returnBuildingId;
@@ -25,6 +26,7 @@ namespace FGJ.Flow
             _returnBuildingId = null;
             _enteredX = 0f;
             _returnX = 0f;
+            _playerOxygen = 0;
         }
 
         public void EnterBuilding(BuildingDefinition building, float entranceX = 0f)
@@ -34,13 +36,18 @@ namespace FGJ.Flow
             _enteredX = entranceX;
         }
 
-        public void CompleteBuilding(bool playerWon)
+        public int PlayerOxygenFor(int maxOxygen)
+        {
+            return _playerOxygen > 0 ? Mathf.Min(_playerOxygen, maxOxygen) : maxOxygen;
+        }
+
+        public void CompleteBuilding(bool playerWon, int playerOxygenAfter = 0)
         {
             if (!playerWon)
-            {
-                ResetRun();
                 return;
-            }
+
+            if (playerOxygenAfter > 0)
+                _playerOxygen = playerOxygenAfter;
 
             if (_currentBuilding != null)
             {

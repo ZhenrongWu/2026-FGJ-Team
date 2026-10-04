@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -20,19 +21,26 @@ namespace FGJ.LiarDice.UI
         public Button continueButton;
         public Text continueLabel;
         public MatchLogView logView;
+        public ItemBarView playerItems;
+        public ItemBarView monsterItems;
     }
 
     public sealed class LiarDiceHud : MonoBehaviour
     {
         [SerializeField] private LiarDiceHudParts parts;
 
+        private readonly LiarDiceText _text = new LiarDiceText();
+        private readonly List<string> _itemLabels = new List<string>();
         private bool _listenersWired;
+        private ItemBarView _wiredItemBar;
 
         public event Action BelieveClicked;
         public event Action BluffClicked;
         public event Action<string, string> BidSubmitted;
         public event Action ContinueClicked;
+        public event Action<int> ItemClicked;
 
+        public LiarDiceHudParts Parts => parts;
         public MatchLogView LogView => parts.logView;
         public OxygenGauge PlayerOxygen => parts.playerOxygen;
         public OxygenGauge MonsterOxygen => parts.monsterOxygen;
@@ -43,6 +51,8 @@ namespace FGJ.LiarDice.UI
         public bool IsBelieveEnabled => parts.believeButton.interactable;
         public bool IsBluffEnabled => parts.bluffButton.interactable;
         public bool IsBidInputEnabled => parts.quantityInput.interactable;
+        public ItemBarView PlayerItems => parts.playerItems;
+        public ItemBarView MonsterItems => parts.monsterItems;
 
         public void SetParts(LiarDiceHudParts hudParts)
         {
@@ -74,7 +84,10 @@ namespace FGJ.LiarDice.UI
 
         private void WireListeners()
         {
-            if (_listenersWired || parts == null || parts.believeButton == null)
+            if (parts == null)
+                return;
+            WireItemBar();
+            if (_listenersWired || parts.believeButton == null)
                 return;
 
             parts.believeButton.onClick.AddListener(() => BelieveClicked?.Invoke());
@@ -82,6 +95,40 @@ namespace FGJ.LiarDice.UI
             parts.submitButton.onClick.AddListener(SubmitBid);
             parts.continueButton.onClick.AddListener(() => ContinueClicked?.Invoke());
             _listenersWired = true;
+        }
+
+        private void WireItemBar()
+        {
+            if (parts.playerItems == null || _wiredItemBar == parts.playerItems)
+                return;
+            if (_wiredItemBar != null)
+                _wiredItemBar.SlotClicked -= OnItemSlotClicked;
+            _wiredItemBar = parts.playerItems;
+            _wiredItemBar.SlotClicked += OnItemSlotClicked;
+        }
+
+        private void OnItemSlotClicked(int index)
+        {
+            ItemClicked?.Invoke(index);
+        }
+
+        public void ShowItems(LiarDiceMatch match, bool playerCanUse)
+        {
+            if (parts.playerItems != null)
+            {
+                _itemLabels.Clear();
+                foreach (var item in match.GetItems(Side.Player))
+                    _itemLabels.Add(_text.ItemName(item));
+                parts.playerItems.Show(_itemLabels, playerCanUse);
+            }
+
+            if (parts.monsterItems != null)
+            {
+                _itemLabels.Clear();
+                for (var i = 0; i < match.GetItems(Side.Monster).Count; i++)
+                    _itemLabels.Add(LiarDiceText.HiddenItemLabel);
+                parts.monsterItems.Show(_itemLabels, false);
+            }
         }
 
         public void SubmitBid()
@@ -104,8 +151,8 @@ namespace FGJ.LiarDice.UI
 
         public void ShowOxygen(LiarDiceMatch match)
         {
-            parts.playerOxygen.Show(match.PlayerOxygen, match.Settings.PlayerOxygen);
-            parts.monsterOxygen.Show(match.MonsterOxygen, match.Settings.MonsterOxygen);
+            parts.playerOxygen.Show(match.PlayerOxygen, match.GetMaxOxygen(Side.Player));
+            parts.monsterOxygen.Show(match.MonsterOxygen, match.GetMaxOxygen(Side.Monster));
         }
 
         public void SetStatus(string message)

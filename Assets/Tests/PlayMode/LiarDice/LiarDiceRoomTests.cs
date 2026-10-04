@@ -70,7 +70,8 @@ namespace FGJ.Tests.PlayMode.LiarDice
                 Hud.LogView.LatestText);
             Assert.AreEqual(2, Hud.PlayerOxygen.FilledCount);
             Assert.IsNotNull(_controller.MonsterView.CurrentSprite);
-            Assert.IsTrue(_controller.MonsterView.IsShowingPlaceholder);
+            Assert.AreEqual("BlobfishScumbag", _controller.MonsterView.CurrentSprite.name);
+            Assert.IsFalse(_controller.MonsterView.IsShowingPlaceholder);
             Assert.AreEqual(2, Hud.MonsterOxygen.SegmentCount);
         }
 
@@ -144,18 +145,17 @@ namespace FGJ.Tests.PlayMode.LiarDice
         }
 
         [UnityTest]
-        public IEnumerator Continue_AfterRound_ClosesCupsAndLoserBidsFirst()
+        public IEnumerator Continue_AfterRound_ClosesCupsAndMonsterBidsFirst()
         {
             Begin();
             yield return WaitForPlayerTurn();
             _controller.ChallengeAsPlayer();
             yield return WaitForIdle();
-            var loser = Match.LastResult.Value.Loser;
 
             _controller.Continue();
 
             Assert.AreEqual(MatchPhase.Bidding, Match.Phase);
-            Assert.AreEqual(loser, Match.CurrentTurn);
+            Assert.AreEqual(Side.Monster, Match.CurrentTurn);
             Assert.IsFalse(Hud.IsContinueVisible);
             Assert.IsFalse(_controller.Table.MonsterCup.IsLifted);
             StringAssert.Contains("第 2 局", Hud.LogView.LatestText);

@@ -23,5 +23,5 @@ MonoBehaviour:
   clearedPrompt: "\u9019\u88E1\u5DF2\u7D93\u5B89\u975C\u4E86"
   interactRange: 1.5
   interactSpan: {x: 8.118, y: 10.672}
-  gameplayConfig: {fileID: 11400000, guid: 0d046963bc814fa41ba45ba1bfc178b1, type: 2}
-  monster: {fileID: 11400000, guid: cc3bad4bf002efb4ea28fabf314fff15, type: 2}
+  gameplayConfig: {fileID: 11400000, guid: a477f44a690c4504be7ffe2cc50cefcd, type: 2}
+  monster: {fileID: 11400000, guid: fb126d0d22d14742a06c31774da8c33c, type: 2}

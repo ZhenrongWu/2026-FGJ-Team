@@ -15,7 +15,7 @@ namespace FGJ.Tests.EditMode.LiarDice
         public void TearDown() => Object.DestroyImmediate(_monster);
 
         [Test]
-        public void Defaults_DescribeSwampWatcher()
+        public void Defaults_HaveNameAndBidLine()
         {
             Assert.AreEqual("沼澤看守者", _monster.DisplayName);
             Assert.AreEqual("「3 個 4 點。」", _monster.BidLine(new Bid(3, 4)));

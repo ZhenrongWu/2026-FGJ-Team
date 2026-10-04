@@ -6,13 +6,16 @@ namespace FGJ.LiarDice.UI
         public readonly bool BluffEnabled;
         public readonly bool BidInputEnabled;
         public readonly bool ContinueVisible;
+        public readonly bool ItemsEnabled;
 
-        public BidPanelState(bool believeEnabled, bool bluffEnabled, bool bidInputEnabled, bool continueVisible)
+        public BidPanelState(bool believeEnabled, bool bluffEnabled, bool bidInputEnabled, bool continueVisible,
+            bool itemsEnabled = false)
         {
             BelieveEnabled = believeEnabled;
             BluffEnabled = bluffEnabled;
             BidInputEnabled = bidInputEnabled;
             ContinueVisible = continueVisible;
+            ItemsEnabled = itemsEnabled;
         }
     }
 
@@ -30,11 +33,14 @@ namespace FGJ.LiarDice.UI
             if (!playerCanAct)
                 return default;
 
+            var hasItems = match.GetItems(Side.Player).Count > 0;
             if (!match.CurrentBid.HasValue)
-                return new BidPanelState(false, false, true, false);
+                return new BidPanelState(false, false, true, false, hasItems);
+            if (match.MustRaise)
+                return new BidPanelState(false, false, match.CanRaise, false, hasItems);
 
             var canRaise = match.CanRaise;
-            return new BidPanelState(canRaise && !believed, match.CanChallenge, canRaise && believed, false);
+            return new BidPanelState(canRaise && !believed, match.CanChallenge, canRaise && believed, false, hasItems);
         }
     }
 }

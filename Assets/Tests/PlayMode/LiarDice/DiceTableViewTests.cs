@@ -105,5 +105,22 @@ namespace FGJ.Tests.PlayMode.LiarDice
             Assert.AreEqual(8, _table.PlayerDice.Count);
             Assert.AreEqual(8, _table.MonsterDice.Count);
         }
+
+        [UnityTest]
+        public IEnumerator FifteenDice_ShrinkToFitInsideCup()
+        {
+            var match = StartMatch(15);
+
+            yield return Play(_table.PlayRoundStart(match));
+
+            Assert.Less(_table.PlayerDieScale, 1f);
+            Assert.AreEqual(_table.PlayerDieScale, _table.MonsterDieScale, 1e-5f);
+            var shrunkSize = _table.PlayerDice[0].transform.localScale.x;
+
+            yield return Play(_table.PlayRoundStart(StartMatch()));
+
+            Assert.AreEqual(1f, _table.PlayerDieScale, 1e-5f);
+            Assert.Less(shrunkSize, _table.PlayerDice[0].transform.localScale.x);
+        }
     }
 }

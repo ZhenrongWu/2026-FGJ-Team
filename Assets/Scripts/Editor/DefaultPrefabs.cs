@@ -64,6 +64,21 @@ namespace FGJ.Editor
             Ensure(EntrancePath, CreateEntrance);
         }
 
+        [MenuItem("FGJ/Prefabs/Rebuild Gameplay Hud Item Bars")]
+        public static void RebuildGameplayHudItemBars()
+        {
+            var root = PrefabUtility.LoadPrefabContents(GameplayHudPath);
+            try
+            {
+                new GameplayHudBuilder(new UiFactory()).RebuildItemBars(root.GetComponent<LiarDiceHud>());
+                PrefabUtility.SaveAsPrefabAsset(root, GameplayHudPath);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+        }
+
         public static T Load<T>(string path) where T : Component
         {
             return AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<T>();

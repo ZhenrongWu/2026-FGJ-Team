@@ -8,8 +8,8 @@ namespace FGJ.Editor
     public static class LiarDiceSceneMenu
     {
         public const string ScenePath = "Assets/Scenes/Gameplay.unity";
-        public const string ConfigPath = "Assets/Data/LiarDice/LiarDiceConfig_SwampWatcher.asset";
-        public const string MonsterPath = "Assets/Data/LiarDice/Monster_SwampWatcher.asset";
+        public const string ConfigPath = "Assets/Data/LiarDice/LiarDiceConfig_Level01.asset";
+        public const string MonsterPath = "Assets/Data/LiarDice/Monster_BlobfishScumbag.asset";
 
         [MenuItem("FGJ/Scenes/Build Gameplay Scene")]
         public static void BuildRoomSceneFromMenu()

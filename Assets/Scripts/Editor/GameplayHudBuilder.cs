@@ -6,7 +6,11 @@ namespace FGJ.Editor
 {
     public sealed class GameplayHudBuilder
     {
-        private const int ItemSlotCount = 3;
+        public const string PlayerItemsName = "PlayerItems";
+        public const string MonsterItemsName = "MonsterItems";
+        private const float ItemBarX = 420f;
+        private static readonly Vector2 ItemBarSize = new Vector2(560f, 100f);
+        private static readonly Vector2 ItemSlotSize = new Vector2(124f, 80f);
         private static readonly Vector2 TopLeft = new Vector2(0f, 1f);
         private static readonly Vector2 TopRight = new Vector2(1f, 1f);
         private static readonly Vector2 BottomLeft = new Vector2(0f, 0f);
@@ -36,8 +40,7 @@ namespace FGJ.Editor
                 playerOxygen = BuildOxygen(canvasObject.transform, "PlayerOxygen", TopLeft, 75f),
                 monsterOxygen = BuildOxygen(canvasObject.transform, "MonsterOxygen", TopRight, -75f)
             };
-            BuildItems(canvasObject.transform, "PlayerItems", TopLeft, 270f, false);
-            BuildItems(canvasObject.transform, "MonsterItems", TopRight, -270f, true);
+            BuildItemBars(canvasObject.transform, parts);
             BuildControlPanel(canvasObject.transform, parts);
             parts.logView = BuildLog(canvasObject.transform);
 
@@ -73,18 +76,51 @@ namespace FGJ.Editor
             return gauge;
         }
 
-        private void BuildItems(Transform canvas, string name, Vector2 anchor, float x, bool mirrored)
+        public void RebuildItemBars(LiarDiceHud hud)
+        {
+            var parts = hud.Parts;
+            foreach (var name in new[] { PlayerItemsName, MonsterItemsName })
+            {
+                var old = hud.transform.Find(name);
+                if (old != null)
+                    Object.DestroyImmediate(old.gameObject);
+            }
+            BuildItemBars(hud.transform, parts);
+            hud.SetParts(parts);
+        }
+
+        private void BuildItemBars(Transform canvas, LiarDiceHudParts parts)
+        {
+            parts.playerItems = BuildItemBar(canvas, PlayerItemsName, TopLeft, ItemBarX, TextAnchor.MiddleLeft);
+            parts.monsterItems = BuildItemBar(canvas, MonsterItemsName, TopRight, -ItemBarX, TextAnchor.MiddleRight);
+        }
+
+        private ItemBarView BuildItemBar(Transform canvas, string name, Vector2 anchor, float x, TextAnchor alignment)
         {
             var row = _ui.CreateImage(name, canvas, _ui.Panel);
-            _ui.Place(row.rectTransform, anchor, new Vector2(x, -70f), new Vector2(300f, 100f));
+            _ui.Place(row.rectTransform, anchor, new Vector2(x, -70f), ItemBarSize);
 
-            for (var i = 0; i < ItemSlotCount; i++)
-            {
-                var offset = (i - 1) * 96f * (mirrored ? -1f : 1f);
-                var slot = _ui.CreateImage($"ItemSlot_{i}", row.transform, new Color(0.12f, 0.12f, 0.12f, 0.75f));
-                _ui.Place(slot.rectTransform, Center, new Vector2(offset, 0f), new Vector2(80f, 80f));
-                slot.gameObject.AddComponent<Outline>().effectColor = new Color(0.7f, 0.7f, 0.7f, 0.9f);
-            }
+            var slots = _ui.CreateRect("Slots", row.transform);
+            _ui.Stretch(slots);
+            slots.offsetMin = new Vector2(10f, 10f);
+            slots.offsetMax = new Vector2(-10f, -10f);
+            var layout = slots.gameObject.AddComponent<HorizontalLayoutGroup>();
+            layout.childAlignment = alignment;
+            layout.spacing = 10f;
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+
+            var template = _ui.CreateButton("ItemSlotTemplate", row.transform, string.Empty, _ui.PanelDark,
+                _ui.TextLight, 22);
+            ((RectTransform)template.transform).sizeDelta = ItemSlotSize;
+            template.gameObject.AddComponent<Outline>().effectColor = new Color(0.7f, 0.7f, 0.7f, 0.9f);
+            template.gameObject.SetActive(false);
+
+            var bar = row.gameObject.AddComponent<ItemBarView>();
+            bar.Configure(slots, template);
+            return bar;
         }
 
         private void BuildControlPanel(Transform canvas, LiarDiceHudParts parts)

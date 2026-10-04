@@ -120,7 +120,7 @@ namespace FGJ.Tests.EditMode.LiarDice
         }
 
         [Test]
-        public void NextRound_RerollsResetsWildAndLoserBidsFirst()
+        public void NextRound_RerollsResetsWildAndMonsterAlwaysBidsFirst()
         {
             var match = CreateMatch(2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3);
             match.PlaceBid(Side.Monster, new Bid(2, 1));
@@ -128,7 +128,7 @@ namespace FGJ.Tests.EditMode.LiarDice
 
             match.NextRound();
 
-            Assert.AreEqual(Side.Player, match.CurrentTurn);
+            Assert.AreEqual(Side.Monster, match.CurrentTurn);
             Assert.IsTrue(match.WildActive);
             Assert.IsNull(match.CurrentBid);
             CollectionAssert.AreEqual(new[] { 2, 2, 2, 2, 2 }, match.GetDice(Side.Player));

@@ -36,18 +36,34 @@ namespace FGJ.LiarDice
         private void ApplyBuildingConfig()
         {
             var building = progress != null ? progress.CurrentBuilding : null;
-            if (controller != null && building != null)
-                controller.UseEncounter(building.GameplayConfig, building.Monster);
+            if (controller == null || building == null)
+                return;
+
+            controller.UseEncounter(building.GameplayConfig, building.Monster);
+            if (controller.Config != null)
+                controller.SetPlayerStartOxygen(progress.PlayerOxygenFor(controller.Config.PlayerOxygen));
         }
 
         private void OnExitRequested(Side winner)
         {
-            var playerWon = winner == Side.Player;
-            progress.CompleteBuilding(playerWon);
-            if (playerWon)
-                router.GoToExploration();
+            if (winner != Side.Player)
+            {
+                router.GoToGameplay();
+                return;
+            }
+
+            var config = controller.Config;
+            var oxygenAfter = config != null ? config.OxygenAfterVictory(controller.Match.PlayerOxygen) : 0;
+            progress.CompleteBuilding(true, oxygenAfter);
+            if (config != null && config.EndsGame)
+            {
+                progress.ResetRun();
+                router.GoToEnding();
+            }
             else
-                router.GoToStart();
+            {
+                router.GoToExploration();
+            }
         }
     }
 }
