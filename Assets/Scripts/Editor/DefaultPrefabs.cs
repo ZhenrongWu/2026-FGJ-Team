@@ -79,6 +79,21 @@ namespace FGJ.Editor
             }
         }
 
+        [MenuItem("FGJ/Prefabs/Rebuild Gameplay Hud Log Decoration")]
+        public static void RebuildGameplayHudLogDecoration()
+        {
+            var root = PrefabUtility.LoadPrefabContents(GameplayHudPath);
+            try
+            {
+                new GameplayHudBuilder(new UiFactory()).RebuildLogDecoration(root.GetComponent<LiarDiceHud>());
+                PrefabUtility.SaveAsPrefabAsset(root, GameplayHudPath);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+        }
+
         public static T Load<T>(string path) where T : Component
         {
             return AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<T>();

@@ -1,4 +1,5 @@
 using FGJ.LiarDice.UI;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,11 @@ namespace FGJ.Editor
     {
         public const string PlayerItemsName = "PlayerItems";
         public const string MonsterItemsName = "MonsterItems";
+        public const string MatchLogName = "MatchLog";
+        public const string LogDecorationName = "LogDecoration";
+        public const string LogDecorationSpritePath = "Assets/Art/Sprites/UI/HUD/MatchLog_Skull.png";
+        private static readonly Vector2 LogDecorationPosition = Vector2.zero;
+        private static readonly Vector2 LogDecorationSize = new Vector2(110f, 141f);
         private const float ItemBarX = 420f;
         private static readonly Vector2 ItemBarSize = new Vector2(560f, 100f);
         private static readonly Vector2 ItemSlotSize = new Vector2(124f, 80f);
@@ -16,6 +22,7 @@ namespace FGJ.Editor
         private static readonly Vector2 BottomLeft = new Vector2(0f, 0f);
         private static readonly Vector2 BottomRight = new Vector2(1f, 0f);
         private static readonly Vector2 Center = new Vector2(0.5f, 0.5f);
+        private static readonly Vector2 TopCenter = new Vector2(0.5f, 1f);
 
         private readonly UiFactory _ui;
 
@@ -166,9 +173,27 @@ namespace FGJ.Editor
             _ui.Place(label.rectTransform, Center, new Vector2(x, 0f), new Vector2(56f, 56f));
         }
 
+        public void RebuildLogDecoration(LiarDiceHud hud)
+        {
+            var log = hud.transform.Find(MatchLogName);
+            var old = log.Find(LogDecorationName);
+            if (old != null)
+                Object.DestroyImmediate(old.gameObject);
+            BuildLogDecoration(log);
+        }
+
+        private void BuildLogDecoration(Transform log)
+        {
+            var decoration = _ui.CreateImage(LogDecorationName, log, Color.white);
+            decoration.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(LogDecorationSpritePath);
+            decoration.preserveAspect = true;
+            decoration.raycastTarget = false;
+            _ui.Place(decoration.rectTransform, TopCenter, LogDecorationPosition, LogDecorationSize);
+        }
+
         private MatchLogView BuildLog(Transform canvas)
         {
-            var panel = _ui.CreateImage("MatchLog", canvas, _ui.Panel);
+            var panel = _ui.CreateImage(MatchLogName, canvas, _ui.Panel);
             _ui.Place(panel.rectTransform, BottomRight, new Vector2(-350f, 160f), new Vector2(640f, 260f));
 
             var viewport = _ui.CreateImage("Viewport", panel.transform, new Color(0f, 0f, 0f, 0.15f));
@@ -197,6 +222,8 @@ namespace FGJ.Editor
             scroll.horizontal = false;
             scroll.movementType = ScrollRect.MovementType.Clamped;
             scroll.scrollSensitivity = 30f;
+
+            BuildLogDecoration(panel.transform);
 
             var logView = panel.gameObject.AddComponent<MatchLogView>();
             logView.Configure(content, scroll);
