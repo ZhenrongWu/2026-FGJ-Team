@@ -15,7 +15,7 @@ namespace FGJ.Editor
         private const float GroundY = 1.5f;
         private const float PlayerStartX = 6f;
         private const float FirstBuildingX = 44f;
-        private const float BuildingSpacing = 24f;
+        public const float BuildingGap = 10f;
         private const float DoorRange = 1.5f;
         private const string EnterPrompt = "按 ↑ 進入";
         private const string ClearedPrompt = "這裡已經安靜了";
@@ -25,8 +25,9 @@ namespace FGJ.Editor
 
         private static readonly (string art, Vector2 doorOffset) Home = ("Home", new Vector2(-0.93f, -1.33f));
         private static readonly (string art, Vector2 doorOffset) Tavern = ("Tavern", new Vector2(0.74f, -0.15f));
-        private static readonly (string art, Vector2 doorOffset) Mayor = ("Mayor", new Vector2(0.22f, -0.01f));
-        private static readonly (string art, Vector2 doorOffset)[] LevelArt = { Home, Tavern, Tavern, Mayor };
+        private static readonly (string art, Vector2 doorOffset) Gang = ("Gang", new Vector2(0.22f, -0.01f));
+        private static readonly (string art, Vector2 doorOffset) Mayor = ("Mayor", new Vector2(0.105f, 0.16f));
+        private static readonly (string art, Vector2 doorOffset)[] LevelArt = { Home, Tavern, Gang, Mayor };
 
         [MenuItem("FGJ/Scenes/Build Exploration Scene")]
         public static void BuildFromMenu()
@@ -94,9 +95,19 @@ namespace FGJ.Editor
             if (!AssetDatabase.IsValidFolder(DataFolder))
                 AssetDatabase.CreateFolder("Assets/Data", "Exploration");
 
+            var buildings = new BuildingDefinition[LevelCount];
+            var spans = new Vector2[LevelCount];
+            for (var i = 0; i < LevelCount; i++)
+            {
+                buildings[i] = EnsureBuilding(i + 1);
+                spans[i] = buildings[i].BuildingSpan;
+            }
+
+            var layout = new BuildingRowLayout(FirstBuildingX, BuildingGap);
+            var positions = layout.Positions(spans);
             var placements = new BuildingPlacement[LevelCount];
             for (var i = 0; i < LevelCount; i++)
-                placements[i] = new BuildingPlacement(EnsureBuilding(i + 1), FirstBuildingX + i * BuildingSpacing);
+                placements[i] = new BuildingPlacement(buildings[i], positions[i]);
 
             var route = AssetDatabase.LoadAssetAtPath<ExplorationRoute>(RoutePath);
             if (route == null)
@@ -105,7 +116,7 @@ namespace FGJ.Editor
                 AssetDatabase.CreateAsset(route, RoutePath);
             }
             route.SetPlacements(placements);
-            route.SetLoopLength(LevelCount * BuildingSpacing);
+            route.SetLoopLength(layout.LoopLength(spans));
             EditorUtility.SetDirty(route);
 
             AssetDatabase.SaveAssets();

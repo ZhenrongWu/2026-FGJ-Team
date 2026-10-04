@@ -16,9 +16,9 @@ MonoBehaviour:
   - building: {fileID: 11400000, guid: 3def61dfc948a9e47a7c4a24bfcb455d, type: 2}
     x: 44
   - building: {fileID: 11400000, guid: 682c6431b67b49a9a9acc8f8750c2169, type: 2}
-    x: 68
+    x: 66.023159
   - building: {fileID: 11400000, guid: dfbd4a82b4dd4cd784f4f3df1b0518c8, type: 2}
-    x: 92
+    x: 90.615791
   - building: {fileID: 11400000, guid: 1f688e749cb345788a8ad9cc0a8392ea, type: 2}
-    x: 116
-  loopLength: 96
+    x: 128.635265
+  loopLength: 124.589476

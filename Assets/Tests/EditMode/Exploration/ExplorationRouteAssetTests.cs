@@ -25,12 +25,18 @@ namespace FGJ.Tests.EditMode.Exploration
         }
 
         [Test]
-        public void Route_LoopsBackToFirstBuildingAfterLastLevel()
+        public void Route_NeighbouringBuildingsKeepTheSameGapIncludingTheLoop()
         {
             var placements = _route.Placements;
-            var spacing = placements[1].x - placements[0].x;
-
-            Assert.AreEqual(spacing * placements.Count, _route.LoopLength, 1e-4f);
+            for (var i = 0; i < placements.Count; i++)
+            {
+                var current = placements[i];
+                var next = placements[(i + 1) % placements.Count];
+                var nextX = i + 1 < placements.Count ? next.x : next.x + _route.LoopLength;
+                var gap = nextX - next.building.BuildingSpan.x - (current.x + current.building.BuildingSpan.y);
+                Assert.AreEqual(ExplorationSceneMenu.BuildingGap, gap, 0.01f,
+                    $"{current.building.name} → {next.building.name}");
+            }
         }
 
         [Test]
@@ -98,7 +104,7 @@ namespace FGJ.Tests.EditMode.Exploration
 
         [TestCase(1, "Home_Exterior")]
         [TestCase(2, "Tavern_Exterior")]
-        [TestCase(3, "Tavern_Exterior")]
+        [TestCase(3, "Gang_Exterior")]
         [TestCase(4, "Mayor_Exterior")]
         public void Route_LevelUsesItsBuildingArt(int level, string exteriorName)
         {
