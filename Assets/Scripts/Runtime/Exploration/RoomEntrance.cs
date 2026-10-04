@@ -39,7 +39,7 @@ namespace FGJ.Exploration
             BindOutline(definition);
         }
 
-        public bool IsInRange(float playerX) => Mathf.Abs(playerX - X) <= building.InteractRange;
+        public bool IsInRange(float playerX) => building.IsWithinInteract(playerX - X);
 
         public void SetCleared(bool cleared)
         {
@@ -93,7 +93,7 @@ namespace FGJ.Exploration
 
             outline.sprite = definition.Outline;
             PlaceLikeExterior(outline.transform, definition);
-            outline.sortingOrder = definition.ExteriorSortingOrder + 1;
+            outline.sortingOrder = definition.ExteriorSortingOrder - 1;
             outline.gameObject.SetActive(IsHighlighted && HasOutline);
             ApplyOutlineAlpha();
         }

@@ -239,4 +239,52 @@ namespace FGJ.Tests.EditMode.Exploration
             Assert.AreEqual(1f, pulse.MaxAlpha);
         }
     }
+
+    public class BuildingInteractSpanTests
+    {
+        private BuildingDefinition _building;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _building = ScriptableObject.CreateInstance<BuildingDefinition>();
+            _building.Configure("Test", "enter", "cleared", 1.5f, null);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Object.DestroyImmediate(_building);
+        }
+
+        [Test]
+        public void IsWithinInteract_WithoutSpan_UsesSymmetricInteractRange()
+        {
+            Assert.IsFalse(_building.UsesInteractSpan);
+            Assert.IsTrue(_building.IsWithinInteract(-1.5f));
+            Assert.IsTrue(_building.IsWithinInteract(1.5f));
+            Assert.IsFalse(_building.IsWithinInteract(2f));
+        }
+
+        [Test]
+        public void IsWithinInteract_WithSpan_FollowsBuildingWidthOnEachSide()
+        {
+            _building.SetInteractSpan(8f, 10.5f);
+
+            Assert.IsTrue(_building.UsesInteractSpan);
+            Assert.IsTrue(_building.IsWithinInteract(-8f));
+            Assert.IsTrue(_building.IsWithinInteract(10.5f));
+            Assert.IsFalse(_building.IsWithinInteract(-8.1f));
+            Assert.IsFalse(_building.IsWithinInteract(10.6f));
+        }
+
+        [Test]
+        public void SetInteractSpan_Negative_ClampsToZero()
+        {
+            _building.SetInteractSpan(-3f, -1f);
+
+            Assert.AreEqual(UnityEngine.Vector2.zero, _building.InteractSpan);
+            Assert.IsFalse(_building.UsesInteractSpan);
+        }
+    }
 }

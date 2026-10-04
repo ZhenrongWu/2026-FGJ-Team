@@ -46,17 +46,12 @@ namespace FGJ.Tests.EditMode.Exploration
         }
 
         [Test]
-        public void Route_BuildingsShareTheSameSettings()
+        public void Route_BuildingsShareTheSameSettingsExceptArt()
         {
             var first = _route.Placements[0].building;
-            Assert.IsNotNull(first.Exterior);
-            Assert.IsNotNull(first.Outline);
 
             foreach (var building in _route.Placements.Select(placement => placement.building))
             {
-                Assert.AreSame(first.Exterior, building.Exterior, building.name);
-                Assert.AreSame(first.Outline, building.Outline, building.name);
-                Assert.AreEqual(first.ExteriorOffset, building.ExteriorOffset, building.name);
                 Assert.AreEqual(first.ExteriorScale, building.ExteriorScale, building.name);
                 Assert.AreEqual(first.ExteriorSortingOrder, building.ExteriorSortingOrder, building.name);
                 Assert.AreEqual(first.EnterPrompt, building.EnterPrompt, building.name);
@@ -64,6 +59,58 @@ namespace FGJ.Tests.EditMode.Exploration
                 Assert.AreEqual(first.InteractRange, building.InteractRange, building.name);
                 Assert.AreSame(first.GameplayConfig, building.GameplayConfig, building.name);
                 Assert.AreSame(first.Monster, building.Monster, building.name);
+            }
+        }
+
+        [Test]
+        public void Route_EachBuildingHasMatchingExteriorAndOutline()
+        {
+            foreach (var building in _route.Placements.Select(placement => placement.building))
+            {
+                Assert.IsNotNull(building.Exterior, building.name);
+                Assert.IsNotNull(building.Outline, building.name);
+                StringAssert.EndsWith("_Exterior", building.Exterior.name, building.name);
+                Assert.AreEqual(building.Exterior.name.Replace("_Exterior", "_Outline"), building.Outline.name,
+                    building.name);
+                Assert.AreEqual(building.Exterior.rect.size, building.Outline.rect.size, building.name);
+            }
+        }
+
+        [TestCase(1, "Tavern_Exterior")]
+        [TestCase(2, "Mayor_Exterior")]
+        [TestCase(3, "Tavern_Exterior")]
+        [TestCase(4, "Tavern_Exterior")]
+        public void Route_LevelUsesItsBuildingArt(int level, string exteriorName)
+        {
+            Assert.AreEqual(exteriorName, _route.Placements[level - 1].building.Exterior.name);
+        }
+
+        [Test]
+        public void Route_InteractSpanMatchesBuildingWidth()
+        {
+            var measurer = new BuildingInteractSpanMeasurer();
+
+            foreach (var building in _route.Placements.Select(placement => placement.building))
+            {
+                var expected = measurer.Measure(building);
+                Assert.IsTrue(building.UsesInteractSpan, building.name);
+                Assert.AreEqual(expected.x, building.InteractSpan.x, 0.01f, building.name);
+                Assert.AreEqual(expected.y, building.InteractSpan.y, 0.01f, building.name);
+            }
+        }
+
+        [Test]
+        public void Route_InteractSpansOfNeighbouringBuildingsDoNotOverlap()
+        {
+            var placements = _route.Placements;
+            for (var i = 0; i < placements.Count; i++)
+            {
+                var current = placements[i];
+                var next = placements[(i + 1) % placements.Count];
+                var nextX = i + 1 < placements.Count ? next.x : next.x + _route.LoopLength;
+                var currentRight = current.x + current.building.InteractSpan.y;
+                var nextLeft = nextX - next.building.InteractSpan.x;
+                Assert.Less(currentRight, nextLeft, $"{current.building.name} → {next.building.name}");
             }
         }
 

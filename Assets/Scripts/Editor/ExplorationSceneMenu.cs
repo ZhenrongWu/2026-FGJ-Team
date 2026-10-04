@@ -11,7 +11,7 @@ namespace FGJ.Editor
         public const string ScenePath = "Assets/Scenes/Exploration.unity";
         public const string DataFolder = "Assets/Data/Exploration";
         public const string RoutePath = DataFolder + "/ExplorationRoute.asset";
-        public const int LevelCount = 4;
+        public static int LevelCount => LevelArt.Length;
 
         private const float GroundY = 1.5f;
         private const float PlayerStartX = 6f;
@@ -20,10 +20,13 @@ namespace FGJ.Editor
         private const float InteractRange = 1.5f;
         private const string EnterPrompt = "按 ↑ 進入";
         private const string ClearedPrompt = "這裡已經安靜了";
-        private const string ExteriorSprite = "Tavern_Exterior";
-        private const string OutlineSprite = "Tavern_Outline";
-        private static readonly Vector2 DoorOffset = new Vector2(0.74f, -0.15f);
+        private const string ExteriorSuffix = "_Exterior";
+        private const string OutlineSuffix = "_Outline";
         private static readonly Vector2 ExteriorScale = new Vector2(2f, 2f);
+
+        private static readonly (string art, Vector2 doorOffset) Tavern = ("Tavern", new Vector2(0.74f, -0.15f));
+        private static readonly (string art, Vector2 doorOffset) Mayor = ("Mayor", new Vector2(0.22f, -0.01f));
+        private static readonly (string art, Vector2 doorOffset)[] LevelArt = { Tavern, Mayor, Tavern, Tavern };
 
         [MenuItem("FGJ/Scenes/Build Exploration Scene")]
         public static void BuildFromMenu()
@@ -118,9 +121,12 @@ namespace FGJ.Editor
             building.Configure(BuildingId(level), EnterPrompt, ClearedPrompt, InteractRange,
                 AssetDatabase.LoadAssetAtPath<LiarDiceConfig>(LiarDiceSceneMenu.ConfigPath),
                 LiarDiceSceneMenu.EnsureDefaultMonster());
-            building.SetExterior(ArtImport.LoadSprite(ExteriorSprite), DoorOffset);
-            building.SetOutline(ArtImport.LoadSprite(OutlineSprite));
+            var (art, doorOffset) = LevelArt[level - 1];
+            building.SetExterior(ArtImport.LoadSprite(art + ExteriorSuffix), doorOffset);
+            building.SetOutline(ArtImport.LoadSprite(art + OutlineSuffix));
             building.SetExteriorScale(ExteriorScale);
+            var span = new BuildingInteractSpanMeasurer().Measure(building);
+            building.SetInteractSpan(span.x, span.y);
             EditorUtility.SetDirty(building);
             return building;
         }

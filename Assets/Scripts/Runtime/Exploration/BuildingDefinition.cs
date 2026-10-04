@@ -19,6 +19,8 @@ namespace FGJ.Exploration
         [SerializeField] private string enterPrompt = "按 ↑ 進入";
         [SerializeField] private string clearedPrompt = "這裡已經安靜了";
         [Min(0f)] [SerializeField] private float interactRange = 1.5f;
+        [Tooltip("依建築寬度的觸發範圍：x 為入口往左距離、y 為往右距離；皆為 0 時改用 Interact Range")]
+        [SerializeField] private Vector2 interactSpan;
         [SerializeField] private LiarDiceConfig gameplayConfig;
         [SerializeField] private MonsterProfile monster;
 
@@ -33,6 +35,8 @@ namespace FGJ.Exploration
         public string EnterPrompt => enterPrompt;
         public string ClearedPrompt => clearedPrompt;
         public float InteractRange => interactRange;
+        public Vector2 InteractSpan => interactSpan;
+        public bool UsesInteractSpan => interactSpan.x > 0f || interactSpan.y > 0f;
         public LiarDiceConfig GameplayConfig => gameplayConfig;
         public MonsterProfile Monster => monster;
 
@@ -45,6 +49,18 @@ namespace FGJ.Exploration
         public void SetOutline(Sprite outlineSprite)
         {
             outline = outlineSprite;
+        }
+
+        public void SetInteractSpan(float left, float right)
+        {
+            interactSpan = new Vector2(Mathf.Max(0f, left), Mathf.Max(0f, right));
+        }
+
+        public bool IsWithinInteract(float offsetFromEntrance)
+        {
+            if (!UsesInteractSpan)
+                return Mathf.Abs(offsetFromEntrance) <= interactRange;
+            return offsetFromEntrance >= -interactSpan.x && offsetFromEntrance <= interactSpan.y;
         }
 
         public void SetExteriorScale(Vector2 scale)

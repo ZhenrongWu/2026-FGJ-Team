@@ -196,7 +196,7 @@ namespace FGJ.Editor
             var outline = new GameObject("Outline");
             outline.transform.SetParent(root.transform, false);
             var outlineRenderer = outline.AddComponent<SpriteRenderer>();
-            outlineRenderer.sortingOrder = -4;
+            outlineRenderer.sortingOrder = -6;
             outline.SetActive(false);
 
             root.AddComponent<RoomEntrance>().Configure(exteriorRenderer, outlineRenderer);

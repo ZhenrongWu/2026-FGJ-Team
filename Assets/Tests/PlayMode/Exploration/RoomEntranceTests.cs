@@ -109,7 +109,7 @@ namespace FGJ.Tests.PlayMode.Exploration
         }
 
         [Test]
-        public void Bind_WithOutline_AlignsWithExteriorAndStaysHidden()
+        public void Bind_WithOutline_AlignsBehindExteriorAndStaysHidden()
         {
             var outline = CreateSprite();
             var building = CreateBuilding(CreateSprite(), new Vector2(0.74f, -0.15f));
@@ -122,7 +122,7 @@ namespace FGJ.Tests.PlayMode.Exploration
             Assert.AreSame(outline, _outline.sprite);
             Assert.AreEqual(_exterior.transform.localPosition, _outline.transform.localPosition);
             Assert.AreEqual(_exterior.transform.localScale, _outline.transform.localScale);
-            Assert.Greater(_outline.sortingOrder, _exterior.sortingOrder);
+            Assert.Less(_outline.sortingOrder, _exterior.sortingOrder);
             Assert.IsFalse(_outline.gameObject.activeSelf);
             Assert.AreEqual(0f, _entrance.OutlineAlpha);
         }
@@ -169,6 +169,20 @@ namespace FGJ.Tests.PlayMode.Exploration
 
             Assert.IsTrue(_entrance.IsHighlighted);
             Assert.IsFalse(_outline.gameObject.activeSelf);
+        }
+
+        [Test]
+        public void IsInRange_WithInteractSpan_CoversBuildingWidthAroundDoor()
+        {
+            var building = CreateBuilding(CreateSprite(), Vector2.zero);
+            building.SetInteractSpan(8f, 10.5f);
+            _entrance.Bind(building);
+            _entrance.transform.position = new Vector3(68f, 0f, 0f);
+
+            Assert.IsTrue(_entrance.IsInRange(60f));
+            Assert.IsTrue(_entrance.IsInRange(78.5f));
+            Assert.IsFalse(_entrance.IsInRange(59.5f));
+            Assert.IsFalse(_entrance.IsInRange(79f));
         }
     }
 }
