@@ -61,5 +61,26 @@ namespace FGJ.Tests.EditMode.Flow
             Assert.AreEqual(Vector2.zero, cg.rectTransform.anchorMin);
             Assert.AreEqual(Vector2.one, cg.rectTransform.anchorMax);
         }
+
+        [Test]
+        public void EndingScene_ShowsNoTextOverCgExceptMainMenuButtonLabel()
+        {
+            var ending = Find<EndingController>();
+            var texts = _scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<Text>(true));
+
+            CollectionAssert.AreEqual(new[] { ending.MainMenuButton.GetComponentInChildren<Text>() }, texts.ToArray());
+        }
+
+        [Test]
+        public void EndingScene_CgShowsEndingArtWithoutTint()
+        {
+            var cg = _scene.GetRootGameObjects()
+                .SelectMany(root => root.GetComponentsInChildren<Image>(true))
+                .First(image => image.name == EndingSceneMenu.CgObjectName);
+
+            Assert.AreSame(AssetDatabase.LoadAssetAtPath<Sprite>(EndingSceneMenu.CgSpritePath), cg.sprite);
+            Assert.IsNotNull(cg.sprite, $"找不到 {EndingSceneMenu.CgSpritePath}");
+            Assert.AreEqual(Color.white, cg.color);
+        }
     }
 }
