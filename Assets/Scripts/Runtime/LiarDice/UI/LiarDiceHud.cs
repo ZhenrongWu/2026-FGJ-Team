@@ -124,6 +124,7 @@ namespace FGJ.LiarDice.UI
 
             if (parts.monsterItems != null)
             {
+                parts.monsterItems.gameObject.SetActive(match.Settings.ItemCount > 0);
                 _itemLabels.Clear();
                 for (var i = 0; i < match.GetItems(Side.Monster).Count; i++)
                     _itemLabels.Add(LiarDiceText.HiddenItemLabel);

@@ -13,7 +13,7 @@ namespace FGJ.Editor
         public const string BootstrapScenePath = "Assets/Scenes/Bootstrap.unity";
 
         private static readonly string[] OrderedSceneNames =
-            { SceneNames.Bootstrap, SceneNames.MainMenu, SceneNames.Exploration, SceneNames.Gameplay };
+            { SceneNames.Bootstrap, SceneNames.MainMenu, SceneNames.Exploration, SceneNames.Gameplay, SceneNames.Ending };
 
         [MenuItem("FGJ/Scenes/Build All Scenes")]
         public static void BuildAllFromMenu()
@@ -28,6 +28,7 @@ namespace FGJ.Editor
             BuildBootstrapScene();
             LiarDiceSceneMenu.BuildRoomScene();
             ExplorationSceneMenu.BuildScene();
+            EndingSceneMenu.BuildScene();
             Apply();
         }
 

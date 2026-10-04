@@ -76,6 +76,15 @@ namespace FGJ.Tests.PlayMode.LiarDice
         }
 
         [UnityTest]
+        public IEnumerator LevelWithoutItems_HidesMonsterItemBar()
+        {
+            Begin();
+            yield return WaitForPlayerTurn();
+
+            Assert.IsFalse(Hud.MonsterItems.gameObject.activeSelf);
+        }
+
+        [UnityTest]
         public IEnumerator Believe_UnlocksBidInput()
         {
             Begin();
