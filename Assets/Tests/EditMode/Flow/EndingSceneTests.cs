@@ -40,13 +40,13 @@ namespace FGJ.Tests.EditMode.Flow
         }
 
         [Test]
-        public void EndingScene_HasQuitButtonWiredToRouter()
+        public void EndingScene_HasMainMenuButtonWiredToRouter()
         {
             var ending = Find<EndingController>();
 
             Assert.IsNotNull(ending);
-            Assert.IsNotNull(ending.QuitButton);
-            Assert.AreEqual(EndingSceneMenu.QuitLabel, ending.QuitButton.GetComponentInChildren<Text>().text);
+            Assert.IsNotNull(ending.MainMenuButton);
+            Assert.AreEqual(EndingSceneMenu.MainMenuLabel, ending.MainMenuButton.GetComponentInChildren<Text>().text);
             Assert.AreSame(FlowAssets.Router, new SerializedObject(ending).FindProperty("router").objectReferenceValue);
         }
 

@@ -8,17 +8,17 @@ namespace FGJ.Ending
     public sealed class EndingController : MonoBehaviour
     {
         [SerializeField] private SceneRouter router;
-        [SerializeField] private Button quitButton;
+        [SerializeField] private Button mainMenuButton;
         [SerializeField] private GameAudio gameAudio;
 
-        private bool _quitRequested;
+        private bool _leaveRequested;
 
-        public Button QuitButton => quitButton;
+        public Button MainMenuButton => mainMenuButton;
 
-        public void Configure(SceneRouter sceneRouter, Button quit)
+        public void Configure(SceneRouter sceneRouter, Button mainMenu)
         {
             router = sceneRouter;
-            quitButton = quit;
+            mainMenuButton = mainMenu;
         }
 
         public void SetAudio(GameAudio audio)
@@ -30,18 +30,18 @@ namespace FGJ.Ending
         {
             if (gameAudio != null)
                 gameAudio.PlayEndingMusic();
-            quitButton.onClick.AddListener(QuitGame);
+            mainMenuButton.onClick.AddListener(ReturnToMainMenu);
         }
 
-        public void QuitGame()
+        public void ReturnToMainMenu()
         {
-            if (_quitRequested)
+            if (_leaveRequested)
                 return;
-            _quitRequested = true;
-            quitButton.interactable = false;
+            _leaveRequested = true;
+            mainMenuButton.interactable = false;
             if (gameAudio != null)
                 gameAudio.Play(SoundEffect.ButtonPress);
-            router.QuitGame();
+            router.GoToStart();
         }
     }
 }

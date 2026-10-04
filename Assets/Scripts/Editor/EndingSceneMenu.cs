@@ -12,7 +12,7 @@ namespace FGJ.Editor
     {
         public const string ScenePath = "Assets/Scenes/Ending.unity";
         public const string CgObjectName = "EndingCG";
-        public const string QuitLabel = "離開遊戲";
+        public const string MainMenuLabel = "回到主選單";
 
         private const string ThanksText = "感謝遊玩";
         private static readonly Vector2 ReferenceResolution = new Vector2(1920, 1080);
@@ -56,11 +56,11 @@ namespace FGJ.Editor
                 style: FontStyle.Bold);
             ui.Place(thanks.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0f, 80f), new Vector2(1200f, 140f));
 
-            var quit = ui.CreateButton("QuitButton", canvasObject.transform, QuitLabel, ui.Danger, ui.TextLight, 36);
-            ui.Place((RectTransform)quit.transform, BottomCenter, new Vector2(0f, 140f), new Vector2(360f, 90f));
+            var mainMenu = ui.CreateButton("MainMenuButton", canvasObject.transform, MainMenuLabel, ui.Danger, ui.TextLight, 36);
+            ui.Place((RectTransform)mainMenu.transform, BottomCenter, new Vector2(0f, 140f), new Vector2(360f, 90f));
 
             var ending = new GameObject("EndingController").AddComponent<EndingController>();
-            ending.Configure(FlowAssets.Router, quit);
+            ending.Configure(FlowAssets.Router, mainMenu);
             ending.SetAudio(AudioAssets.GameAudio);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
