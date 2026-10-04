@@ -116,5 +116,18 @@ namespace FGJ.Tests.PlayMode.MainMenu
             CollectionAssert.AreEqual(new[] { _hover }, _menu.PlayedSounds);
             Assert.IsTrue(_exit.interactable);
         }
+
+        [UnityTest]
+        public IEnumerator PointerEnterButton_AfterStartClicked_DoesNotPlayHoverSound()
+        {
+            var click = Track(CreateClip("Click", ClickSoundSeconds));
+            yield return BuildMenu(click);
+
+            _start.onClick.Invoke();
+            ExecuteEvents.Execute(_exit.gameObject, new PointerEventData(null), ExecuteEvents.pointerEnterHandler);
+            ExecuteEvents.Execute(_start.gameObject, new PointerEventData(null), ExecuteEvents.pointerEnterHandler);
+
+            CollectionAssert.AreEqual(new[] { click }, _menu.PlayedSounds);
+        }
     }
 }

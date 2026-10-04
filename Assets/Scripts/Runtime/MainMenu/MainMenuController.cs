@@ -41,18 +41,24 @@ namespace FGJ.MainMenu
         private void BindButton(Button button, UnityAction onConfirmed)
         {
             button.onClick.AddListener(() => StartCoroutine(PlayClickThenRun(onConfirmed)));
-            PlayHoverSoundOnPointerEnter(button.gameObject);
+            PlayHoverSoundOnPointerEnter(button);
         }
 
-        private void PlayHoverSoundOnPointerEnter(GameObject target)
+        private void PlayHoverSoundOnPointerEnter(Button button)
         {
-            var trigger = target.GetComponent<EventTrigger>();
+            var trigger = button.GetComponent<EventTrigger>();
             if (trigger == null)
-                trigger = target.AddComponent<EventTrigger>();
+                trigger = button.gameObject.AddComponent<EventTrigger>();
 
             var entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
-            entry.callback.AddListener(_ => PlaySound(hoverSound));
+            entry.callback.AddListener(_ => PlayHoverSoundIfInteractable(button));
             trigger.triggers.Add(entry);
+        }
+
+        private void PlayHoverSoundIfInteractable(Button button)
+        {
+            if (button.IsInteractable())
+                PlaySound(hoverSound);
         }
 
         private IEnumerator PlayClickThenRun(UnityAction onConfirmed)
