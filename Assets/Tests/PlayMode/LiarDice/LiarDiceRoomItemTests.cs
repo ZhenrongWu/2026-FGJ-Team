@@ -69,6 +69,7 @@ namespace FGJ.Tests.PlayMode.LiarDice
             CollectionAssert.AreEqual(new[] { LiarDiceText.HiddenItemLabel, LiarDiceText.HiddenItemLabel },
                 Hud.MonsterItems.Labels);
             Assert.IsFalse(Hud.MonsterItems.IsInteractable);
+            Assert.IsTrue(Hud.PlayerItems.gameObject.activeSelf);
             Assert.IsTrue(Hud.MonsterItems.gameObject.activeSelf);
         }
 

@@ -132,8 +132,10 @@ namespace FGJ.LiarDice.UI
 
         public void ShowItems(LiarDiceMatch match, bool playerCanUse)
         {
+            var levelHasItems = match.Settings.ItemCount > 0;
             if (parts.playerItems != null)
             {
+                parts.playerItems.gameObject.SetActive(levelHasItems);
                 _itemLabels.Clear();
                 foreach (var item in match.GetItems(Side.Player))
                     _itemLabels.Add(_text.ItemName(item));
@@ -142,7 +144,7 @@ namespace FGJ.LiarDice.UI
 
             if (parts.monsterItems != null)
             {
-                parts.monsterItems.gameObject.SetActive(match.Settings.ItemCount > 0);
+                parts.monsterItems.gameObject.SetActive(levelHasItems);
                 _itemLabels.Clear();
                 for (var i = 0; i < match.GetItems(Side.Monster).Count; i++)
                     _itemLabels.Add(LiarDiceText.HiddenItemLabel);
